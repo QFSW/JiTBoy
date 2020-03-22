@@ -1,9 +1,10 @@
 #include <windows.h>
 #include <vector>
 #include <iostream>
-#include <cstring>
 #include <fstream>
 #include <memory>
+#include "x86_64.h"
+#include "InstructionBuffer.h"
 
 void* alloc_exe(const size_t size)
 {
@@ -44,31 +45,15 @@ void load_binary(std::vector<uint8_t>& vec, const std::string& path)
     bin_stream.read(reinterpret_cast<char*>(vec.data()), size);
 }
 
-#define DECOMP_32(x) (x) & 0xFF, ((x) >> 8) & 0xFF, ((x) >> 16) & 0xFF, ((x) >> 24) & 0xFF
-
-#define EAX 0b000
-#define AH 0b100
-
-#define MOVI8(reg, x) 0xB0 | (reg), x
-#define MOVI32(reg, x) 0xB8 | (reg), DECOMP_32(x)
-
-#define RET 0xC3
-
-
 int main()
 {
-    std::vector<uint8_t> const exit_code =
-    {
-        MOVI32(EAX, 0),
-        MOVI8(AH, 2),
-        RET
-    };
-
-    std::vector<uint8_t> code;
-    code.insert(std::end(code), std::begin(exit_code), std::end(exit_code));
+    InstructionBuffer code;
+    code.write_mov_ir_32(EAX, 0);
+    code.write_mov_ir_8(AL, 9);
+    code.write_raw(RET);
 
     auto const buffer = alloc_exe(code.size());
-    std::memcpy(buffer, code.data(), code.size());
+    code.copy(buffer);
     commit_exe(buffer, code.size());
 
     auto const function_ptr = reinterpret_cast<std::int32_t(*)()>(buffer);
