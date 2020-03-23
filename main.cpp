@@ -60,6 +60,7 @@ int main()
     InstructionBuffer code;
     code.mov_ir_32(EAX, 1);
     code.mov_ir_32(EBX, 9);
+    code.mov_rr_32(EAX, EBX);
     code.add_rr_32(EAX, EBX);
     code.add_mr_32(EAX, ECX);
     code.add_rm_32(ECX, EAX);

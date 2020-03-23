@@ -32,6 +32,12 @@ public:
 	void add_rr_8(Register8 dst, Register8 src);
 	void add_rm_32(Register32 dst, Register32 src);
 	void add_mr_32(Register32 dst, Register32 src);
+
+	void mov_rr_32(Register32 dst, Register32 src);
+	void mov_rr_16(Register16 dst, Register16 src);
+	void mov_rr_8(Register8 dst, Register8 src);
+	void mov_rm_32(Register32 dst, Register32 src);
+	void mov_mr_32(Register32 dst, Register32 src);
 	
 	void mov_ir_32(Register32 dst, uint32_t imm);
 	void mov_ir_8(Register8 dst, uint8_t imm);

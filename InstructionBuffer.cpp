@@ -26,7 +26,7 @@ void InstructionBuffer::add_rr_32(const Register32 dst, const Register32 src)
 	write_rr_32(dst, src);
 }
 
-void InstructionBuffer::add_rr_16(Register16 dst, Register16 src)
+void InstructionBuffer::add_rr_16(const Register16 dst, const Register16 src)
 {
 	write_raw(Size16);
 	add_rr_32(static_cast<Register32>(dst), static_cast<Register32>(src));
@@ -47,6 +47,36 @@ void InstructionBuffer::add_rm_32(const Register32 dst, const Register32 src)
 void InstructionBuffer::add_mr_32(const Register32 dst, const Register32 src)
 {
 	write_raw<uint8_t>(ADD_32 | 0b10);
+	write_mr_32(dst, src);
+}
+
+void InstructionBuffer::mov_rr_32(const Register32 dst, const Register32 src)
+{
+	write_raw(MOV_32);
+	write_rr_32(dst, src);
+}
+
+void InstructionBuffer::mov_rr_16(const Register16 dst, const Register16 src)
+{
+	write_raw(Size16);
+	mov_rr_32(static_cast<Register32>(dst), static_cast<Register32>(src));
+}
+
+void InstructionBuffer::mov_rr_8(const Register8 dst, const Register8 src)
+{
+	write_raw(MOV_8);
+	write_rr_8(dst, src);
+}
+
+void InstructionBuffer::mov_rm_32(const Register32 dst, const Register32 src)
+{
+	write_raw(MOV_32);
+	write_rm_32(dst, src);
+}
+
+void InstructionBuffer::mov_mr_32(const Register32 dst, const Register32 src)
+{
+	write_raw<uint8_t>(MOV_32 | 0b10);
 	write_mr_32(dst, src);
 }
 

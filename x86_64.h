@@ -14,6 +14,13 @@ enum Opcode8 : uint8_t
 	ADD_8 = ADD | 0b0,
 	ADD_16 = ADD | 0b1,
 	ADD_32 = ADD | 0b1,
+
+	ADD_I_EAX = 0x50,
+
+	MOV = 0x88,
+	MOV_8 = 0x88 | 0b0,
+	MOV_16 = 0x88 | 0b1,
+	MOV_32 = 0x88 | 0b1,
 	
 	MOV_I_8 = 0xB0,
 	MOV_I_16 = 0xB8,
