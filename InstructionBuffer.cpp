@@ -40,7 +40,7 @@ void InstructionBuffer::add_rm_32(const Register32 dst, const Register32 src)
 
 void InstructionBuffer::add_mr_32(const Register32 dst, const Register32 src)
 {
-	write_raw(ADD_32 | 0b10);
+	write_raw<uint8_t>(ADD_32 | 0b10);
 	write_mr_32(dst, src);
 }
 

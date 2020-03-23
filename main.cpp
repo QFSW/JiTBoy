@@ -45,13 +45,24 @@ void load_binary(std::vector<uint8_t>& vec, const std::string& path)
     bin_stream.read(reinterpret_cast<char*>(vec.data()), size);
 }
 
+void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
+{
+    std::fstream bin_stream;
+    bin_stream.open(path, std::fstream::binary | std::fstream::out);
+
+    bin_stream.write(reinterpret_cast<const char*>(vec.data()), vec.size());
+    bin_stream.flush();
+    bin_stream.close();
+}
+
 int main()
 {
     InstructionBuffer code;
     code.mov_ir_32(EAX, 1);
     code.mov_ir_32(EBX, 9);
     code.add_rr_32(EAX, EBX);
-    //code.add_mr_32(EAX, ECX);
+    code.add_mr_32(EAX, ECX);
+    code.add_rm_32(ECX, EAX);
     code.ret();
 
     auto const buffer = alloc_exe(code.size());
