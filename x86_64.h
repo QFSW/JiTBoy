@@ -37,7 +37,8 @@ enum class RegisterSize : uint8_t
 
 enum class OpcodePrefix : uint8_t
 {
-	Size16 = 0x66
+	Size16 = 0x66,
+	Lock = 0xF0
 };
 
 enum class RegisterMode : uint8_t
