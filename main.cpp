@@ -69,9 +69,9 @@ int main()
     code.copy(buffer);
     commit_exe(buffer, code.size());
 
-    int ptr[1] = { 5 };
+    volatile int ptr[1] = { 5 };
     auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
-    auto const result = function_ptr(&ptr);
+    auto const result = function_ptr(const_cast<int*>(ptr));
 
     free_exe(buffer);
     std::cout << result << "\n";
