@@ -48,19 +48,23 @@ void load_binary(std::vector<uint8_t>& vec, const std::string& path)
 int main()
 {
     InstructionBuffer code;
-    code.mov_ir_32(EAX, 0);
-    code.mov_ir_8(AL, 9);
+    code.mov_ir_32(EAX, 1);
+    code.mov_ir_32(EBX, 9);
+    code.add_rr_32(EAX, EBX);
+    //code.add_mr_32(EAX, ECX);
     code.ret();
 
     auto const buffer = alloc_exe(code.size());
     code.copy(buffer);
     commit_exe(buffer, code.size());
 
-    auto const function_ptr = reinterpret_cast<std::int32_t(*)()>(buffer);
-    auto const result = function_ptr();
+    int ptr[1] = { 5 };
+    auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
+    auto const result = function_ptr(&ptr);
 
     free_exe(buffer);
     std::cout << result << "\n";
+    std::cout << *ptr << "\n";
 
     return 0;
 }

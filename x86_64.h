@@ -10,11 +10,24 @@ enum Opcode16 : uint16_t
 
 enum Opcode8 : uint8_t
 {
-	MOV_IR_8 = 0xB0,
-	MOV_IR_16 = 0xB8,
-	MOV_IR_32 = 0xB8,
+	ADD = 0x00,
+	ADD_8 = ADD | 0b0,
+	ADD_16 = ADD | 0b1,
+	ADD_32 = ADD | 0b1,
+	
+	MOV_I_8 = 0xB0,
+	MOV_I_16 = 0xB8,
+	MOV_I_32 = 0xB8,
 	
 	RET = 0xC3
+};
+
+enum RegisterMode : uint8_t
+{
+	MemoryDisp0 = 0b00 << 6,
+	MemoryDisp1 = 0b01 << 6,
+	MemoryDisp4 = 0b10 << 6,
+	Register = 0b11 << 6
 };
 
 enum Register64 : uint8_t

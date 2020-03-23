@@ -27,11 +27,24 @@ public:
 	
 	void write_raw(uint8_t data);
 
+	void add_rr_32(Register32 dst, Register32 src);
+	void add_rr_8(Register8 dst, Register8 src);
+	void add_rm_32(Register32 dst, Register32 src);
+	void add_mr_32(Register32 dst, Register32 src);
+	
 	void mov_ir_32(Register32 dst, uint32_t imm);
 	void mov_ir_8(Register8 dst, uint8_t imm);
 	void ret();
 
 private:
 	std::vector<uint8_t> _buffer;
+
+	void write_rr_32(Register32 dst, Register32 src);
+	void write_rr_8(Register8 dst, Register8 src);
+
+	void write_rm_32(Register32 dst, Register32 src);
+	void write_mr_32(Register32 dst, Register32 src);
+	void write_rm_8(Register8 dst, Register8 src);
+	void write_mr_8(Register8 dst, Register8 src);
 };
 
