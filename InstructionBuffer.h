@@ -107,8 +107,16 @@ void InstructionBuffer::write_raw(const T data)
 	else
 	{
 		_buffer.resize(size() + Size);
-		T* buffer_ptr = reinterpret_cast<T*>(&_buffer.back() - Size + 1);
-		memcpy(buffer_ptr, &data, Size);
+		if constexpr (Size == sizeof(T))
+		{
+			T* buffer_ptr = reinterpret_cast<T*>(&_buffer.back() - Size + 1);
+			*buffer_ptr = data;
+		}
+		else
+		{
+			void* buffer_ptr = &_buffer.back() - Size + 1;
+			memcpy(buffer_ptr, &data, Size);
+		}
 	}
 }
 
