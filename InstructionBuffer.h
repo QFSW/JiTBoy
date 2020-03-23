@@ -7,7 +7,7 @@ class InstructionBuffer
 {
 public:
 	void reset();
-	size_t size() const;
+	size_t size() const noexcept;
 	void copy(void* ptr) const;
 
 	template <typename T, int Size = sizeof(T)>
@@ -27,8 +27,9 @@ public:
 	
 	void write_raw(uint8_t data);
 
-	void write_mov_ir_32(Register32 dst, uint32_t imm);
-	void write_mov_ir_8(Register8 dst, uint8_t imm);
+	void mov_ir_32(Register32 dst, uint32_t imm);
+	void mov_ir_8(Register8 dst, uint8_t imm);
+	void ret();
 
 private:
 	std::vector<uint8_t> _buffer;

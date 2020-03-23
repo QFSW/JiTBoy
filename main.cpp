@@ -48,9 +48,9 @@ void load_binary(std::vector<uint8_t>& vec, const std::string& path)
 int main()
 {
     InstructionBuffer code;
-    code.write_mov_ir_32(EAX, 0);
-    code.write_mov_ir_8(AL, 9);
-    code.write_raw(RET);
+    code.mov_ir_32(EAX, 0);
+    code.mov_ir_8(AL, 9);
+    code.ret();
 
     auto const buffer = alloc_exe(code.size());
     code.copy(buffer);
