@@ -11,6 +11,7 @@ enum Opcode16 : uint16_t
 enum Opcode8 : uint8_t
 {
 	ADD = 0x00,
+	ADC = 0x10,
 	SUB = 0x29,
 	MOV = 0x88,
 	INC = 0xFE,
