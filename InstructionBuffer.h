@@ -57,7 +57,7 @@ private:
 		{
 			_buffer.resize(size() + Size);
 			T* buffer_ptr = reinterpret_cast<T*>(&_buffer.back() - Size + 1);
-			memcpy(buffer_ptr, data, Size);
+			memcpy(buffer_ptr, &data, Size);
 		}
 	}
 
