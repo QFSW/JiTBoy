@@ -17,23 +17,6 @@ public:
 	size_t size() const noexcept;
 	void copy(void* ptr) const;
 
-	template <typename T, int Size = sizeof(T)>
-	void write_raw(const T data)
-	{
-		if constexpr (Size == 1)
-		{
-			_buffer.push_back(static_cast<uint8_t>(data));
-		}
-		else
-		{
-			_buffer.resize(size() + Size);
-			T* buffer_ptr = reinterpret_cast<T*>(&_buffer.back() - Size + 1);
-			*buffer_ptr = data;
-		}
-	}
-	
-	void write_raw(uint8_t data);
-
 	template <Opcode8 Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void instr(const Register dst, const Register src)
 	{
@@ -49,11 +32,30 @@ public:
 		else if constexpr (Mode == InstrMode::MR) encode_regs(RegisterMode::MemoryDisp0, src, dst);
 	}
 
+	template <Opcode8 Op>
+	void instr() { write_raw(Op); }
+
 	void mov_ir_32(Register32 dst, uint32_t imm);
-	void ret();
 
 private:
 	std::vector<uint8_t> _buffer;
+
+	template <typename T, int Size = sizeof(T)>
+	void write_raw(const T data)
+	{
+		if constexpr (Size == 1)
+		{
+			_buffer.push_back(static_cast<uint8_t>(data));
+		}
+		else
+		{
+			_buffer.resize(size() + Size);
+			T* buffer_ptr = reinterpret_cast<T*>(&_buffer.back() - Size + 1);
+			*buffer_ptr = data;
+		}
+	}
+
+	void write_raw(uint8_t data);
 
 	template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
 	static constexpr uint8_t encode_opcode()
