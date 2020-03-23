@@ -13,6 +13,7 @@ enum Opcode8 : uint8_t
 	ADD = 0x00,
 	SUB = 0x29,
 	MOV = 0x88,
+	XOR = 0x30,
 
 	ADD_I_EAX = 0x50,
 	
