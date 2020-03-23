@@ -20,16 +20,9 @@ inline void InstructionBuffer::write_raw(const uint8_t data)
 	_buffer.push_back(data);
 }
 
-void InstructionBuffer::add_rr_32(const Register32 dst, const Register32 src)
-{
-	write_raw(ADD_32);
-	write_rr_32(dst, src);
-}
-
 void InstructionBuffer::add_rr_16(const Register16 dst, const Register16 src)
 {
-	write_raw(Size16);
-	add_rr_32(static_cast<Register32>(dst), static_cast<Register32>(src));
+	write_rr<ADD, RegisterSize::Reg16>(static_cast<Register32>(dst), static_cast<Register32>(src));
 }
 
 void InstructionBuffer::add_rr_8(const Register8 dst, const Register8 src)
@@ -50,16 +43,10 @@ void InstructionBuffer::add_mr_32(const Register32 dst, const Register32 src)
 	write_mr_32(dst, src);
 }
 
-void InstructionBuffer::mov_rr_32(const Register32 dst, const Register32 src)
-{
-	write_raw(MOV_32);
-	write_rr_32(dst, src);
-}
-
 void InstructionBuffer::mov_rr_16(const Register16 dst, const Register16 src)
 {
-	write_raw(Size16);
-	mov_rr_32(static_cast<Register32>(dst), static_cast<Register32>(src));
+	write_raw(OpcodePrefix::Size16);
+	write_rr<MOV, RegisterSize::Reg16>(static_cast<Register32>(dst), static_cast<Register32>(src));
 }
 
 void InstructionBuffer::mov_rr_8(const Register8 dst, const Register8 src)

@@ -29,7 +29,14 @@ enum Opcode8 : uint8_t
 	RET = 0xC3
 };
 
-enum OpcodePrefix : uint8_t
+enum class RegisterSize : uint8_t
+{
+	Reg8 = 8,
+	Reg16 = 16,
+	Reg32 = 32
+};
+
+enum class OpcodePrefix : uint8_t
 {
 	Size16 = 0x66
 };
