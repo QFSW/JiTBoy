@@ -20,6 +20,7 @@ enum Opcode8 : uint8_t
 	AND = 0x20,
 	OR = 0x08,
 	XOR = 0x30,
+	NOT = 0xF6,
 
 	ADD_I_EAX = 0x50,
 	
@@ -34,7 +35,8 @@ enum class UnaryOpcodeExt : uint8_t
 {
 	INC = 0b00,
 	DEC = 0b01,
-	NEG = 0b11
+	NEG = 0b11,
+	NOT = 0b10
 };
 
 enum class RegisterSize : uint8_t
