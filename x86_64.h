@@ -14,6 +14,7 @@ enum Opcode8 : uint8_t
 	SUB = 0x29,
 	MOV = 0x88,
 	INC = 0xFE,
+	NEG = 0xF6,
 	
 	AND = 0x20,
 	OR = 0x08,
