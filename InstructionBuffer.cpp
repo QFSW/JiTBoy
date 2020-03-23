@@ -26,6 +26,12 @@ void InstructionBuffer::add_rr_32(const Register32 dst, const Register32 src)
 	write_rr_32(dst, src);
 }
 
+void InstructionBuffer::add_rr_16(Register16 dst, Register16 src)
+{
+	write_raw(Size16);
+	add_rr_32(static_cast<Register32>(dst), static_cast<Register32>(src));
+}
+
 void InstructionBuffer::add_rr_8(const Register8 dst, const Register8 src)
 {
 	write_raw(ADD_8);

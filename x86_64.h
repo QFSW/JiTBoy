@@ -22,6 +22,11 @@ enum Opcode8 : uint8_t
 	RET = 0xC3
 };
 
+enum OpcodePrefix : uint8_t
+{
+	Size16 = 0x66
+};
+
 enum RegisterMode : uint8_t
 {
 	MemoryDisp0 = 0b00 << 6,

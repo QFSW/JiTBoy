@@ -28,6 +28,7 @@ public:
 	void write_raw(uint8_t data);
 
 	void add_rr_32(Register32 dst, Register32 src);
+	void add_rr_16(Register16 dst, Register16 src);
 	void add_rr_8(Register8 dst, Register8 src);
 	void add_rm_32(Register32 dst, Register32 src);
 	void add_mr_32(Register32 dst, Register32 src);
