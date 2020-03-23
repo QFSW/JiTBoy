@@ -46,6 +46,7 @@ private:
 	void write_opcode();
 
 	void encode_regs(RegisterMode mode, Register dst, Register src);
+	void encode_regs_offset(Register dst, Register src, uint32_t addr_offset);
 };
 
 template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
@@ -84,11 +85,9 @@ void InstructionBuffer::instr(const Register dst, const Register src, const uint
 {
 	write_opcode<Op, Mode, Size>();
 	
-	if constexpr (Mode == InstrMode::RM) encode_regs(RegisterMode::MemoryDisp4, dst, src);
-	else if constexpr (Mode == InstrMode::MR) encode_regs(RegisterMode::MemoryDisp4, src, dst);
+	if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, src, addr_offset);
+	else if constexpr (Mode == InstrMode::MR) encode_regs_offset(src, dst, addr_offset);
 	else throw "Invalid instruction mode encountered";
-
-	write_raw(addr_offset);
 }
 
 template <Opcode8 Op, InstrMode Mode, RegisterSize Size>

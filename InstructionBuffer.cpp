@@ -31,3 +31,21 @@ void InstructionBuffer::encode_regs(RegisterMode mode, Register dst, Register sr
 	const uint8_t val = static_cast<uint8_t>(mode) | static_cast<uint8_t>(src) << 3 | static_cast<uint8_t>(dst);
 	write_raw(val);
 }
+
+void InstructionBuffer::encode_regs_offset(const Register dst, const Register src, const uint32_t addr_offset)
+{
+	if (addr_offset == 0)
+	{
+		encode_regs(RegisterMode::MemoryDisp0, dst, src);
+	}
+	else if ((addr_offset & ~0xFF) == 0)
+	{
+		encode_regs(RegisterMode::MemoryDisp1, dst, src);
+		write_raw<uint8_t>(addr_offset);
+	}
+	else
+	{
+		encode_regs(RegisterMode::MemoryDisp4, dst, src);
+		write_raw<uint32_t>(addr_offset);
+	}
+}
