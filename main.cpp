@@ -65,19 +65,20 @@ int main()
     code.instr<ADD, InstrMode::RM>(Register::ECX, Register::EAX);
     code.instr<INC>(Register::EAX, UnaryOpcodeExt::INC);
     code.instr<NEG>(Register::EAX, UnaryOpcodeExt::NEG);
+    code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EAX, 4);
     code.instr<RET>();
 
     auto const buffer = alloc_exe(code.size());
     code.copy(buffer);
     commit_exe(buffer, code.size());
 
-    volatile int ptr[1] = { 5 };
+    volatile int ptr[2] = { 5 };
     auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
     auto const result = function_ptr(const_cast<int*>(ptr));
 
     free_exe(buffer);
     std::cout << result << "\n";
-    std::cout << *ptr << "\n";
+    std::cout << *ptr << " " << ptr[1] << "\n";
 
     return 0;
 }
