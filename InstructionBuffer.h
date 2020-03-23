@@ -3,6 +3,13 @@
 #include <vector>
 #include "x86_64.h"
 
+enum class InstrMode : uint8_t
+{
+	RR,
+	RM,
+	MR
+};
+
 class InstructionBuffer
 {
 public:
@@ -27,32 +34,28 @@ public:
 	
 	void write_raw(uint8_t data);
 
-	template <Opcode8 Op, RegisterSize Size = RegisterSize::Reg32>
-	void write_rr(const Register dst, const Register src)
+	template <Opcode8 Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	void instr(const Register dst, const Register src)
 	{
-		constexpr uint8_t opcode = encode_opcode<Op, Size>();
+		constexpr uint8_t opcode = encode_opcode<Op, Mode, Size>();
 		if constexpr (Size == RegisterSize::Reg16)
 		{
 			write_raw(OpcodePrefix::Size16);
 		}
 
 		write_raw(opcode);
-		encode_regs(RegisterMode::Register, dst, src);
+		if constexpr (Mode == InstrMode::RR) encode_regs(RegisterMode::Register, dst, src);
+		else if constexpr (Mode == InstrMode::RM) encode_regs(RegisterMode::MemoryDisp0, dst, src);
+		else if constexpr (Mode == InstrMode::MR) encode_regs(RegisterMode::MemoryDisp0, src, dst);
 	}
 
-	void add_rm_32(Register32 dst, Register32 src);
-	void add_mr_32(Register32 dst, Register32 src);
-
-	void mov_rm_32(Register32 dst, Register32 src);
-	void mov_mr_32(Register32 dst, Register32 src);
-	
 	void mov_ir_32(Register32 dst, uint32_t imm);
 	void ret();
 
 private:
 	std::vector<uint8_t> _buffer;
 
-	template <Opcode8 Op, RegisterSize Size>
+	template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
 	static constexpr uint8_t encode_opcode()
 	{
 		auto op = static_cast<uint8_t>(Op);
@@ -63,14 +66,15 @@ private:
 			default: break;
 		}
 
+		switch (Mode)
+		{
+			case InstrMode::MR: op |= 0b10; break;
+			default: break;
+		}
+
 		return op;
 	}
 
 	void encode_regs(RegisterMode mode, Register dst, Register src);
-
-	void write_rr_32(Register32 dst, Register32 src);
-
-	void write_rm_32(Register32 dst, Register32 src);
-	void write_mr_32(Register32 dst, Register32 src);
 };
 

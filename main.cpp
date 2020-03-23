@@ -60,8 +60,9 @@ int main()
     InstructionBuffer code;
     code.mov_ir_32(EAX, 4);
     code.mov_ir_32(EBX, 9);
-    code.write_rr<MOV>(Register::EAX, Register::EBX);
-    code.write_rr<ADD>(Register::EAX, Register::EBX);
+    code.instr<MOV>(Register::EAX, Register::EBX);
+    code.instr<ADD>(Register::EAX, Register::EBX);
+    code.instr<ADD, InstrMode::RM>(Register::ECX, Register::EAX);
     code.ret();
 
     auto const buffer = alloc_exe(code.size());
