@@ -14,6 +14,7 @@ enum Opcode8 : uint8_t
 	SUB = 0x29,
 	MOV = 0x88,
 	INC = 0xFE,
+	DEC = 0xFE,
 	NEG = 0xF6,
 	
 	AND = 0x20,
@@ -27,6 +28,13 @@ enum Opcode8 : uint8_t
 	MOV_I_32 = 0xB8,
 	
 	RET = 0xC3
+};
+
+enum class UnaryOpcodeExt : uint8_t
+{
+	INC = 0b00,
+	DEC = 0b01,
+	NEG = 0b11
 };
 
 enum class RegisterSize : uint8_t

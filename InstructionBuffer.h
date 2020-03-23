@@ -32,6 +32,12 @@ public:
 		else if constexpr (Mode == InstrMode::MR) encode_regs(RegisterMode::MemoryDisp0, src, dst);
 	}
 
+	template <Opcode8 Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	void instr(const Register reg, const UnaryOpcodeExt ext)
+	{
+		instr<Op, Mode, Size>(reg, static_cast<Register>(ext));
+	}
+
 	template <Opcode8 Op>
 	void instr() { write_raw(Op); }
 
