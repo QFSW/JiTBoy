@@ -58,12 +58,10 @@ void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
 int main()
 {
     InstructionBuffer code;
-    code.mov_ir_32(EAX, 1);
+    code.mov_ir_32(EAX, 4);
     code.mov_ir_32(EBX, 9);
-    code.write_rr<MOV>(EAX, EBX);
-    code.write_rr<ADD>(EAX, EBX);
-    code.add_mr_32(EAX, ECX);
-    code.add_rm_32(ECX, EAX);
+    code.write_rr<MOV>(Register::EAX, Register::EBX);
+    code.write_rr<ADD>(Register::EAX, Register::EBX);
     code.ret();
 
     auto const buffer = alloc_exe(code.size());
