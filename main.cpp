@@ -63,6 +63,7 @@ int main()
     code.instr<MOV>(Register::EAX, Register::EBX);
     code.instr<ADD>(Register::EAX, Register::EBX);
     code.instr<ADD, InstrMode::RM>(Register::ECX, Register::EAX);
+    code.instr<SUB>(Register::EAX, Register::EBX);
     code.ret();
 
     auto const buffer = alloc_exe(code.size());
