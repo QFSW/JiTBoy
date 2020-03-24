@@ -19,27 +19,30 @@ public:
 
 	#pragma region Non Immediate Instructions
 	
-	template <Opcode8 Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void instr(Register dst, Register src);
 
-	template <Opcode8 Op, InstrMode Mode, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, InstrMode Mode, RegisterSize Size = RegisterSize::Reg32>
 	void instr(Register dst, Register src, uint32_t addr_offset);
 
-	template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void instr(Register reg);
 
-	template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void instr(Register reg, uint32_t addr_offset);
 
-	template <Opcode8 Op>
+	template <Opcode Op>
 	void instr() { write_raw(Op); }
 	
 	#pragma endregion 
 
 	#pragma region Immediate Instructions
 	
-	template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void instr_imm(Register dst, uint32_t imm);
+
+	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	void instr_imm(Register dst, uint32_t imm, uint32_t addr_offset);
 
 	#pragma endregion 
 
@@ -51,17 +54,17 @@ private:
 
 	void write_raw(uint8_t data);
 
-	template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
+	template <Opcode Op, InstrMode Mode, RegisterSize Size>
 	static constexpr uint8_t encode_opcode();
 
-	template <Opcode8 Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void write_opcode();
 
 	void encode_regs(RegisterMode mode, Register dst, Register src);
 	void encode_regs_offset(Register dst, Register src, uint32_t addr_offset);
 };
 
-template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
+template <Opcode Op, InstrMode Mode, RegisterSize Size>
 constexpr uint8_t InstructionBuffer::encode_opcode()
 {
 	auto op = static_cast<uint8_t>(Op);
@@ -83,7 +86,7 @@ constexpr uint8_t InstructionBuffer::encode_opcode()
 
 #pragma region Non Immediate Instruction Implementations
 
-template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
+template <Opcode Op, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr(const Register dst, const Register src)
 {
 	write_opcode<Op, Mode, Size>();
@@ -94,7 +97,7 @@ void InstructionBuffer::instr(const Register dst, const Register src)
 	else throw "Invalid instruction mode encountered";
 }
 
-template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
+template <Opcode Op, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr(const Register dst, const Register src, const uint32_t addr_offset)
 {
 	write_opcode<Op, Mode, Size>();
@@ -104,13 +107,13 @@ void InstructionBuffer::instr(const Register dst, const Register src, const uint
 	else throw "Invalid instruction mode encountered";
 }
 
-template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
+template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr(const Register reg)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext));
 }
 
-template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
+template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr(const Register reg, const uint32_t addr_offset)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext), addr_offset);
@@ -120,13 +123,24 @@ void InstructionBuffer::instr(const Register reg, const uint32_t addr_offset)
 
 #pragma region Immediate Instruction Implementations
 
-template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
+template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm)
 {
 	write_raw<uint8_t>(static_cast<uint8_t>(Op) | 0b1);
 
 	if constexpr (Mode == InstrMode::RR) encode_regs(RegisterMode::Register, dst, static_cast<Register>(Ext));
 	else if constexpr (Mode == InstrMode::RM) encode_regs(RegisterMode::MemoryDisp0, dst, static_cast<Register>(Ext));
+	else throw "Invalid instruction mode encountered";
+
+	write_raw(imm);
+}
+
+template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
+void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const uint32_t addr_offset)
+{
+	write_raw<uint8_t>(static_cast<uint8_t>(Op) | 0b1);
+
+	if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, static_cast<Register>(Ext), addr_offset);
 	else throw "Invalid instruction mode encountered";
 
 	write_raw(imm);
@@ -157,7 +171,7 @@ void InstructionBuffer::write_raw(const T data)
 	}
 }
 
-template <Opcode8 Op, InstrMode Mode, RegisterSize Size>
+template <Opcode Op, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::write_opcode()
 {
 	constexpr uint8_t opcode = encode_opcode<Op, Mode, Size>();
