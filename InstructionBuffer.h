@@ -7,7 +7,9 @@ enum class InstrMode : uint8_t
 {
 	RR,
 	RM,
-	MR
+	MR,
+	IR,
+	IM
 };
 
 class InstructionBuffer
@@ -38,10 +40,10 @@ public:
 
 	#pragma region Immediate Instructions
 	
-	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::IR, RegisterSize Size = RegisterSize::Reg32>
 	void instr_imm(Register dst, uint32_t imm);
 
-	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::IR, RegisterSize Size = RegisterSize::Reg32>
 	void instr_imm(Register dst, uint32_t imm, uint32_t addr_offset);
 
 	#pragma endregion 
@@ -128,8 +130,8 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm)
 {
 	write_raw<uint8_t>(static_cast<uint8_t>(Op) | 0b1);
 
-	if constexpr (Mode == InstrMode::RR) encode_regs(RegisterMode::Register, dst, static_cast<Register>(Ext));
-	else if constexpr (Mode == InstrMode::RM) encode_regs(RegisterMode::MemoryDisp0, dst, static_cast<Register>(Ext));
+	if constexpr (Mode == InstrMode::IR) encode_regs(RegisterMode::Register, dst, static_cast<Register>(Ext));
+	else if constexpr (Mode == InstrMode::IM) encode_regs(RegisterMode::MemoryDisp0, dst, static_cast<Register>(Ext));
 	else throw "Invalid instruction mode encountered";
 
 	write_raw(imm);
@@ -140,7 +142,7 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const 
 {
 	write_raw<uint8_t>(static_cast<uint8_t>(Op) | 0b1);
 
-	if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, static_cast<Register>(Ext), addr_offset);
+	if constexpr (Mode == InstrMode::IM) encode_regs_offset(dst, static_cast<Register>(Ext), addr_offset);
 	else throw "Invalid instruction mode encountered";
 
 	write_raw(imm);

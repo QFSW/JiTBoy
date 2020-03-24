@@ -59,8 +59,8 @@ int main()
 {
     InstructionBuffer code;
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 50);
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::RM>(Register::ECX, 25);
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::RM>(Register::ECX, 30, 4);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 25);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 30, 4);
     code.instr<RET>();
 
     auto const buffer = alloc_exe(code.size());
