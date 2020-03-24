@@ -61,27 +61,6 @@ enum class RegisterMode : uint8_t
 	Register = 0b11 << 6
 };
 
-enum Register64 : uint8_t
-{
-	RAX = 0b000,
-	RCX = 0b001,
-	RDX = 0b010,
-	RBX = 0b011,
-	RSP = 0b100,
-	RBP = 0b101,
-	RSI = 0b110,
-	RDI = 0b111,
-
-	R8 = 0b1000,
-	R9 = 0b1001,
-	R10 = 0b1010,
-	R11 = 0b1011,
-	R12 = 0b1100,
-	R13 = 0b1101,
-	R14 = 0b1110,
-	R15 = 0b1111
-};
-
 enum Register32 : uint8_t
 {
 	EAX = 0b000,
