@@ -19,6 +19,7 @@ enum Opcode : uint8_t
 	NOT = 0xF6,
 	
 	ADD_I = 0x80,
+	ADC_I = 0x80,
 	SUB_I = 0x80,
 	MOV_I = 0xC6,
 
@@ -35,6 +36,7 @@ enum class OpcodeExt : uint8_t
 	NOT = 2,
 
 	ADD_I = 0,
+	ADC_I = 2,
 	SUB_I = 5,
 	MOV_I = 0,
 };
