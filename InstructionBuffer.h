@@ -16,8 +16,8 @@ class InstructionBuffer
 {
 public:
 	void reset();
-	size_t size() const noexcept;
 	void copy(void* ptr) const;
+	[[nodiscard]] size_t size() const noexcept;
 
 	#pragma region Non Immediate Instructions
 	

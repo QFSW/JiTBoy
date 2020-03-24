@@ -73,7 +73,7 @@ int main()
     commit_exe(buffer, code.size());
 
     printf("\n");
-	for (int i = 0; i < code.size(); ++i)
+	for (size_t i = 0; i < code.size(); ++i)
 	{
         printf("%02x ", reinterpret_cast<uint8_t*>(buffer)[i]);
 	}
