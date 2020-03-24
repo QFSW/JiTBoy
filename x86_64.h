@@ -3,12 +3,7 @@
 
 // ReSharper disable CppInconsistentNaming
 
-enum Opcode16 : uint16_t
-{
-	
-};
-
-enum Opcode8 : uint8_t
+enum Opcode : uint8_t
 {
 	ADD = 0x00,
 	ADC = 0x10,
