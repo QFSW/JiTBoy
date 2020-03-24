@@ -63,17 +63,22 @@ int main()
     code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 30, 4);
     code.instr<RET>();
 
+    std::cout << "Generated instructions of size " << code.size() << std::endl;
+
     auto const buffer = alloc_exe(code.size());
     code.copy(buffer);
     commit_exe(buffer, code.size());
+
+    std::cout << "Committed instructions to executable memory" << std::endl;
 
     volatile int ptr[2] = { 5 };
     auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
     auto const result = function_ptr(const_cast<int*>(ptr));
 
+    std::cout << "Executed instructions" << std::endl;
+
     free_exe(buffer);
-    std::cout << result << "\n";
-    std::cout << *ptr << " " << ptr[1] << "\n";
+    std::cout << "\nEAX = " << result << "\nptr[0] = " << ptr[0] << "\nptr[1] = " << ptr[1] << std::endl;
 
     return 0;
 }
