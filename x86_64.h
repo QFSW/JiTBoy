@@ -22,6 +22,9 @@ enum Opcode : uint8_t
 	ADC_I = 0x80,
 	SUB_I = 0x80,
 	MOV_I = 0xC6,
+	AND_I = 0x80,
+	OR_I = 0x80,
+	XOR_I = 0x80,
 
 	ADD_I_EAX = 0x50,
 	
@@ -39,6 +42,9 @@ enum class OpcodeExt : uint8_t
 	ADC_I = 2,
 	SUB_I = 5,
 	MOV_I = 0,
+	AND_I = 4,
+	OR_I = 1,
+	XOR_I = 6
 };
 
 enum class RegisterSize : uint8_t
