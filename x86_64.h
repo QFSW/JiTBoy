@@ -25,19 +25,19 @@ enum Opcode8 : uint8_t
 
 	ADD_I_EAX = 0x50,
 	
-	MOV_I_8 = 0xB0,
-	MOV_I_16 = 0xB8,
-	MOV_I_32 = 0xB8,
+	MOV_I = 0xC6,
 	
 	RET = 0xC3
 };
 
 enum class OpcodeExt : uint8_t
 {
-	INC = 0b00,
-	DEC = 0b01,
-	NEG = 0b11,
-	NOT = 0b10
+	INC = 0b000,
+	DEC = 0b001,
+	NEG = 0b011,
+	NOT = 0b010,
+
+	MOV_I = 0b000
 };
 
 enum class RegisterSize : uint8_t

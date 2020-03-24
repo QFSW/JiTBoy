@@ -58,15 +58,8 @@ void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
 int main()
 {
     InstructionBuffer code;
-    code.mov_ir_32(EAX, 4);
-    code.mov_ir_32(EBX, 9);
-    code.instr<MOV>(Register::EAX, Register::EBX);
-    code.instr<ADD>(Register::EAX, Register::EBX);
-    code.instr<ADD, InstrMode::RM>(Register::ECX, Register::EAX);
-    code.instr<INC, OpcodeExt::INC>(Register::EAX);
-    code.instr<NEG, OpcodeExt::NEG>(Register::EAX);
-    code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EAX, 4);
-    code.instr<NEG, OpcodeExt::NEG, InstrMode::RM>(Register::ECX, 4);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 50);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::RM>(Register::ECX, 25);
     code.instr<RET>();
 
     auto const buffer = alloc_exe(code.size());
