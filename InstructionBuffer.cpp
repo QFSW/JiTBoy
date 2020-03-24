@@ -32,7 +32,7 @@ void InstructionBuffer::encode_regs_offset(const Register dst, const Register sr
 	{
 		encode_regs(RegisterMode::MemoryDisp0, dst, src);
 	}
-	else if ((addr_offset & ~0xFF) == 0)
+	else if (is_8_bit(addr_offset))
 	{
 		encode_regs(RegisterMode::MemoryDisp1, dst, src);
 		write_raw<uint8_t>(addr_offset);
@@ -42,4 +42,9 @@ void InstructionBuffer::encode_regs_offset(const Register dst, const Register sr
 		encode_regs(RegisterMode::MemoryDisp4, dst, src);
 		write_raw<uint32_t>(addr_offset);
 	}
+}
+
+constexpr bool InstructionBuffer::is_8_bit(const uint32_t val)
+{
+	return !(val & ~0xFF);
 }

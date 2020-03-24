@@ -59,32 +59,26 @@ private:
 	template <Opcode Op, InstrMode Mode, RegisterSize Size>
 	static constexpr uint8_t encode_opcode();
 
-	template <Opcode Op, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode Op, RegisterSize Size>
+	static constexpr uint8_t encode_imm_opcode(uint32_t imm);
+
+	template <Opcode Op, InstrMode Mode, RegisterSize Size>
 	void write_opcode();
+
+	template <Opcode Op, RegisterSize Size>
+	void write_imm_opcode(uint32_t imm);
+
+	template <Opcode Op, RegisterSize Size>
+	void write_immediate(uint32_t imm);
 
 	void encode_regs(RegisterMode mode, Register dst, Register src);
 	void encode_regs_offset(Register dst, Register src, uint32_t addr_offset);
+
+	template <Opcode Op>
+	static constexpr bool is_fast_imm_instr();
+
+	static constexpr bool is_8_bit(uint32_t val);
 };
-
-template <Opcode Op, InstrMode Mode, RegisterSize Size>
-constexpr uint8_t InstructionBuffer::encode_opcode()
-{
-	auto op = static_cast<uint8_t>(Op);
-	switch (Size)
-	{
-		case RegisterSize::Reg16:
-		case RegisterSize::Reg32: op |= 0b1; break;
-		default: break;
-	}
-
-	switch (Mode)
-	{
-		case InstrMode::MR: op |= 0b10; break;
-		default: break;
-	}
-
-	return op;
-}
 
 #pragma region Non Immediate Instruction Implementations
 
@@ -128,24 +122,24 @@ void InstructionBuffer::instr(const Register reg, const uint32_t addr_offset)
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm)
 {
-	write_raw<uint8_t>(static_cast<uint8_t>(Op) | 0b1);
+	write_imm_opcode<Op, Size>(imm);
 
 	if constexpr (Mode == InstrMode::IR) encode_regs(RegisterMode::Register, dst, static_cast<Register>(Ext));
 	else if constexpr (Mode == InstrMode::IM) encode_regs(RegisterMode::MemoryDisp0, dst, static_cast<Register>(Ext));
 	else throw "Invalid instruction mode encountered";
 
-	write_raw(imm);
+	write_immediate<Op, Size>(imm);
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const uint32_t addr_offset)
 {
-	write_raw<uint8_t>(static_cast<uint8_t>(Op) | 0b1);
+	write_imm_opcode<Op, Size>(imm);
 
 	if constexpr (Mode == InstrMode::IM) encode_regs_offset(dst, static_cast<Register>(Ext), addr_offset);
 	else throw "Invalid instruction mode encountered";
 
-	write_raw(imm);
+	write_immediate<Op, Size>(imm);
 }
 
 #pragma endregion 
@@ -174,6 +168,61 @@ void InstructionBuffer::write_raw(const T data)
 }
 
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
+constexpr uint8_t InstructionBuffer::encode_opcode()
+{
+	auto op = static_cast<uint8_t>(Op);
+	switch (Size)
+	{
+		case RegisterSize::Reg16:
+		case RegisterSize::Reg32: op |= 0b1; break;
+		default: break;
+	}
+
+	switch (Mode)
+	{
+		case InstrMode::MR: op |= 0b10; break;
+		default: break;
+	}
+
+	return op;
+}
+
+template <Opcode Op, RegisterSize Size>
+constexpr uint8_t InstructionBuffer::encode_imm_opcode(const uint32_t imm)
+{
+	auto opcode = static_cast<uint8_t>(Op);
+	if constexpr (Size == RegisterSize::Reg8)
+	{
+		return opcode;
+	}
+	else
+	{
+		opcode |= 0b1;
+		if constexpr (is_fast_imm_instr<Op>())
+		{
+			if (is_8_bit(imm))
+			{
+				opcode |= 0b10;
+			}
+		}
+
+		return opcode;
+	}
+}
+
+template <Opcode Op>
+constexpr bool InstructionBuffer::is_fast_imm_instr()
+{
+	switch (Op)
+	{
+	case ADD_I:
+		return true;
+	default:
+		return false;
+	}
+}
+
+template <Opcode Op, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::write_opcode()
 {
 	constexpr uint8_t opcode = encode_opcode<Op, Mode, Size>();
@@ -183,5 +232,31 @@ void InstructionBuffer::write_opcode()
 	}
 
 	write_raw(opcode);
+}
+
+template <Opcode Op, RegisterSize Size>
+void InstructionBuffer::write_imm_opcode(const uint32_t imm)
+{
+	const uint8_t opcode = encode_imm_opcode<Op, Size>(imm);
+	if constexpr (Size == RegisterSize::Reg16)
+	{
+		write_raw(OpcodePrefix::Size16);
+	}
+
+	write_raw(opcode);
+}
+
+template <Opcode Op, RegisterSize Size>
+void InstructionBuffer::write_immediate(const uint32_t imm)
+{
+	if constexpr (Size == RegisterSize::Reg8) write_raw<uint8_t>(imm);
+	else
+	{
+		constexpr bool fast = is_fast_imm_instr<Op>();
+		if (fast && is_8_bit(imm)) write_raw<uint8_t>(imm);
+		else if constexpr (Size == RegisterSize::Reg16) write_raw<uint16_t>(imm);
+		else if constexpr (Size == RegisterSize::Reg32) write_raw<uint32_t>(imm);
+		else throw "Unsupported register size";
+	}
 }
 

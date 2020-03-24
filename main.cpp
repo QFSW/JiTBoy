@@ -58,9 +58,12 @@ void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
 int main()
 {
     InstructionBuffer code;
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 50);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 25);
+    code.instr_imm<ADD_I, OpcodeExt::ADD_I>(Register::EAX, 50);
     code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 25);
     code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 30, 4);
+    code.instr_imm<ADD_I, OpcodeExt::ADD_I, InstrMode::IM>(Register::ECX, 30, 4);
+    code.instr_imm<SUB_I, OpcodeExt::SUB_I, InstrMode::IM>(Register::ECX, 1, 4);
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;
@@ -69,8 +72,15 @@ int main()
     code.copy(buffer);
     commit_exe(buffer, code.size());
 
-    std::cout << "Committed instructions to executable memory" << std::endl;
+    printf("\n");
+	for (int i = 0; i < code.size(); ++i)
+	{
+        printf("%02x ", reinterpret_cast<uint8_t*>(buffer)[i]);
+	}
+    printf("\n\n");
 
+    std::cout << "Committed instructions to executable memory" << std::endl;
+	
     volatile int ptr[2] = { 5 };
     auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
     auto const result = function_ptr(const_cast<int*>(ptr));

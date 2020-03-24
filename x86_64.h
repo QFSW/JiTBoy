@@ -17,22 +17,26 @@ enum Opcode : uint8_t
 	OR = 0x08,
 	XOR = 0x30,
 	NOT = 0xF6,
+	
+	ADD_I = 0x80,
+	SUB_I = 0x80,
+	MOV_I = 0xC6,
 
 	ADD_I_EAX = 0x50,
-	
-	MOV_I = 0xC6,
 	
 	RET = 0xC3
 };
 
 enum class OpcodeExt : uint8_t
 {
-	INC = 0b000,
-	DEC = 0b001,
-	NEG = 0b011,
-	NOT = 0b010,
+	INC = 0,
+	DEC = 1,
+	NEG = 3,
+	NOT = 2,
 
-	MOV_I = 0b000
+	ADD_I = 0,
+	SUB_I = 5,
+	MOV_I = 0,
 };
 
 enum class RegisterSize : uint8_t
