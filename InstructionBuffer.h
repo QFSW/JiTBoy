@@ -23,8 +23,11 @@ public:
 	template <Opcode8 Op, InstrMode Mode, RegisterSize Size = RegisterSize::Reg32>
 	void instr(Register dst, Register src, uint32_t addr_offset);
 
-	template <Opcode8 Op, UnaryOpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void instr(Register reg);
+
+	template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
+	void instr(Register reg, uint32_t addr_offset);
 
 	template <Opcode8 Op>
 	void instr() { write_raw(Op); }
@@ -90,10 +93,16 @@ void InstructionBuffer::instr(const Register dst, const Register src, const uint
 	else throw "Invalid instruction mode encountered";
 }
 
-template <Opcode8 Op, UnaryOpcodeExt Ext, InstrMode Mode, RegisterSize Size>
+template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::instr(const Register reg)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext));
+}
+
+template <Opcode8 Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
+void InstructionBuffer::instr(const Register reg, const uint32_t addr_offset)
+{
+	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext), addr_offset);
 }
 
 template <typename T, int Size>

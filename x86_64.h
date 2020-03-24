@@ -32,7 +32,7 @@ enum Opcode8 : uint8_t
 	RET = 0xC3
 };
 
-enum class UnaryOpcodeExt : uint8_t
+enum class OpcodeExt : uint8_t
 {
 	INC = 0b00,
 	DEC = 0b01,
