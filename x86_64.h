@@ -2,6 +2,7 @@
 #include <cstdint>
 
 // ReSharper disable CppInconsistentNaming
+// ReSharper disable IdentifierTypo
 
 enum Opcode : uint8_t
 {
@@ -77,7 +78,35 @@ enum class RegisterMode : uint8_t
 enum class JumpCond : uint8_t
 {
 	JA = 0x77,
-	JAE = 0x73
+	JAE = 0x73,
+	JB = 0x72,
+	JBE = 0x76,
+	JC = 0x72,
+	JE = 0x74,
+	JG = 0x7F,
+	JGE = 0x7D,
+	JL = 0x7C,
+	JLE = 0x7E,
+	JNA = 0x76,
+	JNAE = 0x72,
+	JNB = 0x73,
+	JNBE = 0x77,
+	JNC = 0x73,
+	JNE = 0x75,
+	JNG = 0x7E,
+	JNGE = 0x7C,
+	JNL = 0x7D,
+	JNLE = 0x7F,
+	JNO = 0x71,
+	JNP = 0x7B,
+	JNS = 0x79,
+	JNZ = 0x75,
+	JO = 0x70,
+	JP = 0x7A,
+	JPE = 0x7A,
+	JPO = 0x7B,
+	JS = 0x78,
+	JZ = 0x74
 };
 
 enum class Register : uint8_t
