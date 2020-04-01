@@ -58,12 +58,12 @@ void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
 int main()
 {
     InstructionBuffer code;
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 25);
-    code.instr_imm<ADD_I, OpcodeExt::ADD_I>(Register::EAX, 50);
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 25);
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 30, 4);
-    code.instr_imm<ADD_I, OpcodeExt::ADD_I, InstrMode::IM>(Register::ECX, 30, 4);
-    code.instr_imm<SUB_I, OpcodeExt::SUB_I, InstrMode::IM>(Register::ECX, 1, 4);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::ECX, 25);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 50);
+    code.jump(2);
+    code.instr<ADD>(Register::EAX, Register::ECX);
+    code.instr<ADD>(Register::EAX, Register::EDX);
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;

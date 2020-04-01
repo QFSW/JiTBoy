@@ -3,13 +3,20 @@
 #include <vector>
 #include "x86_64.h"
 
-enum class InstrMode : uint8_t
+enum class InstrMode
 {
 	RR,
 	RM,
 	MR,
 	IR,
 	IM
+};
+
+enum class JumpAdjust
+{
+	None,
+	Always,
+	Auto
 };
 
 class InstructionBuffer
@@ -25,13 +32,13 @@ public:
 	void instr(Register dst, Register src);
 
 	template <Opcode Op, InstrMode Mode, RegisterSize Size = RegisterSize::Reg32>
-	void instr(Register dst, Register src, uint32_t addr_offset);
+	void instr(Register dst, Register src, int32_t addr_offset);
 
 	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void instr(Register reg);
 
 	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
-	void instr(Register reg, uint32_t addr_offset);
+	void instr(Register reg, int32_t addr_offset);
 
 	template <Opcode Op>
 	void instr() { write_raw(Op); }
@@ -44,8 +51,15 @@ public:
 	void instr_imm(Register dst, uint32_t imm);
 
 	template <Opcode Op, OpcodeExt Ext, InstrMode Mode = InstrMode::IR, RegisterSize Size = RegisterSize::Reg32>
-	void instr_imm(Register dst, uint32_t imm, uint32_t addr_offset);
+	void instr_imm(Register dst, uint32_t imm, int32_t addr_offset);
 
+	#pragma endregion
+
+	#pragma region Jump Instructions
+
+	template <JumpAdjust Adjust = JumpAdjust::Auto>
+	void jump(int32_t offset);
+	
 	#pragma endregion 
 
 private:
@@ -72,10 +86,13 @@ private:
 	void write_immediate(uint32_t imm);
 
 	void encode_regs(RegisterMode mode, Register dst, Register src);
-	void encode_regs_offset(Register dst, Register src, uint32_t addr_offset);
+	void encode_regs_offset(Register dst, Register src, int32_t addr_offset);
 
 	template <Opcode Op>
 	static constexpr bool is_fast_imm_instr();
+
+	template <JumpAdjust Adjust = JumpAdjust::Auto>
+	static constexpr bool is_near_jump(int32_t offset);
 
 	static constexpr bool is_8_bit(uint32_t val);
 };
@@ -94,7 +111,7 @@ void InstructionBuffer::instr(const Register dst, const Register src)
 }
 
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr(const Register dst, const Register src, const uint32_t addr_offset)
+void InstructionBuffer::instr(const Register dst, const Register src, const int32_t addr_offset)
 {
 	write_opcode<Op, Mode, Size>();
 	
@@ -110,7 +127,7 @@ void InstructionBuffer::instr(const Register reg)
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr(const Register reg, const uint32_t addr_offset)
+void InstructionBuffer::instr(const Register reg, const int32_t addr_offset)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext), addr_offset);
 }
@@ -132,7 +149,7 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm)
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const uint32_t addr_offset)
+void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const int32_t addr_offset)
 {
 	write_imm_opcode<Op, Size>(imm);
 
@@ -140,6 +157,34 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const 
 	else throw "Invalid instruction mode encountered";
 
 	write_immediate<Op, Size>(imm);
+}
+
+#pragma endregion 
+
+#pragma region Jump Instruction Implementations
+
+template <JumpAdjust Adjust>
+void InstructionBuffer::jump(int32_t offset)
+{
+	const bool is_near = is_near_jump<Adjust>(offset);
+	const uint8_t instr_size = 1 + (is_near ? 1 : 4);
+	
+	if constexpr (Adjust == JumpAdjust::Always) offset -= instr_size;
+	else if constexpr (Adjust == JumpAdjust::Auto)
+	{
+		if (offset < 0) offset -= instr_size;
+	}
+
+	if (is_near)
+	{
+		write_raw(JMP_REL_8);
+		write_raw<int8_t>(offset);
+	}
+	else
+	{
+		write_raw(JMP_REL_32);
+		write_raw<int32_t>(offset);
+	}
 }
 
 #pragma endregion 
@@ -219,6 +264,23 @@ constexpr bool InstructionBuffer::is_fast_imm_instr()
 		return true;
 	default:
 		return false;
+	}
+}
+
+template <JumpAdjust Adjust>
+constexpr bool InstructionBuffer::is_near_jump(const int32_t offset)
+{
+	if constexpr (Adjust == JumpAdjust::None)
+	{
+		return is_8_bit(offset);
+	}
+	else if constexpr (Adjust == JumpAdjust::Auto)
+	{
+		return offset >= -126 && offset <= 127;
+	}
+	else
+	{
+		return offset >= -126 && offset <= 129;
 	}
 }
 

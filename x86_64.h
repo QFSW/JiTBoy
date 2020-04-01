@@ -28,7 +28,10 @@ enum Opcode : uint8_t
 
 	ADD_I_EAX = 0x50,
 	
-	RET = 0xC3
+	RET = 0xC3,
+
+	JMP_REL_8 = 0xEB,
+	JMP_REL_32 = 0xE9
 };
 
 enum class OpcodeExt : uint8_t
