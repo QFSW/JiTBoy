@@ -35,7 +35,8 @@ enum Opcode : uint8_t
 
 	JMP_REL_8 = 0xEB,
 	JMP_REL_32 = 0xE9,
-	
+
+	CMOVcc = 0x40,
 	Jcc_8 = 0x70,
 	Jcc_32 = 0x80
 };
@@ -68,6 +69,7 @@ enum class OpcodePrefix : uint8_t
 {
 	Size16 = 0x66,
 	Lock = 0xF0,
+	CMOVcc = 0x0F,
 	Jcc_32 = 0x0F
 };
 
