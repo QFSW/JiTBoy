@@ -26,7 +26,7 @@ void InstructionBuffer::encode_regs(RegisterMode mode, Register dst, Register sr
 	write_raw(val);
 }
 
-void InstructionBuffer::encode_regs_offset(const Register dst, const Register src, const uint32_t addr_offset)
+void InstructionBuffer::encode_regs_offset(const Register dst, const Register src, const int32_t addr_offset)
 {
 	if (addr_offset == 0)
 	{

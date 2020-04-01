@@ -58,12 +58,17 @@ void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
 int main()
 {
     InstructionBuffer code;
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 25);
-    code.instr_imm<ADD_I, OpcodeExt::ADD_I>(Register::EAX, 50);
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 25);
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I, InstrMode::IM>(Register::ECX, 30, 4);
-    code.instr_imm<ADD_I, OpcodeExt::ADD_I, InstrMode::IM>(Register::ECX, 30, 4);
-    code.instr_imm<SUB_I, OpcodeExt::SUB_I, InstrMode::IM>(Register::ECX, 1, 4);
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
+    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
+
+    const uint32_t size = code.size();
+    code.instr<ADD>(Register::EAX, Register::EDX); // EAX += EDX
+    code.instr<DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
+	
+    code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
+    code.jump_cond<JumpCond::JA>(size - code.size());
+	
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;

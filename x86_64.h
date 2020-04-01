@@ -2,6 +2,7 @@
 #include <cstdint>
 
 // ReSharper disable CppInconsistentNaming
+// ReSharper disable IdentifierTypo
 
 enum Opcode : uint8_t
 {
@@ -12,6 +13,7 @@ enum Opcode : uint8_t
 	INC = 0xFE,
 	DEC = 0xFE,
 	NEG = 0xF6,
+	CMP = 0x38,
 	
 	AND = 0x20,
 	OR = 0x08,
@@ -25,10 +27,14 @@ enum Opcode : uint8_t
 	AND_I = 0x80,
 	OR_I = 0x80,
 	XOR_I = 0x80,
+	CMP_I = 0x80,
 
 	ADD_I_EAX = 0x50,
 	
-	RET = 0xC3
+	RET = 0xC3,
+
+	JMP_REL_8 = 0xEB,
+	JMP_REL_32 = 0xE9
 };
 
 enum class OpcodeExt : uint8_t
@@ -44,7 +50,8 @@ enum class OpcodeExt : uint8_t
 	MOV_I = 0,
 	AND_I = 4,
 	OR_I = 1,
-	XOR_I = 6
+	XOR_I = 6,
+	CMP_I = 7
 };
 
 enum class RegisterSize : uint8_t
@@ -66,6 +73,40 @@ enum class RegisterMode : uint8_t
 	MemoryDisp1 = 0b01 << 6,
 	MemoryDisp4 = 0b10 << 6,
 	Register = 0b11 << 6
+};
+
+enum class JumpCond : uint8_t
+{
+	JA = 0x77,
+	JAE = 0x73,
+	JB = 0x72,
+	JBE = 0x76,
+	JC = 0x72,
+	JE = 0x74,
+	JG = 0x7F,
+	JGE = 0x7D,
+	JL = 0x7C,
+	JLE = 0x7E,
+	JNA = 0x76,
+	JNAE = 0x72,
+	JNB = 0x73,
+	JNBE = 0x77,
+	JNC = 0x73,
+	JNE = 0x75,
+	JNG = 0x7E,
+	JNGE = 0x7C,
+	JNL = 0x7D,
+	JNLE = 0x7F,
+	JNO = 0x71,
+	JNP = 0x7B,
+	JNS = 0x79,
+	JNZ = 0x75,
+	JO = 0x70,
+	JP = 0x7A,
+	JPE = 0x7A,
+	JPO = 0x7B,
+	JS = 0x78,
+	JZ = 0x74
 };
 
 enum class Register : uint8_t
