@@ -72,6 +72,8 @@ public:
 
 	template <CondCode Cond, InstrMode Mode, RegisterSize Size = RegisterSize::Reg32>
 	void move_cond(Register dst, Register src, int32_t addr_offset);
+
+	void bswap(Register dst);
 	
 	#pragma endregion 
 

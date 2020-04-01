@@ -81,6 +81,9 @@ int main()
     });
 
     linker.label("loop_skp", code.size());
+    code.instr<MOV, InstrMode::MR>(Register::EAX, Register::ECX);
+    code.bswap(Register::EAX);
+    code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EAX);
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;
@@ -106,14 +109,20 @@ int main()
 
     std::cout << "Committed instructions to executable memory" << std::endl;
 	
-    volatile int ptr[2] = { 5, 10 };
+    volatile uint8_t ptr[4] = { 5, 10, 15, 20 };
     auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
-    auto const result = function_ptr(const_cast<int*>(ptr));
+    auto const result = function_ptr(const_cast<uint8_t*>(ptr));
 
     std::cout << "Executed instructions" << std::endl;
 
     free_exe(buffer);
-    std::cout << "\nEAX = " << result << "\nptr[0] = " << ptr[0] << "\nptr[1] = " << ptr[1] << std::endl;
+    std::cout << "\nEAX = " << result;
+    for (auto i = 0; i < 4; i++)
+    {
+        std::cout << "\nptr[" << i << "] = " << static_cast<uint32_t>(ptr[i]);
+    }
+
+    std::cout << std::endl;
 
     return 0;
 }

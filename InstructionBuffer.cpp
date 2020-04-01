@@ -15,6 +15,12 @@ void InstructionBuffer::copy(void* ptr) const
 	memcpy(ptr, _buffer.data(), _buffer.size());
 }
 
+void InstructionBuffer::bswap(Register dst)
+{
+	write_raw<uint8_t>(0x0F);
+	write_raw<uint8_t>(0xC8 | static_cast<uint8_t>(dst));
+}
+
 inline void InstructionBuffer::write_raw(const uint8_t data)
 {
 	_buffer.push_back(data);
