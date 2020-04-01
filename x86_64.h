@@ -19,6 +19,8 @@ enum Opcode : uint8_t
 	OR = 0x08,
 	XOR = 0x30,
 	NOT = 0xF6,
+
+	NOP = 0x90,
 	
 	ADD_I = 0x80,
 	ADC_I = 0x80,
