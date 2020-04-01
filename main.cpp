@@ -67,7 +67,7 @@ int main()
     code.instr<DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
 	
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
-    code.jump_cond<JumpCond::JA>(size - code.size());
+    code.jump_cond<CondCode::A>(size - code.size());
 	
     code.instr<RET>();
 

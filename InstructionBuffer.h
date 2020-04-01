@@ -60,7 +60,7 @@ public:
 	template <JumpAdjust Adjust = JumpAdjust::Auto>
 	void jump(int32_t offset);
 
-	template <JumpCond Cond, JumpAdjust Adjust = JumpAdjust::Auto>
+	template <CondCode Cond, JumpAdjust Adjust = JumpAdjust::Auto>
 	void jump_cond(int32_t offset);
 	
 	#pragma endregion 
@@ -190,7 +190,7 @@ void InstructionBuffer::jump(int32_t offset)
 	}
 }
 
-template <JumpCond Cond, JumpAdjust Adjust>
+template <CondCode Cond, JumpAdjust Adjust>
 void InstructionBuffer::jump_cond(int32_t offset)
 {
 	const bool is_near = is_near_jump<Adjust>(offset);
@@ -204,16 +204,17 @@ void InstructionBuffer::jump_cond(int32_t offset)
 
 	if (is_near)
 	{
-		write_raw(Cond);
+		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_REL_8);
+		
+		write_raw(op);
 		write_raw<int8_t>(offset);
 	}
 	else
 	{
-		const uint8_t cond_adjust = 0x10;
-		const uint8_t cond_prefix = 0x0F;
-
-		write_raw<uint8_t>(cond_prefix);
-		write_raw<uint8_t>(static_cast<uint8_t>(Cond) + cond_adjust);
+		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_REL_32);
+		
+		write_raw(OpcodePrefix::Jcc_REL_32);
+		write_raw(op);
 		write_raw<int32_t>(offset);
 	}
 }
