@@ -64,27 +64,37 @@ int main()
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
 
+    code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0);
+    linker.resolve("loop_skp", [&]{ return code.size(); }, [&](const int32_t offset)
+    {
+		code.jump_cond<CondCode::E>(offset);
+    });
+	
     linker.label("loop_start", code.size());
     code.instr<ADD>(Register::EAX, Register::EDX); // EAX += EDX
     code.instr<DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
 	
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
-    code.jump_cond<CondCode::A>(linker.resolve_rel("loop_start", code.size()));
-	
+    linker.resolve("loop_start", [&] { return code.size(); }, [&](const int32_t offset)
+    {
+        code.jump_cond<CondCode::A>(offset);
+    });
+
+    linker.label("loop_skp", code.size());
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;
 
     auto const buffer = alloc_exe(code.size());
-    linker.terminate_local(buffer);
-
-    std::cout << "Globally resolved linker symbols" << std::endl;
-	for (const auto& kvp : linker.global_map())
-	{
-        printf("%s: %p\n", kvp.first.c_str(), kvp.second);
-	}
-	
     code.copy(buffer);
+    linker.terminate_local(buffer);
+	
+    std::cout << "Globally resolved linker symbols" << std::endl;
+    for (const auto& kvp : linker.global_map())
+    {
+        printf("%s: %p\n", kvp.first.c_str(), kvp.second);
+    }
+	
     commit_exe(buffer, code.size());
 
     printf("\n");
