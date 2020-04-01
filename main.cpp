@@ -59,15 +59,14 @@ int main()
 {
     InstructionBuffer code;
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
-    code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::ECX, 0); // ECX = 0
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
 
     code.instr<ADD>(Register::EAX, Register::EDX); // EAX += EDX
     code.instr<DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
 	
-    code.instr<CMP>(Register::EBX, Register::ECX); // Jump back to routine if EBX == ECX
-    code.jump_cond<JumpCond::JA>(-6);
+    code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
+    code.jump_cond<JumpCond::JA>(-7);
 	
     code.instr<RET>();
 
