@@ -10,6 +10,11 @@ int32_t Linker::resolve_rel(const std::string& name, const uint32_t current) con
 	return _local_map.at(name) - current;
 }
 
+const std::unordered_map<std::string, uint8_t*>& Linker::global_map() const
+{
+	return _global_map;
+}
+
 void Linker::terminate_local(uint8_t* block_addr)
 {
 	for (const auto& label : _local_map)
