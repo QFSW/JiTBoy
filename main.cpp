@@ -61,7 +61,7 @@ int main()
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0);
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::ECX, 25);
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 50);
-    code.jump(2);
+    code.jump_cond<JumpCond::JA>(2);
     code.instr<ADD>(Register::EAX, Register::ECX);
     code.instr<ADD>(Register::EAX, Register::EDX);
     code.instr<RET>();

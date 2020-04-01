@@ -59,6 +59,9 @@ public:
 
 	template <JumpAdjust Adjust = JumpAdjust::Auto>
 	void jump(int32_t offset);
+
+	template <JumpCond Cond, JumpAdjust Adjust = JumpAdjust::Auto>
+	void jump_cond(int32_t offset);
 	
 	#pragma endregion 
 
@@ -91,7 +94,7 @@ private:
 	template <Opcode Op>
 	static constexpr bool is_fast_imm_instr();
 
-	template <JumpAdjust Adjust = JumpAdjust::Auto>
+	template <JumpAdjust Adjust, uint8_t NearSize = 2>
 	static constexpr bool is_near_jump(int32_t offset);
 
 	static constexpr bool is_8_bit(uint32_t val);
@@ -187,6 +190,34 @@ void InstructionBuffer::jump(int32_t offset)
 	}
 }
 
+template <JumpCond Cond, JumpAdjust Adjust>
+void InstructionBuffer::jump_cond(int32_t offset)
+{
+	const bool is_near = is_near_jump<Adjust>(offset);
+	const uint8_t instr_size = 1 + (is_near ? 1 : 5);
+
+	if constexpr (Adjust == JumpAdjust::Always) offset -= instr_size;
+	else if constexpr (Adjust == JumpAdjust::Auto)
+	{
+		if (offset < 0) offset -= instr_size;
+	}
+
+	if (is_near)
+	{
+		write_raw(Cond);
+		write_raw<int8_t>(offset);
+	}
+	else
+	{
+		const uint8_t cond_adjust = 0x10;
+		const uint8_t cond_prefix = 0x0F;
+
+		write_raw<uint8_t>(cond_prefix);
+		write_raw<uint8_t>(static_cast<uint8_t>(Cond) + cond_adjust);
+		write_raw<int32_t>(offset);
+	}
+}
+
 #pragma endregion 
 
 template <typename T, int Size>
@@ -267,7 +298,7 @@ constexpr bool InstructionBuffer::is_fast_imm_instr()
 	}
 }
 
-template <JumpAdjust Adjust>
+template <JumpAdjust Adjust, uint8_t NearSize>
 constexpr bool InstructionBuffer::is_near_jump(const int32_t offset)
 {
 	if constexpr (Adjust == JumpAdjust::None)
@@ -276,11 +307,11 @@ constexpr bool InstructionBuffer::is_near_jump(const int32_t offset)
 	}
 	else if constexpr (Adjust == JumpAdjust::Auto)
 	{
-		return offset >= -126 && offset <= 127;
+		return offset >= -128 + NearSize && offset <= 127;
 	}
 	else
 	{
-		return offset >= -126 && offset <= 129;
+		return offset >= -128 + NearSize && offset <= 127 + NearSize;
 	}
 }
 

@@ -71,6 +71,12 @@ enum class RegisterMode : uint8_t
 	Register = 0b11 << 6
 };
 
+enum class JumpCond : uint8_t
+{
+	JA = 0x77,
+	JAE = 0x73
+};
+
 enum class Register : uint8_t
 {
 	RAX = 0b000,
