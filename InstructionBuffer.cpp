@@ -50,7 +50,7 @@ void InstructionBuffer::encode_regs_offset(const Register dst, const Register sr
 	}
 }
 
-constexpr bool InstructionBuffer::is_8_bit(const uint32_t val)
+constexpr bool InstructionBuffer::is_8_bit(const int32_t val)
 {
-	return !(val & ~0xFF);
+	return val == static_cast<int8_t>(val);
 }

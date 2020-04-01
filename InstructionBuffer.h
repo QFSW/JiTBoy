@@ -109,7 +109,7 @@ private:
 	template <JumpAdjust Adjust, uint8_t NearSize = 2>
 	static constexpr bool is_near_jump(int32_t offset);
 
-	static constexpr bool is_8_bit(uint32_t val);
+	static constexpr bool is_8_bit(int32_t val);
 };
 
 #pragma region Non Immediate Instruction Implementations
