@@ -69,6 +69,9 @@ public:
 
 	template <CondCode Cond, InstrMode Mode = InstrMode::RR, RegisterSize Size = RegisterSize::Reg32>
 	void move_cond(Register dst, Register src);
+
+	template <CondCode Cond, InstrMode Mode, RegisterSize Size = RegisterSize::Reg32>
+	void move_cond(Register dst, Register src, int32_t addr_offset);
 	
 	#pragma endregion 
 
@@ -226,6 +229,10 @@ void InstructionBuffer::jump_cond(int32_t offset)
 	}
 }
 
+#pragma endregion 
+
+#pragma region Misc Instruction Implementations
+
 template <CondCode Cond, InstrMode Mode, RegisterSize Size>
 void InstructionBuffer::move_cond(const Register dst, const Register src)
 {
@@ -233,7 +240,7 @@ void InstructionBuffer::move_cond(const Register dst, const Register src)
 
 	if constexpr (Size == RegisterSize::Reg8) throw "CMOVcc does not support 8bit operands";
 	else if constexpr (Size == RegisterSize::Reg16) write_raw(OpcodePrefix::Size16);
-	
+
 	write_raw(OpcodePrefix::CMOVcc);
 
 	if constexpr (Mode == InstrMode::RR) instr<op, InstrMode::RR, RegisterSize::Reg8>(src, dst);
@@ -241,7 +248,21 @@ void InstructionBuffer::move_cond(const Register dst, const Register src)
 	else throw "Unsupported instruction mode";
 }
 
-#pragma endregion 
+template <CondCode Cond, InstrMode Mode, RegisterSize Size>
+void InstructionBuffer::move_cond(const Register dst, const Register src, const int32_t addr_offset)
+{
+	constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
+
+	if constexpr (Size == RegisterSize::Reg8) throw "CMOVcc does not support 8bit operands";
+	else if constexpr (Size == RegisterSize::Reg16) write_raw(OpcodePrefix::Size16);
+
+	write_raw(OpcodePrefix::CMOVcc);
+
+	if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst, addr_offset);
+	else throw "Unsupported instruction mode";
+}
+
+#pragma endregion
 
 template <typename T, int Size>
 void InstructionBuffer::write_raw(const T data)

@@ -68,7 +68,6 @@ int main()
 	
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
     code.jump_cond<CondCode::A>(size - code.size());
-    code.move_cond<CondCode::BE, InstrMode::MR>(Register::EAX, Register::ECX);
 	
     code.instr<RET>();
 
@@ -87,7 +86,7 @@ int main()
 
     std::cout << "Committed instructions to executable memory" << std::endl;
 	
-    volatile int ptr[2] = { 5 };
+    volatile int ptr[2] = { 5, 10 };
     auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
     auto const result = function_ptr(const_cast<int*>(ptr));
 
