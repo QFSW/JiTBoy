@@ -62,11 +62,12 @@ int main()
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
 
+    const uint32_t size = code.size();
     code.instr<ADD>(Register::EAX, Register::EDX); // EAX += EDX
     code.instr<DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
 	
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
-    code.jump_cond<JumpCond::JA>(-7);
+    code.jump_cond<JumpCond::JA>(size - code.size());
 	
     code.instr<RET>();
 
