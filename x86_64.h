@@ -35,8 +35,9 @@ enum Opcode : uint8_t
 
 	JMP_REL_8 = 0xEB,
 	JMP_REL_32 = 0xE9,
-	Jcc_REL_8 = 0x70,
-	Jcc_REL_32 = 0x80
+	
+	Jcc_8 = 0x70,
+	Jcc_32 = 0x80
 };
 
 enum class OpcodeExt : uint8_t
@@ -67,7 +68,7 @@ enum class OpcodePrefix : uint8_t
 {
 	Size16 = 0x66,
 	Lock = 0xF0,
-	Jcc_REL_32 = 0x0F
+	Jcc_32 = 0x0F
 };
 
 enum class RegisterMode : uint8_t

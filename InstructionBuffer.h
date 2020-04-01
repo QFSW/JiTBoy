@@ -204,16 +204,16 @@ void InstructionBuffer::jump_cond(int32_t offset)
 
 	if (is_near)
 	{
-		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_REL_8);
+		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_8);
 		
 		write_raw(op);
 		write_raw<int8_t>(offset);
 	}
 	else
 	{
-		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_REL_32);
+		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_32);
 		
-		write_raw(OpcodePrefix::Jcc_REL_32);
+		write_raw(OpcodePrefix::Jcc_32);
 		write_raw(op);
 		write_raw<int32_t>(offset);
 	}
