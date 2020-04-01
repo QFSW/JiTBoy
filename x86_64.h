@@ -12,6 +12,7 @@ enum Opcode : uint8_t
 	INC = 0xFE,
 	DEC = 0xFE,
 	NEG = 0xF6,
+	CMP = 0x38,
 	
 	AND = 0x20,
 	OR = 0x08,
