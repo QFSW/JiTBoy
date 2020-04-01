@@ -159,10 +159,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="InstructionBuffer.cpp" />
+    <ClCompile Include="Linker.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InstructionBuffer.h" />
+    <ClInclude Include="Linker.h" />
     <ClInclude Include="x86_64.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

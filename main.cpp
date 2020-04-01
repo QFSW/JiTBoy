@@ -5,8 +5,9 @@
 #include <memory>
 #include "x86_64.h"
 #include "InstructionBuffer.h"
+#include "Linker.h"
 
-void* alloc_exe(const size_t size)
+uint8_t* alloc_exe(const size_t size)
 {
     auto const buffer = VirtualAlloc(nullptr, size, MEM_COMMIT, PAGE_READWRITE);
     if (!buffer)
@@ -15,7 +16,7 @@ void* alloc_exe(const size_t size)
         std::exit(GetLastError());
     }
 
-    return buffer;
+    return reinterpret_cast<uint8_t*>(buffer);
 }
 
 void commit_exe(void* buffer, const size_t size)
@@ -57,30 +58,35 @@ void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
 
 int main()
 {
+    Linker linker;
     InstructionBuffer code;
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
 
-    const uint32_t size = code.size();
+    linker.label("loop_start", code.size());
     code.instr<ADD>(Register::EAX, Register::EDX); // EAX += EDX
     code.instr<DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
 	
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
-    code.jump_cond<CondCode::A>(size - code.size());
+    code.jump_cond<CondCode::A>(linker.resolve_rel("loop_start", code.size()));
 	
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;
 
     auto const buffer = alloc_exe(code.size());
+    linker.terminate_local(buffer);
+
+    std::cout << "Globally resolved linker symbols" << std::endl;
+	
     code.copy(buffer);
     commit_exe(buffer, code.size());
 
     printf("\n");
 	for (size_t i = 0; i < code.size(); ++i)
 	{
-        printf("%02x ", reinterpret_cast<uint8_t*>(buffer)[i]);
+        printf("%02x ", buffer[i]);
 	}
     printf("\n\n");
 

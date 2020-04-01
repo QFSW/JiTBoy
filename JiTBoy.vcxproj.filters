@@ -21,12 +21,18 @@
     <ClCompile Include="InstructionBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Linker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="x86_64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InstructionBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Linker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
