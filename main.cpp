@@ -64,6 +64,10 @@ int main()
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
 
+    code.instr<PUSH, OpcodeExt::PUSH>(Register::EBX);
+    code.instr<SUB>(Register::EBX, Register::EBX);
+    code.instr<POP, OpcodeExt::POP>(Register::EBX);
+
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0);
     linker.resolve("loop_skp", [&]{ return code.size(); }, [&](const int32_t offset)
     {
@@ -81,9 +85,9 @@ int main()
     });
 
     linker.label("loop_skp", code.size());
-    code.instr<MOV, InstrMode::MR>(Register::EAX, Register::ECX);
-    code.bswap(Register::EAX);
-    code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EAX);
+    code.instr<MOV, InstrMode::MR>(Register::EBX, Register::ECX);
+    code.bswap(Register::EBX);
+    code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EBX);
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;

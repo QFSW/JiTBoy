@@ -20,6 +20,9 @@ enum Opcode : uint8_t
 	XOR = 0x30,
 	NOT = 0xF6,
 
+	PUSH = 0xFF,
+	POP = 0x8F,
+	
 	NOP = 0x90,
 	
 	ADD_I = 0x80,
@@ -50,6 +53,8 @@ enum class OpcodeExt : uint8_t
 	DEC = 1,
 	NEG = 3,
 	NOT = 2,
+	PUSH = 6,
+	POP = 0,
 
 	ADD_I = 0,
 	ADC_I = 2,
