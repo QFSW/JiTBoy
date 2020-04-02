@@ -28,7 +28,7 @@ void Linker::resolve(const std::string& name,
 					 const std::function<uint32_t()> &get_current,
                      const std::function<void(int32_t offset)> &body)
 {
-	const int32_t offset = resolve_begin(name, get_current());
+	const auto offset = resolve_begin(name, get_current());
 	body(offset);
 	resolve_end(name, get_current());
 }
@@ -40,21 +40,31 @@ const std::unordered_map<std::string, uint8_t*>& Linker::global_map() const
 
 void Linker::terminate_local(uint8_t* block_addr)
 {
-	for (const auto& unresolved : _unresolved_locals)
-	{
-		auto label = _local_map.find(unresolved.second);
-		if (label == _local_map.end())
-		{
-			throw "Unresolved symbol";
-		}
-		
-		auto* ptr = reinterpret_cast<int32_t*>(block_addr + unresolved.first - 4);
-		*ptr = label->second - unresolved.first;
-	}
-	
 	for (const auto& label : _local_map)
 	{
 		_global_map[label.first] = block_addr + label.second;
+	}
+	
+	for (const auto& unresolved : _unresolved_locals)
+	{
+		auto* end_ptr = block_addr + unresolved.first;
+		auto* offset_ptr = reinterpret_cast<int32_t*>(end_ptr - sizeof(int32_t));
+		
+		auto label_local = _local_map.find(unresolved.second);
+		if (label_local != _local_map.end())
+		{
+			*offset_ptr = label_local->second - unresolved.first;
+		}
+		else
+		{
+			auto label_global = _global_map.find(unresolved.second);
+			if (label_global == _global_map.end())
+			{
+				throw "Unresolved symbol";
+			}
+
+			*offset_ptr = label_global->second - end_ptr;
+		}
 	}
 
 	_unresolved_locals.clear();
