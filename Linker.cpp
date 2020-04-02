@@ -50,21 +50,13 @@ void Linker::terminate_local(uint8_t* block_addr)
 		auto* end_ptr = block_addr + unresolved.first;
 		auto* offset_ptr = reinterpret_cast<int32_t*>(end_ptr - sizeof(int32_t));
 		
-		auto label_local = _local_map.find(unresolved.second);
-		if (label_local != _local_map.end())
+		auto label = _global_map.find(unresolved.second);
+		if (label == _global_map.end())
 		{
-			*offset_ptr = label_local->second - unresolved.first;
+			throw "Unresolved symbol";
 		}
-		else
-		{
-			auto label_global = _global_map.find(unresolved.second);
-			if (label_global == _global_map.end())
-			{
-				throw "Unresolved symbol";
-			}
 
-			*offset_ptr = label_global->second - end_ptr;
-		}
+		*offset_ptr = label->second - end_ptr;
 	}
 
 	_unresolved_locals.clear();
