@@ -62,6 +62,9 @@ public:
 
 	template <CondCode Cond, JumpAdjust Adjust = JumpAdjust::Auto>
 	void jump_cond(int32_t offset);
+
+	template <JumpAdjust Adjust = JumpAdjust::Auto>
+	void call(int32_t offset);
 	
 	#pragma endregion
 
@@ -102,6 +105,9 @@ private:
 
 	void encode_regs(RegisterMode mode, Register dst, Register src);
 	void encode_regs_offset(Register dst, Register src, int32_t addr_offset);
+
+	template <JumpAdjust Adjust>
+	static constexpr int32_t adjust_offset(int32_t offset, const uint8_t instr_size);
 
 	template <Opcode Op>
 	static constexpr bool is_fast_imm_instr();
@@ -179,16 +185,24 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const 
 #pragma region Jump Instruction Implementations
 
 template <JumpAdjust Adjust>
+constexpr int32_t InstructionBuffer::adjust_offset(const int32_t offset, const uint8_t instr_size)
+{
+	if constexpr (Adjust == JumpAdjust::Always) return offset - instr_size;
+	else if constexpr (Adjust == JumpAdjust::Auto)
+	{
+		if (offset < 0) return offset - instr_size;
+	}
+
+	return offset;
+}
+
+template <JumpAdjust Adjust>
 void InstructionBuffer::jump(int32_t offset)
 {
 	const bool is_near = is_near_jump<Adjust>(offset);
 	const uint8_t instr_size = 1 + (is_near ? 1 : 4);
 	
-	if constexpr (Adjust == JumpAdjust::Always) offset -= instr_size;
-	else if constexpr (Adjust == JumpAdjust::Auto)
-	{
-		if (offset < 0) offset -= instr_size;
-	}
+	offset = adjust_offset<Adjust>(offset, instr_size);
 
 	if (is_near)
 	{
@@ -208,11 +222,7 @@ void InstructionBuffer::jump_cond(int32_t offset)
 	const bool is_near = is_near_jump<Adjust>(offset);
 	const uint8_t instr_size = 1 + (is_near ? 1 : 5);
 
-	if constexpr (Adjust == JumpAdjust::Always) offset -= instr_size;
-	else if constexpr (Adjust == JumpAdjust::Auto)
-	{
-		if (offset < 0) offset -= instr_size;
-	}
+	offset = adjust_offset<Adjust>(offset, instr_size);
 
 	if (is_near)
 	{
@@ -229,6 +239,15 @@ void InstructionBuffer::jump_cond(int32_t offset)
 		write_raw(op);
 		write_raw<int32_t>(offset);
 	}
+}
+
+template <JumpAdjust Adjust>
+void InstructionBuffer::call(int32_t offset)
+{
+	offset = adjust_offset<Adjust>(offset, 5);
+
+	write_raw(CALL_REL);
+	write_raw<int32_t>(offset);
 }
 
 #pragma endregion 

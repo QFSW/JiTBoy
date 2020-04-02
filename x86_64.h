@@ -37,6 +37,7 @@ enum Opcode : uint8_t
 
 	JMP_REL_8 = 0xEB,
 	JMP_REL_32 = 0xE9,
+	CALL_REL = 0xE8,
 
 	CMOVcc = 0x40,
 	Jcc_8 = 0x70,
