@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <iostream>
 
+static constexpr size_t win_page_size = 4096;
+
 template <size_t BufferSize>
 class ExecutableAllocator
 {
@@ -14,17 +16,18 @@ public:
 		GetSystemInfo(&system_info);
 		_page_size = system_info.dwPageSize;
 
-		MEMORY_BASIC_INFORMATION info;
-		VirtualQuery(_buffer, &info, BufferSize);
+		MEMORY_BASIC_INFORMATION page_info;
+		VirtualQuery(_buffer, &page_info, BufferSize);
 
-		auto page_start = reinterpret_cast<uint8_t*>(info.BaseAddress) + _page_size;
-		_consumed = page_start - _buffer;
+		auto page_start = reinterpret_cast<uint8_t*>(page_info.BaseAddress) + _page_size;
+		_consumed = (page_start - _buffer) % _page_size;
 	}
 
 	uint8_t* alloc(size_t size);
 	void commit(void* buffer, size_t size) const;
 	
 private:
+	__declspec(align(win_page_size))
 	uint8_t _buffer[BufferSize] = {};
 	size_t _page_size;
 	size_t _consumed;
