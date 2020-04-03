@@ -58,6 +58,12 @@ int main_test()
     std::cout << "Generated instructions of size " << code.size() << std::endl;
 
     auto const buffer = allocator.alloc(code.size());
+
+    std::cout << "Allocated executable memory - "
+			  << allocator.get_used() << "b, "
+			  << allocator.get_used() / static_cast<float>(allocator.get_total()) << "% used"
+			  << std::endl;
+	
     code.copy(buffer);
     linker.terminate_local(buffer);
 	

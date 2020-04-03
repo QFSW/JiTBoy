@@ -15,6 +15,10 @@ public:
 
 	uint8_t* alloc(size_t size);
 	void commit(void* buffer, size_t size) const;
+
+	[[nodiscard]] size_t get_used() const;
+	[[nodiscard]] size_t get_free() const;
+	[[nodiscard]] size_t get_total() const;
 	
 private:
 	__declspec(align(win_page_size))
@@ -63,6 +67,24 @@ void ExecutableAllocator<BufferSize>::commit(void* buffer, const size_t size) co
 {
 	DWORD dummy;
 	VirtualProtect(buffer, page_aligned(size), PAGE_EXECUTE_READ, &dummy);
+}
+
+template <size_t BufferSize>
+size_t ExecutableAllocator<BufferSize>::get_used() const
+{
+	return _consumed;
+}
+
+template <size_t BufferSize>
+size_t ExecutableAllocator<BufferSize>::get_free() const
+{
+	return BufferSize - _consumed;
+}
+
+template <size_t BufferSize>
+size_t ExecutableAllocator<BufferSize>::get_total() const
+{
+	return BufferSize;
 }
 
 template <size_t BufferSize>
