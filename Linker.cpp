@@ -1,5 +1,6 @@
 #include "Linker.h"
-#include "limits"
+#include <limits>
+#include <stdexcept>
 
 void Linker::label(const std::string& name, const uint32_t current)
 {
@@ -58,7 +59,7 @@ void Linker::terminate_local(uint8_t* block_addr)
 		auto label = _global_map.find(unresolved.second);
 		if (label == _global_map.end())
 		{
-			throw "Unresolved symbol";
+			throw std::runtime_error("Unable to resolve symbol " + unresolved.second);
 		}
 
 		*offset_ptr = label->second - end_ptr;

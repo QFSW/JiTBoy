@@ -12,7 +12,7 @@ uint32_t return_8()
     return 8;
 }
 
-int main()
+int main_test()
 {
     Linker linker;
     InstructionBuffer code;
@@ -46,7 +46,7 @@ int main()
     code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EBX);
 
     code.enter(16);
-    linker.label_global("ret8", &return_8);
+    linker.label_global("ret8", return_8);
     linker.resolve("ret8", [&] { return code.size(); }, [&](const int32_t offset)
     {
         code.call(offset);
@@ -93,4 +93,17 @@ int main()
     std::cout << std::endl;
 
     return 0;
+}
+
+int main()
+{
+	try
+	{
+        return main_test();
+	}
+	catch (std::exception &e)
+	{
+        std::cerr << "JiTBoy failed!\n" << e.what();
+        std::exit(-1);
+	}
 }

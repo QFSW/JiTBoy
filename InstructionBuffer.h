@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <stdexcept>
 #include "x86_64.h"
 
 enum class InstrMode
@@ -129,7 +130,7 @@ void InstructionBuffer::instr(const Register dst, const Register src)
 	if constexpr (Mode == InstrMode::RR) encode_regs(RegisterMode::Register, dst, src);
 	else if constexpr (Mode == InstrMode::RM) encode_regs(RegisterMode::MemoryDisp0, dst, src);
 	else if constexpr (Mode == InstrMode::MR) encode_regs(RegisterMode::MemoryDisp0, src, dst);
-	else throw "Invalid instruction mode encountered";
+	else throw std::logic_error("Invalid instruction mode encountered");
 }
 
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
@@ -139,7 +140,7 @@ void InstructionBuffer::instr(const Register dst, const Register src, const int3
 	
 	if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, src, addr_offset);
 	else if constexpr (Mode == InstrMode::MR) encode_regs_offset(src, dst, addr_offset);
-	else throw "Invalid instruction mode encountered";
+	else throw std::logic_error("Invalid instruction mode encountered");
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
@@ -165,7 +166,7 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm)
 
 	if constexpr (Mode == InstrMode::IR) encode_regs(RegisterMode::Register, dst, static_cast<Register>(Ext));
 	else if constexpr (Mode == InstrMode::IM) encode_regs(RegisterMode::MemoryDisp0, dst, static_cast<Register>(Ext));
-	else throw "Invalid instruction mode encountered";
+	else throw std::logic_error("Invalid instruction mode encountered");
 
 	write_immediate<Op, Size>(imm);
 }
@@ -176,7 +177,7 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const 
 	write_imm_opcode<Op, Size>(imm);
 
 	if constexpr (Mode == InstrMode::IM) encode_regs_offset(dst, static_cast<Register>(Ext), addr_offset);
-	else throw "Invalid instruction mode encountered";
+	else throw std::logic_error("Invalid instruction mode encountered");
 
 	write_immediate<Op, Size>(imm);
 }
@@ -260,14 +261,14 @@ void InstructionBuffer::move_cond(const Register dst, const Register src)
 {
 	constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
 
-	if constexpr (Size == RegisterSize::Reg8) throw "CMOVcc does not support 8bit operands";
+	if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
 	else if constexpr (Size == RegisterSize::Reg16) write_raw(OpcodePrefix::Size16);
 
 	write_raw(OpcodePrefix::CMOVcc);
 
 	if constexpr (Mode == InstrMode::RR) instr<op, InstrMode::RR, RegisterSize::Reg8>(src, dst);
 	else if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst);
-	else throw "Unsupported instruction mode";
+	else throw std::logic_error("Unsupported instruction mode");
 }
 
 template <CondCode Cond, InstrMode Mode, RegisterSize Size>
@@ -275,13 +276,13 @@ void InstructionBuffer::move_cond(const Register dst, const Register src, const 
 {
 	constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
 
-	if constexpr (Size == RegisterSize::Reg8) throw "CMOVcc does not support 8bit operands";
+	if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
 	else if constexpr (Size == RegisterSize::Reg16) write_raw(OpcodePrefix::Size16);
 
 	write_raw(OpcodePrefix::CMOVcc);
 
 	if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst, addr_offset);
-	else throw "Unsupported instruction mode";
+	else throw std::logic_error("Unsupported instruction mode");
 }
 
 #pragma endregion
@@ -417,7 +418,7 @@ void InstructionBuffer::write_immediate(const uint32_t imm)
 		if (fast && is_8_bit(imm)) write_raw<uint8_t>(imm);
 		else if constexpr (Size == RegisterSize::Reg16) write_raw<uint16_t>(imm);
 		else if constexpr (Size == RegisterSize::Reg32) write_raw<uint32_t>(imm);
-		else throw "Unsupported register size";
+		else throw std::logic_error("Unsupported register size");
 	}
 }
 
