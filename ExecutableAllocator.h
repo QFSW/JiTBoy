@@ -52,12 +52,7 @@ ExecutableAllocator<BufferSize>::ExecutableAllocator()
 template <size_t BufferSize>
 uint8_t* ExecutableAllocator<BufferSize>::alloc(const size_t size)
 {
-	const size_t current_aligned = page_aligned(_consumed);
-	const size_t new_aligned = page_aligned(_consumed + size);
-	const size_t mem_size = new_aligned - current_aligned + _page_size;
-	auto* buffer_aligned = _buffer + _dead_space + current_aligned - _page_size;
-
-	auto const buffer = _buffer + _consumed + _dead_space;
+	auto const buffer = _buffer + get_used();
 	
 	_consumed += size;
 	if (get_used() > BufferSize)
@@ -66,7 +61,7 @@ uint8_t* ExecutableAllocator<BufferSize>::alloc(const size_t size)
 	}
 
 	DWORD dummy;
-	VirtualProtect(buffer_aligned, mem_size, PAGE_READWRITE, &dummy);
+	VirtualProtect(buffer, size, PAGE_READWRITE, &dummy);
 
 	return buffer;
 }
