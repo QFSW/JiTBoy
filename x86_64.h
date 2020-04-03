@@ -14,6 +14,8 @@ enum Opcode : uint8_t
 	DEC = 0xFE,
 	NEG = 0xF6,
 	CMP = 0x38,
+	MUL = 0xF6,
+	DIV = 0xF6,
 	
 	AND = 0x20,
 	OR = 0x08,
@@ -56,6 +58,8 @@ enum class OpcodeExt : uint8_t
 	NOT = 2,
 	PUSH = 6,
 	POP = 0,
+	MUL = 4,
+	DIV = 6,
 
 	ADD_I = 0,
 	ADC_I = 2,
