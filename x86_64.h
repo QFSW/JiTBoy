@@ -72,19 +72,20 @@ enum class OpcodeExt : uint8_t
 	CMP_I = 7
 };
 
+enum class OpcodePrefix : uint8_t
+{
+	Size16 = 0x66,
+	Size64 = 0x48,
+	Lock = 0xF0,
+	CMOVcc = 0x0F,
+	Jcc_32 = 0x0F
+};
+
 enum class RegisterSize : uint8_t
 {
 	Reg8 = 8,
 	Reg16 = 16,
 	Reg32 = 32
-};
-
-enum class OpcodePrefix : uint8_t
-{
-	Size16 = 0x66,
-	Lock = 0xF0,
-	CMOVcc = 0x0F,
-	Jcc_32 = 0x0F
 };
 
 enum class RegisterMode : uint8_t

@@ -7,6 +7,7 @@ class Linker
 {
 public:
 	void label(const std::string& name, uint32_t current);
+	void label_global(const std::string& name, void* addr);
 	
 	[[nodiscard]] int32_t resolve_begin(const std::string& name, uint32_t current) const;
 	void resolve_end(const std::string& name, uint32_t current);

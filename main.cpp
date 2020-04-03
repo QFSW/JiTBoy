@@ -30,37 +30,15 @@ void free_exe(void* buffer)
     VirtualFree(buffer, 0, MEM_RELEASE);
 }
 
-void load_binary(std::vector<uint8_t>& vec, const std::string& path)
+uint32_t return_8()
 {
-    std::ifstream bin_stream;
-    bin_stream.open(path, std::ios_base::binary | std::ios_base::in | std::ios_base::ate);
-    if (!bin_stream.is_open())
-    {
-        std::exit(-1);
-    }
-
-    const size_t size = bin_stream.tellg();
-    bin_stream.seekg(0, std::ios::beg);
-
-    vec.resize(size);
-    bin_stream.read(reinterpret_cast<char*>(vec.data()), size);
-}
-
-void dump_binary(const std::vector<uint8_t>& vec, const std::string& path)
-{
-    std::fstream bin_stream;
-    bin_stream.open(path, std::fstream::binary | std::fstream::out);
-
-    bin_stream.write(reinterpret_cast<const char*>(vec.data()), vec.size());
-    bin_stream.flush();
-    bin_stream.close();
+    return 8;
 }
 
 int main()
 {
     Linker linker;
     InstructionBuffer code;
-    code.enter(16);
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
@@ -89,7 +67,15 @@ int main()
     code.instr<MOV, InstrMode::MR>(Register::EBX, Register::ECX);
     code.bswap(Register::EBX);
     code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EBX);
+
+    code.enter(16);
+    linker.label_global("ret8", &return_8);
+    linker.resolve("ret8", [&] { return code.size(); }, [&](const int32_t offset)
+    {
+        code.call(offset);
+    });
     code.instr<LEAVE>();
+	
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;

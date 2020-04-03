@@ -6,6 +6,11 @@ void Linker::label(const std::string& name, const uint32_t current)
 	_local_map[name] = current;
 }
 
+void Linker::label_global(const std::string& name, void* addr)
+{
+	_global_map[name] = reinterpret_cast<uint8_t*>(addr);
+}
+
 int32_t Linker::resolve_begin(const std::string& name, const uint32_t current) const
 {
 	if (_local_map.find(name) == _local_map.end())
