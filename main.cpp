@@ -60,6 +60,7 @@ int main()
 {
     Linker linker;
     InstructionBuffer code;
+    code.enter(16);
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
@@ -88,6 +89,7 @@ int main()
     code.instr<MOV, InstrMode::MR>(Register::EBX, Register::ECX);
     code.bswap(Register::EBX);
     code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EBX);
+    code.instr<LEAVE>();
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;

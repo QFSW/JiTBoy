@@ -77,6 +77,7 @@ public:
 	void move_cond(Register dst, Register src, int32_t addr_offset);
 
 	void bswap(Register dst);
+	void enter(uint16_t size, uint8_t nesting = 0);
 	
 	#pragma endregion 
 
