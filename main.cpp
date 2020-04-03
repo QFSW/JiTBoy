@@ -1,34 +1,11 @@
-#include <windows.h>
-#include <vector>
 #include <iostream>
 #include <fstream>
-#include <memory>
 #include "x86_64.h"
 #include "InstructionBuffer.h"
 #include "Linker.h"
+#include "ExecutableAllocator.h"
 
-uint8_t* alloc_exe(const size_t size)
-{
-    auto const buffer = VirtualAlloc(nullptr, size, MEM_COMMIT, PAGE_READWRITE);
-    if (!buffer)
-    {
-        std::cerr << "exe memory allocation failed" << std::endl;
-        std::exit(GetLastError());
-    }
-
-    return reinterpret_cast<uint8_t*>(buffer);
-}
-
-void commit_exe(void* buffer, const size_t size)
-{
-    DWORD dummy;
-    VirtualProtect(buffer, size, PAGE_EXECUTE_READ, &dummy);
-}
-
-void free_exe(void* buffer)
-{
-    VirtualFree(buffer, 0, MEM_RELEASE);
-}
+ExecutableAllocator<512 * 1024> allocator;
 
 uint32_t return_8()
 {
@@ -80,7 +57,7 @@ int main()
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;
 
-    auto const buffer = alloc_exe(code.size());
+    auto const buffer = allocator.alloc(code.size());
     code.copy(buffer);
     linker.terminate_local(buffer);
 	
@@ -90,7 +67,7 @@ int main()
         printf("%s: %p\n", kvp.first.c_str(), kvp.second);
     }
 	
-    commit_exe(buffer, code.size());
+    allocator.commit(buffer, code.size());
 
     printf("\n");
 	for (size_t i = 0; i < code.size(); ++i)
@@ -107,7 +84,6 @@ int main()
 
     std::cout << "Executed instructions" << std::endl;
 
-    free_exe(buffer);
     std::cout << "\nEAX = " << result;
     for (auto i = 0; i < 4; i++)
     {

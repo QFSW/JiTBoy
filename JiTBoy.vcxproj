@@ -158,11 +158,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ExecutableAllocator.cpp" />
     <ClCompile Include="InstructionBuffer.cpp" />
     <ClCompile Include="Linker.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ExecutableAllocator.h" />
     <ClInclude Include="InstructionBuffer.h" />
     <ClInclude Include="Linker.h" />
     <ClInclude Include="x86_64.h" />

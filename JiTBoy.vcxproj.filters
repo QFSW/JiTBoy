@@ -24,6 +24,9 @@
     <ClCompile Include="Linker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExecutableAllocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="x86_64.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Linker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecutableAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
