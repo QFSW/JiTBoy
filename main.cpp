@@ -5,7 +5,7 @@
 #include "Linker.h"
 #include "ExecutableAllocator.h"
 
-ExecutableAllocator<512 * 1024> allocator;
+ExecutableAllocator<4096> allocator;
 
 uint32_t return_8()
 {
@@ -61,7 +61,7 @@ int main_test()
 
     std::cout << "Allocated executable memory - "
 			  << allocator.get_used() << "b, "
-			  << allocator.get_used() / static_cast<float>(allocator.get_total()) << "% used"
+			  << allocator.get_used() * 100 / static_cast<float>(allocator.get_total()) << "% used"
 			  << std::endl;
 	
     code.copy(buffer);

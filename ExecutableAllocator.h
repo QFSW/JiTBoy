@@ -14,7 +14,7 @@ public:
 	ExecutableAllocator();
 
 	uint8_t* alloc(size_t size);
-	void commit(void* buffer, size_t size) const;
+	void commit(void* buffer, size_t size);
 
 	[[nodiscard]] size_t get_used() const;
 	[[nodiscard]] size_t get_free() const;
@@ -25,6 +25,7 @@ private:
 	uint8_t _buffer[BufferSize] = {};
 	size_t _page_size;
 	size_t _consumed;
+	size_t _dead_space;
 
 	[[nodiscard]] size_t page_aligned(size_t size) const;
 };
@@ -44,41 +45,49 @@ ExecutableAllocator<BufferSize>::ExecutableAllocator()
 	}
 
 	auto page_start = reinterpret_cast<uint8_t*>(page_info.BaseAddress) + _page_size;
-	_consumed = (page_start - _buffer) % _page_size;
+	_dead_space = (page_start - _buffer) % _page_size;
+	_consumed = 0;
 }
 
 template <size_t BufferSize>
-uint8_t* ExecutableAllocator<BufferSize>::alloc(size_t size)
+uint8_t* ExecutableAllocator<BufferSize>::alloc(const size_t size)
 {
-	auto const buffer = _buffer + _consumed;
-	size = page_aligned(size);
+	const size_t current_aligned = page_aligned(_consumed);
+	const size_t new_aligned = page_aligned(_consumed + size);
+	const size_t mem_size = new_aligned - current_aligned + _page_size;
+	auto* buffer_aligned = _buffer + _dead_space + current_aligned - _page_size;
 
+	auto const buffer = _buffer + _consumed + _dead_space;
+	
 	_consumed += size;
-	if (_consumed > BufferSize)
+	if (get_used() > BufferSize)
 	{
 		throw std::runtime_error("Buffer full");
 	}
+
+	DWORD dummy;
+	VirtualProtect(buffer_aligned, mem_size, PAGE_READWRITE, &dummy);
 
 	return buffer;
 }
 
 template <size_t BufferSize>
-void ExecutableAllocator<BufferSize>::commit(void* buffer, const size_t size) const
+void ExecutableAllocator<BufferSize>::commit(void* buffer, const size_t size)
 {
 	DWORD dummy;
-	VirtualProtect(buffer, page_aligned(size), PAGE_EXECUTE_READ, &dummy);
+	VirtualProtect(buffer, size, PAGE_EXECUTE_READ, &dummy);
 }
 
 template <size_t BufferSize>
 size_t ExecutableAllocator<BufferSize>::get_used() const
 {
-	return _consumed;
+	return _consumed + _dead_space;
 }
 
 template <size_t BufferSize>
 size_t ExecutableAllocator<BufferSize>::get_free() const
 {
-	return BufferSize - _consumed;
+	return get_total() - get_used();
 }
 
 template <size_t BufferSize>
