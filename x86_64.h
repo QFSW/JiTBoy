@@ -37,6 +37,7 @@ enum Opcode : uint8_t
 	ADD_I_EAX = 0x50,
 	
 	RET = 0xC3,
+	LEAVE = 0xC9,
 
 	JMP_REL_8 = 0xEB,
 	JMP_REL_32 = 0xE9,
