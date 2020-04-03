@@ -42,9 +42,9 @@ enum Opcode : uint8_t
 	ENTER = 0xC8,
 	LEAVE = 0xC9,
 
-	JMP_REL_8 = 0xEB,
-	JMP_REL_32 = 0xE9,
-	CALL_REL = 0xE8,
+	JMP_8 = 0xEB,
+	JMP_32 = 0xE9,
+	CALL = 0xE8,
 
 	CMOVcc = 0x40,
 	Jcc_8 = 0x70,

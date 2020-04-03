@@ -207,12 +207,12 @@ void InstructionBuffer::jump(int32_t offset)
 
 	if (is_near)
 	{
-		write_raw(JMP_REL_8);
+		write_raw(JMP_8);
 		write_raw<int8_t>(offset);
 	}
 	else
 	{
-		write_raw(JMP_REL_32);
+		write_raw(JMP_32);
 		write_raw<int32_t>(offset);
 	}
 }
@@ -247,7 +247,7 @@ void InstructionBuffer::call(int32_t offset)
 {
 	offset = adjust_offset<Adjust>(offset, 5);
 
-	write_raw(CALL_REL);
+	write_raw(CALL);
 	write_raw<int32_t>(offset);
 }
 
@@ -357,10 +357,12 @@ constexpr bool InstructionBuffer::is_fast_imm_instr()
 {
 	switch (Op)
 	{
-	case ADD_I:
-		return true;
-	default:
+	case MOV_I:
+	case CALL:
+	case RET:
 		return false;
+	default:
+		return true;
 	}
 }
 
