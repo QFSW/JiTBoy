@@ -4,8 +4,11 @@
 #include "InstructionBuffer.h"
 #include "Linker.h"
 #include "ExecutableAllocator.h"
+#include "LabelGenerator.h"
 
 ExecutableAllocator<4096> allocator;
+LabelGenerator label_gen;
+Linker linker;
 
 uint32_t return_8()
 {
@@ -14,7 +17,6 @@ uint32_t return_8()
 
 int main_test()
 {
-    Linker linker;
     InstructionBuffer code;
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
@@ -24,23 +26,25 @@ int main_test()
     code.instr<SUB>(Register::EBX, Register::EBX);
     code.instr<POP, OpcodeExt::POP>(Register::EBX);
 
+    const auto label_skp = label_gen.generate("loop_skp");
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0);
-    linker.resolve("loop_skp", [&]{ return code.size(); }, [&](const int32_t offset)
+    linker.resolve(label_skp, [&]{ return code.size(); }, [&](const int32_t offset)
     {
 		code.jump_cond<CondCode::E>(offset);
     });
-	
-    linker.label("loop_start", code.size());
+
+    const auto label_start = label_gen.generate("loop_start");
+    linker.label(label_start, code.size());
     code.instr<ADD>(Register::EAX, Register::EDX); // EAX += EDX
     code.instr<DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
 	
     code.instr_imm<CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
-    linker.resolve("loop_start", [&] { return code.size(); }, [&](const int32_t offset)
+    linker.resolve(label_start, [&] { return code.size(); }, [&](const int32_t offset)
     {
         code.jump_cond<CondCode::A>(offset);
     });
 
-    linker.label("loop_skp", code.size());
+    linker.label(label_skp, code.size());
     code.instr<MOV, InstrMode::MR>(Register::EBX, Register::ECX);
     code.bswap(Register::EBX);
     code.instr<MOV, InstrMode::RM>(Register::ECX, Register::EBX);
