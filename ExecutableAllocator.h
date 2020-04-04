@@ -16,9 +16,9 @@ public:
 	uint8_t* alloc(size_t size);
 	void commit(void* buffer, size_t size);
 
-	[[nodiscard]] size_t get_used() const;
-	[[nodiscard]] size_t get_free() const;
-	[[nodiscard]] size_t get_total() const;
+	[[nodiscard]] size_t get_used() const noexcept;
+	[[nodiscard]] size_t get_free() const noexcept;
+	[[nodiscard]] size_t get_total() const noexcept;
 	
 private:
 	__declspec(align(win_page_size))
@@ -27,7 +27,7 @@ private:
 	size_t _consumed;
 	size_t _dead_space;
 
-	[[nodiscard]] size_t page_aligned(size_t size) const;
+	[[nodiscard]] size_t page_aligned(size_t size) const noexcept;
 };
 
 template <size_t BufferSize>
@@ -74,25 +74,25 @@ void ExecutableAllocator<BufferSize>::commit(void* buffer, const size_t size)
 }
 
 template <size_t BufferSize>
-size_t ExecutableAllocator<BufferSize>::get_used() const
+size_t ExecutableAllocator<BufferSize>::get_used() const noexcept
 {
 	return _consumed + _dead_space;
 }
 
 template <size_t BufferSize>
-size_t ExecutableAllocator<BufferSize>::get_free() const
+size_t ExecutableAllocator<BufferSize>::get_free() const noexcept
 {
 	return get_total() - get_used();
 }
 
 template <size_t BufferSize>
-size_t ExecutableAllocator<BufferSize>::get_total() const
+size_t ExecutableAllocator<BufferSize>::get_total() const noexcept
 {
 	return BufferSize;
 }
 
 template <size_t BufferSize>
-size_t ExecutableAllocator<BufferSize>::page_aligned(const size_t size) const
+size_t ExecutableAllocator<BufferSize>::page_aligned(const size_t size) const noexcept
 {
 	return (size / _page_size + 1) * _page_size;
 }
