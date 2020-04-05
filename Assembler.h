@@ -42,7 +42,7 @@ public:
 	void instr(Register reg, int32_t addr_offset);
 
 	template <Opcode Op>
-	void instr() { _buffer.write_raw(Op); }
+	void instr() { _buffer.write(Op); }
 	
 	#pragma endregion 
 
@@ -203,13 +203,13 @@ void Assembler::jump(int32_t offset)
 
 	if (is_near)
 	{
-		_buffer.write_raw(JMP_8);
-		_buffer.write_raw<int8_t>(offset);
+		_buffer.write(JMP_8);
+		_buffer.write<int8_t>(offset);
 	}
 	else
 	{
-		_buffer.write_raw(JMP_32);
-		_buffer.write_raw<int32_t>(offset);
+		_buffer.write(JMP_32);
+		_buffer.write<int32_t>(offset);
 	}
 }
 
@@ -225,16 +225,16 @@ void Assembler::jump_cond(int32_t offset)
 	{
 		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_8);
 		
-		_buffer.write_raw(op);
-		_buffer.write_raw<int8_t>(offset);
+		_buffer.write(op);
+		_buffer.write<int8_t>(offset);
 	}
 	else
 	{
 		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_32);
 		
-		_buffer.write_raw(OpcodePrefix::Jcc_32);
-		_buffer.write_raw(op);
-		_buffer.write_raw<int32_t>(offset);
+		_buffer.write(OpcodePrefix::Jcc_32);
+		_buffer.write(op);
+		_buffer.write<int32_t>(offset);
 	}
 }
 
@@ -243,8 +243,8 @@ void Assembler::call(int32_t offset)
 {
 	offset = adjust_offset<Adjust>(offset, 5);
 
-	_buffer.write_raw(CALL);
-	_buffer.write_raw<int32_t>(offset);
+	_buffer.write(CALL);
+	_buffer.write<int32_t>(offset);
 }
 
 #pragma endregion 
@@ -257,9 +257,9 @@ void Assembler::move_cond(const Register dst, const Register src)
 	constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
 
 	if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
-	else if constexpr (Size == RegisterSize::Reg16) _buffer.write_raw(OpcodePrefix::Size16);
+	else if constexpr (Size == RegisterSize::Reg16) _buffer.write(OpcodePrefix::Size16);
 
-	_buffer.write_raw(OpcodePrefix::CMOVcc);
+	_buffer.write(OpcodePrefix::CMOVcc);
 
 	if constexpr (Mode == InstrMode::RR) instr<op, InstrMode::RR, RegisterSize::Reg8>(src, dst);
 	else if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst);
@@ -272,9 +272,9 @@ void Assembler::move_cond(const Register dst, const Register src, const int32_t 
 	constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
 
 	if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
-	else if constexpr (Size == RegisterSize::Reg16) _buffer.write_raw(OpcodePrefix::Size16);
+	else if constexpr (Size == RegisterSize::Reg16) _buffer.write(OpcodePrefix::Size16);
 
-	_buffer.write_raw(OpcodePrefix::CMOVcc);
+	_buffer.write(OpcodePrefix::CMOVcc);
 
 	if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst, addr_offset);
 	else throw std::logic_error("Unsupported instruction mode");
@@ -362,10 +362,10 @@ void Assembler::write_opcode()
 	constexpr uint8_t opcode = encode_opcode<Op, Mode, Size>();
 	if constexpr (Size == RegisterSize::Reg16)
 	{
-		_buffer.write_raw(OpcodePrefix::Size16);
+		_buffer.write(OpcodePrefix::Size16);
 	}
 
-	_buffer.write_raw(opcode);
+	_buffer.write(opcode);
 }
 
 template <Opcode Op, RegisterSize Size>
@@ -374,22 +374,22 @@ void Assembler::write_imm_opcode(const uint32_t imm)
 	const uint8_t opcode = encode_imm_opcode<Op, Size>(imm);
 	if constexpr (Size == RegisterSize::Reg16)
 	{
-		_buffer.write_raw(OpcodePrefix::Size16);
+		_buffer.write(OpcodePrefix::Size16);
 	}
 
-	_buffer.write_raw(opcode);
+	_buffer.write(opcode);
 }
 
 template <Opcode Op, RegisterSize Size>
 void Assembler::write_immediate(const uint32_t imm)
 {
-	if constexpr (Size == RegisterSize::Reg8) _buffer.write_raw<uint8_t>(imm);
+	if constexpr (Size == RegisterSize::Reg8) _buffer.write<uint8_t>(imm);
 	else
 	{
 		constexpr bool fast = is_fast_imm_instr<Op>();
-		if (fast && is_8_bit(imm)) _buffer.write_raw<uint8_t>(imm);
-		else if constexpr (Size == RegisterSize::Reg16) _buffer.write_raw<uint16_t>(imm);
-		else if constexpr (Size == RegisterSize::Reg32) _buffer.write_raw<uint32_t>(imm);
+		if (fast && is_8_bit(imm)) _buffer.write<uint8_t>(imm);
+		else if constexpr (Size == RegisterSize::Reg16) _buffer.write<uint16_t>(imm);
+		else if constexpr (Size == RegisterSize::Reg32) _buffer.write<uint32_t>(imm);
 		else throw std::logic_error("Unsupported register size");
 	}
 }

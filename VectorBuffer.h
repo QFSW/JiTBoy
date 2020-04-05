@@ -5,8 +5,10 @@
 class VectorBuffer
 {
 public:
+	explicit VectorBuffer(size_t capacity = 0);
+	
 	template <typename T, int Size = sizeof(T)>
-	void write_raw(T data);
+	void write(T data);
 
 	void reset();
 	void copy(void* ptr) const;
@@ -17,7 +19,7 @@ private:
 };
 
 template <typename T, int Size>
-void VectorBuffer::write_raw(T data)
+void VectorBuffer::write(T data)
 {
 	if constexpr (Size == 1)
 	{

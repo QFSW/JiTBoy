@@ -1,5 +1,10 @@
 #include "VectorBuffer.h"
 
+VectorBuffer::VectorBuffer(const size_t capacity)
+{
+	_buffer.reserve(capacity);
+}
+
 void VectorBuffer::reset()
 {
 	_buffer.clear();
