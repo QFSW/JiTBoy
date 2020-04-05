@@ -159,16 +159,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ExecutableAllocator.cpp" />
-    <ClCompile Include="InstructionBuffer.cpp" />
+    <ClCompile Include="Assembler.cpp" />
     <ClCompile Include="LabelGenerator.cpp" />
     <ClCompile Include="Linker.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="VectorBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ExecutableAllocator.h" />
-    <ClInclude Include="InstructionBuffer.h" />
+    <ClInclude Include="Assembler.h" />
     <ClInclude Include="LabelGenerator.h" />
     <ClInclude Include="Linker.h" />
+    <ClInclude Include="VectorBuffer.h" />
     <ClInclude Include="x86_64.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

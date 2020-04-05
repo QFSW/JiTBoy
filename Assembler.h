@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
-#include <vector>
 #include <stdexcept>
+#include "VectorBuffer.h"
 #include "x86_64.h"
 
 enum class InstrMode
@@ -20,7 +20,7 @@ enum class JumpAdjust
 	Auto
 };
 
-class InstructionBuffer
+class Assembler
 {
 public:
 	void reset();
@@ -42,7 +42,7 @@ public:
 	void instr(Register reg, int32_t addr_offset);
 
 	template <Opcode Op>
-	void instr() { write_raw(Op); }
+	void instr() { _buffer.write_raw(Op); }
 	
 	#pragma endregion 
 
@@ -83,12 +83,7 @@ public:
 	#pragma endregion 
 
 private:
-	std::vector<uint8_t> _buffer;
-
-	template <typename T, int Size = sizeof(T)>
-	void write_raw(T data);
-
-	void write_raw(uint8_t data);
+	VectorBuffer _buffer;
 
 	template <Opcode Op, InstrMode Mode, RegisterSize Size>
 	static constexpr uint8_t encode_opcode();
@@ -109,7 +104,7 @@ private:
 	void encode_regs_offset(Register dst, Register src, int32_t addr_offset);
 
 	template <JumpAdjust Adjust>
-	static constexpr int32_t adjust_offset(int32_t offset, const uint8_t instr_size);
+	static constexpr int32_t adjust_offset(int32_t offset, uint8_t instr_size);
 
 	template <Opcode Op>
 	static constexpr bool is_fast_imm_instr();
@@ -123,7 +118,7 @@ private:
 #pragma region Non Immediate Instruction Implementations
 
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr(const Register dst, const Register src)
+void Assembler::instr(const Register dst, const Register src)
 {
 	write_opcode<Op, Mode, Size>();
 	
@@ -134,7 +129,7 @@ void InstructionBuffer::instr(const Register dst, const Register src)
 }
 
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr(const Register dst, const Register src, const int32_t addr_offset)
+void Assembler::instr(const Register dst, const Register src, const int32_t addr_offset)
 {
 	write_opcode<Op, Mode, Size>();
 	
@@ -144,13 +139,13 @@ void InstructionBuffer::instr(const Register dst, const Register src, const int3
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr(const Register reg)
+void Assembler::instr(const Register reg)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext));
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr(const Register reg, const int32_t addr_offset)
+void Assembler::instr(const Register reg, const int32_t addr_offset)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext), addr_offset);
 }
@@ -160,7 +155,7 @@ void InstructionBuffer::instr(const Register reg, const int32_t addr_offset)
 #pragma region Immediate Instruction Implementations
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm)
+void Assembler::instr_imm(const Register dst, const uint32_t imm)
 {
 	write_imm_opcode<Op, Size>(imm);
 
@@ -172,7 +167,7 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm)
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const int32_t addr_offset)
+void Assembler::instr_imm(const Register dst, const uint32_t imm, const int32_t addr_offset)
 {
 	write_imm_opcode<Op, Size>(imm);
 
@@ -187,7 +182,7 @@ void InstructionBuffer::instr_imm(const Register dst, const uint32_t imm, const 
 #pragma region Jump Instruction Implementations
 
 template <JumpAdjust Adjust>
-constexpr int32_t InstructionBuffer::adjust_offset(const int32_t offset, const uint8_t instr_size)
+constexpr int32_t Assembler::adjust_offset(const int32_t offset, const uint8_t instr_size)
 {
 	if constexpr (Adjust == JumpAdjust::Always) return offset - instr_size;
 	else if constexpr (Adjust == JumpAdjust::Auto)
@@ -199,7 +194,7 @@ constexpr int32_t InstructionBuffer::adjust_offset(const int32_t offset, const u
 }
 
 template <JumpAdjust Adjust>
-void InstructionBuffer::jump(int32_t offset)
+void Assembler::jump(int32_t offset)
 {
 	const bool is_near = is_near_jump<Adjust>(offset);
 	const uint8_t instr_size = 1 + (is_near ? 1 : 4);
@@ -208,18 +203,18 @@ void InstructionBuffer::jump(int32_t offset)
 
 	if (is_near)
 	{
-		write_raw(JMP_8);
-		write_raw<int8_t>(offset);
+		_buffer.write_raw(JMP_8);
+		_buffer.write_raw<int8_t>(offset);
 	}
 	else
 	{
-		write_raw(JMP_32);
-		write_raw<int32_t>(offset);
+		_buffer.write_raw(JMP_32);
+		_buffer.write_raw<int32_t>(offset);
 	}
 }
 
 template <CondCode Cond, JumpAdjust Adjust>
-void InstructionBuffer::jump_cond(int32_t offset)
+void Assembler::jump_cond(int32_t offset)
 {
 	const bool is_near = is_near_jump<Adjust>(offset);
 	const uint8_t instr_size = 1 + (is_near ? 1 : 5);
@@ -230,26 +225,26 @@ void InstructionBuffer::jump_cond(int32_t offset)
 	{
 		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_8);
 		
-		write_raw(op);
-		write_raw<int8_t>(offset);
+		_buffer.write_raw(op);
+		_buffer.write_raw<int8_t>(offset);
 	}
 	else
 	{
 		constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_32);
 		
-		write_raw(OpcodePrefix::Jcc_32);
-		write_raw(op);
-		write_raw<int32_t>(offset);
+		_buffer.write_raw(OpcodePrefix::Jcc_32);
+		_buffer.write_raw(op);
+		_buffer.write_raw<int32_t>(offset);
 	}
 }
 
 template <JumpAdjust Adjust>
-void InstructionBuffer::call(int32_t offset)
+void Assembler::call(int32_t offset)
 {
 	offset = adjust_offset<Adjust>(offset, 5);
 
-	write_raw(CALL);
-	write_raw<int32_t>(offset);
+	_buffer.write_raw(CALL);
+	_buffer.write_raw<int32_t>(offset);
 }
 
 #pragma endregion 
@@ -257,14 +252,14 @@ void InstructionBuffer::call(int32_t offset)
 #pragma region Misc Instruction Implementations
 
 template <CondCode Cond, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::move_cond(const Register dst, const Register src)
+void Assembler::move_cond(const Register dst, const Register src)
 {
 	constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
 
 	if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
-	else if constexpr (Size == RegisterSize::Reg16) write_raw(OpcodePrefix::Size16);
+	else if constexpr (Size == RegisterSize::Reg16) _buffer.write_raw(OpcodePrefix::Size16);
 
-	write_raw(OpcodePrefix::CMOVcc);
+	_buffer.write_raw(OpcodePrefix::CMOVcc);
 
 	if constexpr (Mode == InstrMode::RR) instr<op, InstrMode::RR, RegisterSize::Reg8>(src, dst);
 	else if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst);
@@ -272,14 +267,14 @@ void InstructionBuffer::move_cond(const Register dst, const Register src)
 }
 
 template <CondCode Cond, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::move_cond(const Register dst, const Register src, const int32_t addr_offset)
+void Assembler::move_cond(const Register dst, const Register src, const int32_t addr_offset)
 {
 	constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
 
 	if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
-	else if constexpr (Size == RegisterSize::Reg16) write_raw(OpcodePrefix::Size16);
+	else if constexpr (Size == RegisterSize::Reg16) _buffer.write_raw(OpcodePrefix::Size16);
 
-	write_raw(OpcodePrefix::CMOVcc);
+	_buffer.write_raw(OpcodePrefix::CMOVcc);
 
 	if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst, addr_offset);
 	else throw std::logic_error("Unsupported instruction mode");
@@ -287,31 +282,8 @@ void InstructionBuffer::move_cond(const Register dst, const Register src, const 
 
 #pragma endregion
 
-template <typename T, int Size>
-void InstructionBuffer::write_raw(const T data)
-{
-	if constexpr (Size == 1)
-	{
-		_buffer.push_back(static_cast<uint8_t>(data));
-	}
-	else
-	{
-		_buffer.resize(size() + Size);
-		if constexpr (Size == sizeof(T))
-		{
-			T* buffer_ptr = reinterpret_cast<T*>(&_buffer.back() - Size + 1);
-			*buffer_ptr = data;
-		}
-		else
-		{
-			void* buffer_ptr = &_buffer.back() - Size + 1;
-			memcpy(buffer_ptr, &data, Size);
-		}
-	}
-}
-
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
-constexpr uint8_t InstructionBuffer::encode_opcode()
+constexpr uint8_t Assembler::encode_opcode()
 {
 	auto op = static_cast<uint8_t>(Op);
 	switch (Size)
@@ -331,7 +303,7 @@ constexpr uint8_t InstructionBuffer::encode_opcode()
 }
 
 template <Opcode Op, RegisterSize Size>
-constexpr uint8_t InstructionBuffer::encode_imm_opcode(const uint32_t imm)
+constexpr uint8_t Assembler::encode_imm_opcode(const uint32_t imm)
 {
 	auto opcode = static_cast<uint8_t>(Op);
 	if constexpr (Size == RegisterSize::Reg8)
@@ -354,7 +326,7 @@ constexpr uint8_t InstructionBuffer::encode_imm_opcode(const uint32_t imm)
 }
 
 template <Opcode Op>
-constexpr bool InstructionBuffer::is_fast_imm_instr()
+constexpr bool Assembler::is_fast_imm_instr()
 {
 	switch (Op)
 	{
@@ -368,7 +340,7 @@ constexpr bool InstructionBuffer::is_fast_imm_instr()
 }
 
 template <JumpAdjust Adjust, uint8_t NearSize>
-constexpr bool InstructionBuffer::is_near_jump(const int32_t offset)
+constexpr bool Assembler::is_near_jump(const int32_t offset)
 {
 	if constexpr (Adjust == JumpAdjust::None)
 	{
@@ -385,40 +357,45 @@ constexpr bool InstructionBuffer::is_near_jump(const int32_t offset)
 }
 
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
-void InstructionBuffer::write_opcode()
+void Assembler::write_opcode()
 {
 	constexpr uint8_t opcode = encode_opcode<Op, Mode, Size>();
 	if constexpr (Size == RegisterSize::Reg16)
 	{
-		write_raw(OpcodePrefix::Size16);
+		_buffer.write_raw(OpcodePrefix::Size16);
 	}
 
-	write_raw(opcode);
+	_buffer.write_raw(opcode);
 }
 
 template <Opcode Op, RegisterSize Size>
-void InstructionBuffer::write_imm_opcode(const uint32_t imm)
+void Assembler::write_imm_opcode(const uint32_t imm)
 {
 	const uint8_t opcode = encode_imm_opcode<Op, Size>(imm);
 	if constexpr (Size == RegisterSize::Reg16)
 	{
-		write_raw(OpcodePrefix::Size16);
+		_buffer.write_raw(OpcodePrefix::Size16);
 	}
 
-	write_raw(opcode);
+	_buffer.write_raw(opcode);
 }
 
 template <Opcode Op, RegisterSize Size>
-void InstructionBuffer::write_immediate(const uint32_t imm)
+void Assembler::write_immediate(const uint32_t imm)
 {
-	if constexpr (Size == RegisterSize::Reg8) write_raw<uint8_t>(imm);
+	if constexpr (Size == RegisterSize::Reg8) _buffer.write_raw<uint8_t>(imm);
 	else
 	{
 		constexpr bool fast = is_fast_imm_instr<Op>();
-		if (fast && is_8_bit(imm)) write_raw<uint8_t>(imm);
-		else if constexpr (Size == RegisterSize::Reg16) write_raw<uint16_t>(imm);
-		else if constexpr (Size == RegisterSize::Reg32) write_raw<uint32_t>(imm);
+		if (fast && is_8_bit(imm)) _buffer.write_raw<uint8_t>(imm);
+		else if constexpr (Size == RegisterSize::Reg16) _buffer.write_raw<uint16_t>(imm);
+		else if constexpr (Size == RegisterSize::Reg32) _buffer.write_raw<uint32_t>(imm);
 		else throw std::logic_error("Unsupported register size");
 	}
+}
+
+constexpr bool Assembler::is_8_bit(const int32_t val)
+{
+	return val == static_cast<int8_t>(val);
 }
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "x86_64.h"
-#include "InstructionBuffer.h"
+#include "Assembler.h"
 #include "Linker.h"
 #include "ExecutableAllocator.h"
 #include "LabelGenerator.h"
@@ -17,7 +17,7 @@ uint32_t return_8()
 
 int main_test()
 {
-    InstructionBuffer code;
+    Assembler code;
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EBX, 6); // EBX = 6
