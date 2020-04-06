@@ -72,9 +72,9 @@ int main_test()
     linker.terminate_local(buffer);
 	
     std::cout << "Globally resolved linker symbols" << std::endl;
-    for (const auto& kvp : linker.global_map())
+    for (const auto& [label, ptr] : linker.global_map())
     {
-        printf("%s: %p\n", kvp.first.c_str(), kvp.second);
+        printf("%s: %p\n", label.c_str(), ptr);
     }
 	
     allocator.commit(buffer, code.size());

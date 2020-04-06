@@ -46,23 +46,23 @@ const std::unordered_map<std::string, uint8_t*>& Linker::global_map() const
 
 void Linker::terminate_local(uint8_t* block_addr)
 {
-	for (const auto& label : _local_map)
+	for (const auto& [label, offset] : _local_map)
 	{
-		_global_map[label.first] = block_addr + label.second;
+		_global_map[label] = block_addr + offset;
 	}
 	
-	for (const auto& unresolved : _unresolved_locals)
+	for (const auto& [offset_end, label] : _unresolved_locals)
 	{
-		auto* end_ptr = block_addr + unresolved.first;
+		auto* end_ptr = block_addr + offset_end;
 		auto* offset_ptr = reinterpret_cast<int32_t*>(end_ptr - sizeof(int32_t));
 		
-		auto label = _global_map.find(unresolved.second);
-		if (label == _global_map.end())
+		auto global_label = _global_map.find(label);
+		if (global_label == _global_map.end())
 		{
-			throw std::runtime_error("Unable to resolve symbol " + unresolved.second);
+			throw std::runtime_error("Unable to resolve symbol " + label);
 		}
 
-		*offset_ptr = label->second - end_ptr;
+		*offset_ptr = global_label->second - end_ptr;
 	}
 
 	_unresolved_locals.clear();
