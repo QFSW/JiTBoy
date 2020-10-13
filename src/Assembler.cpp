@@ -51,3 +51,8 @@ void Assembler::encode_regs_offset(const Register dst, const Register src, const
 		_buffer.write<uint32_t>(addr_offset);
 	}
 }
+
+std::string Assembler::get_debug() const
+{
+	return _debug_stream.str();
+}

@@ -61,6 +61,7 @@ int main_test()
     code.instr<RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;
+    std::cout << code.get_debug() << std::endl;
 
     auto const buffer = allocator.alloc(code.size());
 
@@ -102,7 +103,7 @@ int main_test()
     }
 
     std::cout << std::endl;
-
+	
     return 0;
 }
 

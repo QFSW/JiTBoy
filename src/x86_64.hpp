@@ -204,3 +204,7 @@ enum class Register : uint8_t
 	R14L = 0b1110,
 	R15L = 0b1111
 };
+
+const char* opcode_to_string(Opcode op);
+const char* opcode_imm_to_string(Opcode op, OpcodeExt ext);
+const char* reg_to_string(Register reg, RegisterSize size);

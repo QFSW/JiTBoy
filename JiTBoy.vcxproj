@@ -164,6 +164,8 @@
     <ClCompile Include="src/linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />
+    <ClCompile Include="src/x86_64.cpp" />
+    <ClCompile Include="src/strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/executable_allocator.hpp" />
@@ -172,6 +174,7 @@
     <ClInclude Include="src/linker.hpp" />
     <ClInclude Include="src/vector_buffer.hpp" />
     <ClInclude Include="src/x86_64.hpp" />
+    <ClInclude Include="stc/strtools.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,9 @@
 #pragma once
 #include <cstdint>
 #include <stdexcept>
+#include <sstream>
 
+#include "strtools.hpp"
 #include "vector_buffer.hpp"
 #include "x86_64.hpp"
 
@@ -27,6 +29,7 @@ public:
 	void reset();
 	void copy(void* ptr) const;
 	[[nodiscard]] size_t size() const noexcept;
+	[[nodiscard]] std::string get_debug() const;
 
 	#pragma region Non Immediate Instructions
 	
@@ -114,6 +117,9 @@ private:
 	static constexpr bool is_near_jump(int32_t offset);
 
 	static constexpr bool is_8_bit(int32_t val);
+
+	static constexpr bool debug = true;
+	std::stringstream _debug_stream;
 };
 
 #pragma region Non Immediate Instruction Implementations
@@ -127,6 +133,20 @@ void Assembler::instr(const Register dst, const Register src)
 	else if constexpr (Mode == InstrMode::RM) encode_regs(RegisterMode::MemoryDisp0, dst, src);
 	else if constexpr (Mode == InstrMode::MR) encode_regs(RegisterMode::MemoryDisp0, src, dst);
 	else throw std::logic_error("Invalid instruction mode encountered");
+
+	if constexpr (debug)
+	{
+		_debug_stream << opcode_to_string(Op) << " ";
+
+		const auto reg1 = reg_to_string(dst, Size);
+		const auto reg2 = reg_to_string(src, Size);
+		
+		if constexpr (Mode == InstrMode::RR) _debug_stream << strtools::catf("%s %s", reg1, reg2);
+		else if constexpr (Mode == InstrMode::RM) _debug_stream << strtools::catf("[%s] %s",reg1, reg2);
+		else if constexpr (Mode == InstrMode::MR) _debug_stream << strtools::catf("%s [%s]",reg1, reg2);
+		
+		_debug_stream << "\n";
+	}
 }
 
 template <Opcode Op, InstrMode Mode, RegisterSize Size>
@@ -165,6 +185,18 @@ void Assembler::instr_imm(const Register dst, const uint32_t imm)
 	else throw std::logic_error("Invalid instruction mode encountered");
 
 	write_immediate<Op, Size>(imm);
+
+	if constexpr (debug)
+	{
+		_debug_stream << opcode_imm_to_string(Op, Ext) << " ";
+
+		const auto reg = reg_to_string(dst, Size);
+
+		if constexpr (Mode == InstrMode::IR) _debug_stream << strtools::catf("%s %d", reg, imm);
+		else if constexpr (Mode == InstrMode::IM) _debug_stream << strtools::catf("[%s] %d", reg, imm);
+
+		_debug_stream << "\n";
+	}
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>

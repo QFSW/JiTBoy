@@ -24,13 +24,19 @@
     <ClCompile Include="src/main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\vector_buffer.cpp">
+    <ClCompile Include="src/executable_allocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\label_generator.cpp">
+    <ClCompile Include="src/label_generator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\executable_allocator.cpp">
+    <ClCompile Include="src/vector_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/x86_64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="strtools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,16 +47,19 @@
     <ClInclude Include="src/Linker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/VectorBuffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/x86_64.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\executable_allocator.hpp">
+    <ClInclude Include="src/executable_allocator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\label_generator.hpp">
+    <ClInclude Include="src/label_generator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/vector_buffer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="strtools.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
