@@ -32,7 +32,7 @@ void Linker::resolve_end(const std::string& name, const uint32_t current)
 }
 
 void Linker::resolve(const std::string& name,
-					 const std::function<uint32_t()> &get_current,
+					 const std::function<uint32_t()>& get_current,
                      const std::function<void(int32_t offset)> &body)
 {
 	const auto offset = resolve_begin(name, get_current());

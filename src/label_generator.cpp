@@ -1,6 +1,8 @@
 #include "label_generator.hpp"
 
-std::string LabelGenerator::generate(const std::string &name)
+#include <sstream>
+
+std::string LabelGenerator::generate(const std::string& name)
 {
     const auto name_count = _registered_names[name]++;
 

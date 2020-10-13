@@ -13,7 +13,7 @@ public:
 	void resolve_end(const std::string& name, uint32_t current);
 	
 	void resolve(const std::string& name,
-				 const std::function<uint32_t()> &get_current,
+				 const std::function<uint32_t()>& get_current,
 		         const std::function<void(int32_t offset)> &body);
 
 	void terminate_local(uint8_t* block_addr);
