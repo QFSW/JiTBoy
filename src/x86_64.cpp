@@ -65,3 +65,27 @@ const char* reg_to_string(const Register reg, const RegisterSize size)
 		default: return "???";
 	}
 }
+
+const char* cond_to_string(const CondCode cond)
+{
+	switch (cond)
+	{
+		case CondCode::A: return "A";
+		case CondCode::AE: return "AE";
+		case CondCode::B: return "B";
+		case CondCode::BE: return "BE";
+		case CondCode::E: return "E";
+		case CondCode::G: return "G";
+		case CondCode::GE: return "GE";
+		case CondCode::L: return "L";
+		case CondCode::LE: return "LE";
+		case CondCode::NE: return "NE";
+		case CondCode::NO: return "NO";
+		case CondCode::NP: return "NP";
+		case CondCode::NS: return "NS";
+		case CondCode::O: return "O";
+		case CondCode::P: return "P";
+		case CondCode::S: return "S";
+		default: return "???";
+	}
+}

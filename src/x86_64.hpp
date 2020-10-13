@@ -208,3 +208,4 @@ enum class Register : uint8_t
 const char* opcode_to_string(Opcode op);
 const char* opcode_imm_to_string(Opcode op, OpcodeExt ext);
 const char* reg_to_string(Register reg, RegisterSize size);
+const char* cond_to_string(CondCode cond);

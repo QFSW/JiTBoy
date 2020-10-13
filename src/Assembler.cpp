@@ -19,6 +19,11 @@ void Assembler::bswap(Register dst)
 {
 	_buffer.write<uint8_t>(0x0F);
 	_buffer.write<uint8_t>(0xC8 | static_cast<uint8_t>(dst));
+
+	if constexpr (debug)
+	{
+		_debug_stream << strtools::catf("BSWAP %s\n", reg_to_string(dst, RegisterSize::Reg32));
+	}
 }
 
 void Assembler::enter(const uint16_t size, const uint8_t nesting)
@@ -26,6 +31,11 @@ void Assembler::enter(const uint16_t size, const uint8_t nesting)
 	_buffer.write(Opcode::ENTER);
 	_buffer.write(size);
 	_buffer.write(nesting);
+
+	if constexpr (debug)
+	{
+		_debug_stream << strtools::catf("ENTER %d, %d\n", size, nesting);
+	}
 }
 
 void Assembler::encode_regs(RegisterMode mode, Register dst, Register src)

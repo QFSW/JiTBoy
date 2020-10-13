@@ -46,7 +46,11 @@ public:
 	void instr(Register reg, int32_t addr_offset);
 
 	template <Opcode Op>
-	void instr() { _buffer.write(Op); }
+	void instr()
+	{
+		_buffer.write(Op);
+		if constexpr (debug) _debug_stream << opcode_to_string(Op) << "\n";
+	}
 	
 	#pragma endregion 
 
@@ -140,10 +144,11 @@ void Assembler::instr(const Register dst, const Register src)
 
 		const auto reg1 = reg_to_string(dst, Size);
 		const auto reg2 = reg_to_string(src, Size);
-		
-		if constexpr (Mode == InstrMode::RR) _debug_stream << strtools::catf("%s %s", reg1, reg2);
-		else if constexpr (Mode == InstrMode::RM) _debug_stream << strtools::catf("[%s] %s",reg1, reg2);
-		else if constexpr (Mode == InstrMode::MR) _debug_stream << strtools::catf("%s [%s]",reg1, reg2);
+
+		using namespace strtools;
+		if constexpr (Mode == InstrMode::RR) _debug_stream << catf("%s %s", reg1, reg2);
+		else if constexpr (Mode == InstrMode::RM) _debug_stream << catf("[%s] %s",reg1, reg2);
+		else if constexpr (Mode == InstrMode::MR) _debug_stream << catf("%s [%s]",reg1, reg2);
 		
 		_debug_stream << "\n";
 	}
@@ -157,18 +162,33 @@ void Assembler::instr(const Register dst, const Register src, const int32_t addr
 	if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, src, addr_offset);
 	else if constexpr (Mode == InstrMode::MR) encode_regs_offset(src, dst, addr_offset);
 	else throw std::logic_error("Invalid instruction mode encountered");
+
+	if constexpr (debug)
+	{
+		_debug_stream << "???\n";
+	}
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void Assembler::instr(const Register reg)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext));
+
+	if constexpr (debug)
+	{
+		_debug_stream << "???\n";
+	}
 }
 
 template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
 void Assembler::instr(const Register reg, const int32_t addr_offset)
 {
 	instr<Op, Mode, Size>(reg, static_cast<Register>(Ext), addr_offset);
+
+	if constexpr (debug)
+	{
+		_debug_stream << "???\n";
+	}
 }
 
 #pragma endregion
@@ -192,8 +212,9 @@ void Assembler::instr_imm(const Register dst, const uint32_t imm)
 
 		const auto reg = reg_to_string(dst, Size);
 
-		if constexpr (Mode == InstrMode::IR) _debug_stream << strtools::catf("%s %d", reg, imm);
-		else if constexpr (Mode == InstrMode::IM) _debug_stream << strtools::catf("[%s] %d", reg, imm);
+		using namespace strtools;
+		if constexpr (Mode == InstrMode::IR) _debug_stream << catf("%s %d", reg, imm);
+		else if constexpr (Mode == InstrMode::IM) _debug_stream << catf("[%s] %d", reg, imm);
 
 		_debug_stream << "\n";
 	}
@@ -208,6 +229,11 @@ void Assembler::instr_imm(const Register dst, const uint32_t imm, const int32_t 
 	else throw std::logic_error("Invalid instruction mode encountered");
 
 	write_immediate<Op, Size>(imm);
+
+	if constexpr (debug)
+	{
+		_debug_stream << "???\n";
+	}
 }
 
 #pragma endregion 
@@ -244,6 +270,11 @@ void Assembler::jump(int32_t offset)
 		_buffer.write(JMP_32);
 		_buffer.write<int32_t>(offset);
 	}
+
+	if constexpr (debug)
+	{
+		_debug_stream << "???\n";
+	}
 }
 
 template <CondCode Cond, JumpAdjust Adjust>
@@ -269,6 +300,11 @@ void Assembler::jump_cond(int32_t offset)
 		_buffer.write(op);
 		_buffer.write<int32_t>(offset);
 	}
+
+	if constexpr (debug)
+	{
+		_debug_stream << strtools::catf("J%s %d\n", cond_to_string(Cond), offset);
+	}
 }
 
 template <JumpAdjust Adjust>
@@ -278,6 +314,11 @@ void Assembler::call(int32_t offset)
 
 	_buffer.write(CALL);
 	_buffer.write<int32_t>(offset);
+
+	if constexpr (debug)
+	{
+		_debug_stream << strtools::catf("CALL %d\n", offset);
+	}
 }
 
 #pragma endregion 
@@ -297,6 +338,11 @@ void Assembler::move_cond(const Register dst, const Register src)
 	if constexpr (Mode == InstrMode::RR) instr<op, InstrMode::RR, RegisterSize::Reg8>(src, dst);
 	else if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst);
 	else throw std::logic_error("Unsupported instruction mode");
+
+	if constexpr (debug)
+	{
+		_debug_stream << "???\n";
+	}
 }
 
 template <CondCode Cond, InstrMode Mode, RegisterSize Size>
@@ -311,6 +357,11 @@ void Assembler::move_cond(const Register dst, const Register src, const int32_t 
 
 	if constexpr (Mode == InstrMode::MR) instr<op, InstrMode::RM, RegisterSize::Reg8>(src, dst, addr_offset);
 	else throw std::logic_error("Unsupported instruction mode");
+
+	if constexpr (debug)
+	{
+		_debug_stream << "???\n";
+	}
 }
 
 #pragma endregion
