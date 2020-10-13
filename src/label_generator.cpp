@@ -1,4 +1,4 @@
-#include "LabelGenerator.hpp"
+#include "label_generator.hpp"
 
 std::string LabelGenerator::generate(const std::string &name)
 {

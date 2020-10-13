@@ -15,42 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src/Assembler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Linker.cpp">
+    <ClCompile Include="src/Linker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExecutableAllocator.cpp">
+    <ClCompile Include="src/main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LabelGenerator.cpp">
+    <ClCompile Include="src\vector_buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VectorBuffer.cpp">
+    <ClCompile Include="src\label_generator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Assembler.cpp">
+    <ClCompile Include="src\executable_allocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="x86_64.hpp">
+    <ClInclude Include="src/Assembler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VectorBuffer.hpp">
+    <ClInclude Include="src/Linker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Linker.hpp">
+    <ClInclude Include="src/VectorBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LabelGenerator.hpp">
+    <ClInclude Include="src/x86_64.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExecutableAllocator.hpp">
+    <ClInclude Include="src\executable_allocator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Assembler.hpp">
+    <ClInclude Include="src\label_generator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
