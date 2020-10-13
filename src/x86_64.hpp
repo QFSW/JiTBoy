@@ -85,7 +85,8 @@ enum class RegisterSize : uint8_t
 {
 	Reg8 = 8,
 	Reg16 = 16,
-	Reg32 = 32
+	Reg32 = 32,
+	Reg64 = 64
 };
 
 enum class RegisterMode : uint8_t

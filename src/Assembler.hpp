@@ -341,7 +341,16 @@ void Assembler::move_cond(const Register dst, const Register src)
 
 	if constexpr (debug)
 	{
-		_debug_stream << "???\n";
+		_debug_stream << strtools::catf("CMOV%s ", cond_to_string(Cond));
+
+		const auto reg1 = reg_to_string(dst, Size);
+		const auto reg2 = reg_to_string(src, Size);
+
+		using namespace strtools;
+		if constexpr (Mode == InstrMode::RR) _debug_stream << catf("%s %s", reg1, reg2);
+		else if constexpr (Mode == InstrMode::MR) _debug_stream << catf("%s [%s]", reg1, reg2);
+
+		_debug_stream << "\n";
 	}
 }
 

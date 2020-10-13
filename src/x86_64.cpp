@@ -61,7 +61,27 @@ const char* reg_to_string(const Register reg, const RegisterSize size)
 			case Register::ESI: return "ESI";
 			case Register::EDI: return "EDI";
 			default: return "???";
-		};
+		}
+		case RegisterSize::Reg64: switch (reg)
+		{
+			case Register::RAX: return "RAX";
+			case Register::RCX: return "RCX";
+			case Register::RDX: return "RDX";
+			case Register::RBX: return "RBX";
+			case Register::RSP: return "RSP";
+			case Register::RBP: return "RBP";
+			case Register::RSI: return "RSI";
+			case Register::RDI: return "RDI";
+			case Register::R8: return "R8";
+			case Register::R9: return "R9";
+			case Register::R10: return "R10";
+			case Register::R11: return "R11";
+			case Register::R12: return "R12";
+			case Register::R13: return "R13";
+			case Register::R14: return "R14";
+			case Register::R15: return "R15";
+			default: return "???";
+		}
 		default: return "???";
 	}
 }
