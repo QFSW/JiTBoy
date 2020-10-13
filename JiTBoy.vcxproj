@@ -158,20 +158,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ExecutableAllocator.cpp" />
-    <ClCompile Include="Assembler.cpp" />
-    <ClCompile Include="LabelGenerator.cpp" />
-    <ClCompile Include="Linker.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="VectorBuffer.cpp" />
+    <ClCompile Include="src/ExecutableAllocator.cpp" />
+    <ClCompile Include="src/Assembler.cpp" />
+    <ClCompile Include="src/LabelGenerator.cpp" />
+    <ClCompile Include="src/Linker.cpp" />
+    <ClCompile Include="src/main.cpp" />
+    <ClCompile Include="src/VectorBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ExecutableAllocator.hpp" />
-    <ClInclude Include="Assembler.hpp" />
-    <ClInclude Include="LabelGenerator.hpp" />
-    <ClInclude Include="Linker.hpp" />
-    <ClInclude Include="VectorBuffer.hpp" />
-    <ClInclude Include="x86_64.hpp" />
+    <ClInclude Include="src/ExecutableAllocator.hpp" />
+    <ClInclude Include="src/Assembler.hpp" />
+    <ClInclude Include="src/LabelGenerator.hpp" />
+    <ClInclude Include="src/Linker.hpp" />
+    <ClInclude Include="src/VectorBuffer.hpp" />
+    <ClInclude Include="src/x86_64.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
