@@ -166,12 +166,12 @@
     <ClCompile Include="VectorBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ExecutableAllocator.h" />
-    <ClInclude Include="Assembler.h" />
-    <ClInclude Include="LabelGenerator.h" />
-    <ClInclude Include="Linker.h" />
-    <ClInclude Include="VectorBuffer.h" />
-    <ClInclude Include="x86_64.h" />
+    <ClInclude Include="ExecutableAllocator.hpp" />
+    <ClInclude Include="Assembler.hpp" />
+    <ClInclude Include="LabelGenerator.hpp" />
+    <ClInclude Include="Linker.hpp" />
+    <ClInclude Include="VectorBuffer.hpp" />
+    <ClInclude Include="x86_64.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

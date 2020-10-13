@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <stdexcept>
-#include "VectorBuffer.h"
-#include "x86_64.h"
+#include "VectorBuffer.hpp"
+#include "x86_64.hpp"
 
 enum class InstrMode
 {

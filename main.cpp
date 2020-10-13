@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include "x86_64.h"
-#include "Assembler.h"
-#include "Linker.h"
-#include "ExecutableAllocator.h"
-#include "LabelGenerator.h"
+#include "x86_64.hpp"
+#include "Assembler.hpp"
+#include "Linker.hpp"
+#include "ExecutableAllocator.hpp"
+#include "LabelGenerator.hpp"
 
 ExecutableAllocator<4096> allocator;
 LabelGenerator label_gen;

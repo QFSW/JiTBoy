@@ -1,4 +1,4 @@
-#include "VectorBuffer.h"
+#include "VectorBuffer.hpp"
 
 VectorBuffer::VectorBuffer(const size_t capacity)
 {

@@ -35,22 +35,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="x86_64.h">
+    <ClInclude Include="x86_64.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Linker.h">
+    <ClInclude Include="VectorBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExecutableAllocator.h">
+    <ClInclude Include="Linker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LabelGenerator.h">
+    <ClInclude Include="LabelGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VectorBuffer.h">
+    <ClInclude Include="ExecutableAllocator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Assembler.h">
+    <ClInclude Include="Assembler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
