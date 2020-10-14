@@ -47,8 +47,30 @@ const char* reg_to_string(const Register reg, const RegisterSize size)
 {
 	switch (size)
 	{
-		case RegisterSize::Reg8: return "???";
-		case RegisterSize::Reg16: return "???";
+		case RegisterSize::Reg8: switch (reg)
+		{
+			case Register::AL: return "AL";
+			case Register::CL: return "CL";
+			case Register::DL: return "DL";
+			case Register::BL: return "BL";
+			case Register::AH: return "AH";
+			case Register::CH: return "CH";
+			case Register::DH: return "DH";
+			case Register::BH: return "BH";
+			default: return "???";
+		}
+		case RegisterSize::Reg16: switch (reg)
+		{
+			case Register::AX: return "AX";
+			case Register::CX: return "CX";
+			case Register::DX: return "DX";
+			case Register::BX: return "BX";
+			case Register::SP: return "SP";
+			case Register::BP: return "BP";
+			case Register::SI: return "SI";
+			case Register::DI: return "DI";
+			default: return "???";
+		}
 		case RegisterSize::Reg32: switch (reg)
 		{
 
