@@ -3,6 +3,7 @@
 
 #include <x86/x86.hpp>
 #include <x86/assembler.hpp>
+#include <mips/instruction.hpp>
 #include <linker.hpp>
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
@@ -24,16 +25,29 @@ int main_test()
 
     std::vector<mips::Instruction> mcode =
     {
+    	// addi $4, $4, 55
+    	// add  $3, $4, $5
+        mips::InstructionI
+        {
+            mips::OpcodeI::ADDI,
+            mips::Register::r4,
+            mips::Register::r4,
+            55
+        },
         mips::InstructionR
         {
             mips::OpcodeR::ADD,
             mips::Register::r3,
             mips::Register::r4,
             mips::Register::r5
-        }
+        },
     };
 
-    compiler.compile(mcode);
+    compiler.compile(mcode)();
+    for (int i = 0; i < 32; i++)
+    {
+        std::cout << strtools::catf("$%d: %d\n", i, regs.data()[i]);
+    }
 	
     return 0;
 	

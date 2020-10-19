@@ -159,6 +159,7 @@ namespace x86
 	template <Opcode Op, InstrMode Mode, RegisterSize Size>
 	void Assembler::instr(const Register dst, const Register src, const int32_t addr_offset)
 	{
+		// TODO: when offset is 0, hand off to the normal function
 		write_opcode<Op, Mode, Size>();
 		
 		if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, src, addr_offset);
@@ -167,7 +168,25 @@ namespace x86
 
 		if constexpr (debug)
 		{
-			_debug_stream << "???\n";
+			_debug_stream << opcode_to_string(Op) << " ";
+
+			const auto reg1 = reg_to_string(dst, Size);
+			const auto reg2 = reg_to_string(src, Size);
+
+			std::stringstream offset;
+			if (addr_offset)
+			{
+				offset << " " << (addr_offset > 0 ? '+' : '-')
+					<< " "
+					<< abs(addr_offset);
+			}
+
+
+			using namespace strtools;
+			if constexpr (Mode == InstrMode::RM) _debug_stream << catf("[%s%s] %s", reg1, offset.str().c_str(), reg2);
+			else if constexpr (Mode == InstrMode::MR) _debug_stream << catf("%s [%s%s]", reg1, reg2, offset.str().c_str());
+
+			_debug_stream << "\n";
 		}
 	}
 

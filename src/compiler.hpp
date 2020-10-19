@@ -7,11 +7,12 @@
 
 class Compiler
 {
+	typedef void(*func)();
 	using Allocator = ExecutableAllocator<4096>;
 	
 public:
 	Compiler(mips::RegisterFile& regs, Allocator& allocator);
-	void compile(const std::vector<mips::Instruction>& block);
+	func compile(const std::vector<mips::Instruction>& block);
 	
 private:
 	x86::Assembler _assembler;
@@ -24,5 +25,8 @@ private:
 
 	template <x86::Opcode Op>
 	void compile(mips::InstructionR instr);
+
+	template <x86::Opcode Op, x86::OpcodeExt Ext>
+	void compile(mips::InstructionI instr);
 };
 
