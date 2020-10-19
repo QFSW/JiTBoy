@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 // ReSharper disable CppInconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -136,4 +137,8 @@ namespace mips
 		fp = r30,
 		ra = r31
 	};
+
+	const char* opcode_to_string(OpcodeR op);
+	const char* opcode_to_string(OpcodeI op);
+	std::string reg_to_string(Register reg);
 }

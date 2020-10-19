@@ -39,6 +39,8 @@ namespace x86
 			case CMP_I: switch (ext)
 			{
 				case OpcodeExt::CMP_I: return "CMP";
+				case OpcodeExt::ADD_I: return "ADD";
+				case OpcodeExt::AND_I: return "AND";
 				default: return "???";
 			}
 			default: return "???";

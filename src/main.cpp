@@ -8,6 +8,7 @@
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
 #include <compiler.hpp>
+#include <runtime.hpp>
 
 ExecutableAllocator<4096> allocator;
 LabelGenerator label_gen;
@@ -20,19 +21,24 @@ uint32_t return_8()
 
 int main_test()
 {
-    mips::RegisterFile regs;
-    Compiler compiler(regs, allocator);
-
-    std::vector<mips::Instruction> mcode =
+    std::vector<mips::Instruction> code =
     {
-    	// addi $4, $4, 55
-    	// add  $3, $4, $5
+        // addi $4, $4, 55
+        // addi $5, $5, 5
+        // add  $3, $4, $5
         mips::InstructionI
         {
             mips::OpcodeI::ADDI,
             mips::Register::r4,
             mips::Register::r4,
             55
+        },
+        mips::InstructionI
+        {
+            mips::OpcodeI::ADDI,
+            mips::Register::r5,
+            mips::Register::r5,
+            5
         },
         mips::InstructionR
         {
@@ -43,14 +49,14 @@ int main_test()
         },
     };
 
-    compiler.compile(mcode)();
-    for (int i = 0; i < 32; i++)
-    {
-        std::cout << strtools::catf("$%d: %d\n", i, regs.data()[i]);
-    }
-	
+    Runtime runtime;
+    runtime.execute(code);
+
     return 0;
-	
+}
+
+int main_x86()
+{
     using namespace x86;
 	
     Assembler code;

@@ -29,4 +29,8 @@ namespace mips
 	};
 
 	using Instruction = std::variant<InstructionR, InstructionI, InstructionJ>;
+
+	std::ostream& operator<<(std::ostream& os, const InstructionR& instr);
+	std::ostream& operator<<(std::ostream& os, const InstructionI& instr);
+	std::ostream& operator<<(std::ostream& os, const InstructionJ& instr);
 }

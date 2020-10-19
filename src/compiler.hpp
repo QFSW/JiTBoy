@@ -6,13 +6,15 @@
 #include <mips/register_file.hpp>
 
 class Compiler
-{
-	typedef void(*func)();
-	using Allocator = ExecutableAllocator<4096>;
-	
+{	
 public:
+	using Allocator = ExecutableAllocator<4096>;
+	typedef void(*func)();
+	
 	Compiler(mips::RegisterFile& regs, Allocator& allocator);
+	
 	func compile(const std::vector<mips::Instruction>& block);
+	[[nodiscard]] std::string get_debug() const;
 	
 private:
 	x86::Assembler _assembler;
@@ -28,5 +30,8 @@ private:
 
 	template <x86::Opcode Op, x86::OpcodeExt Ext>
 	void compile(mips::InstructionI instr);
+
+	static constexpr bool debug = true;
+	std::stringstream _debug_stream;
 };
 

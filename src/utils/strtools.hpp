@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <sstream>
 
 namespace strtools
 {
@@ -9,6 +10,14 @@ namespace strtools
 		static char buf[BufSize];
 		sprintf_s(buf, format, args...);
 		return std::string(buf);
+	}
+
+	template <typename T>
+	std::string cat(T t)
+	{
+		std::stringstream ss;
+		ss << t;
+		return ss.str();
 	}
 }
 
