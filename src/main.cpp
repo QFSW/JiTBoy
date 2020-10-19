@@ -7,8 +7,8 @@
 #include <linker.hpp>
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
-#include <compiler.hpp>
 #include <runtime.hpp>
+#include <benchmark.hpp>
 
 ExecutableAllocator<4096> allocator;
 LabelGenerator label_gen;
@@ -49,8 +49,14 @@ int main_test()
         },
     };
 
-    Runtime runtime;
-    runtime.execute(code);
+    auto time = benchmark::measure([&]
+    {
+        Runtime runtime;
+        runtime.execute(code);
+        std::cout << runtime.get_debug();
+    });
+
+    std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "mus" << std::endl;
 
     return 0;
 }

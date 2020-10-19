@@ -95,5 +95,8 @@
     <ClInclude Include="src\runtime.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\benchmark.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

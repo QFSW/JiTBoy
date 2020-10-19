@@ -12,6 +12,7 @@ class ExecutableAllocator
 {
 public:
 	ExecutableAllocator();
+	~ExecutableAllocator();
 
 	uint8_t* alloc(size_t size);
 	void commit(void* buffer, size_t size);
@@ -47,6 +48,13 @@ ExecutableAllocator<BufferSize>::ExecutableAllocator()
 	auto page_start = reinterpret_cast<uint8_t*>(page_info.BaseAddress) + _page_size;
 	_dead_space = (page_start - _buffer) % _page_size;
 	_consumed = 0;
+}
+
+template <size_t BufferSize>
+ExecutableAllocator<BufferSize>::~ExecutableAllocator()
+{
+	DWORD dummy;
+	VirtualProtect(_buffer, BufferSize, PAGE_READWRITE, &dummy);
 }
 
 template <size_t BufferSize>

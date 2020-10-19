@@ -177,6 +177,7 @@
     <ClCompile Include="src/x86/assembler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\benchmark.hpp" />
     <ClInclude Include="src\runtime.hpp" />
     <ClInclude Include="src\mips\register_file.hpp" />
     <ClInclude Include="src\compiler.hpp" />
