@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src/Assembler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/Linker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,21 +30,18 @@
     <ClCompile Include="src/vector_buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/x86_64.cpp">
+    <ClCompile Include="src/strtools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="strtools.cpp">
+    <ClCompile Include="src/x86/x86.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/x86/assembler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/Assembler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/Linker.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/x86_64.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/executable_allocator.hpp">
@@ -59,7 +53,13 @@
     <ClInclude Include="src/vector_buffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="strtools.hpp">
+    <ClInclude Include="stc/strtools.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/x86/x86.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/x86/assembler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

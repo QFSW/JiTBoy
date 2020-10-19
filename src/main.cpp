@@ -1,11 +1,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "x86_64.hpp"
-#include "linker.hpp"
-#include "executable_allocator.hpp"
-#include "label_generator.hpp"
-#include "assembler.hpp"
+#include <x86/x86.hpp>
+#include <x86/assembler.hpp>
+#include <linker.hpp>
+#include <executable_allocator.hpp>
+#include <label_generator.hpp>
 
 ExecutableAllocator<4096> allocator;
 LabelGenerator label_gen;
@@ -18,6 +18,8 @@ uint32_t return_8()
 
 int main_test()
 {
+    using namespace x86;
+	
     Assembler code;
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
     code.instr_imm<MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
