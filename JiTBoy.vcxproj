@@ -176,6 +176,8 @@
     <ClInclude Include="src/label_generator.hpp" />
     <ClInclude Include="src/linker.hpp" />
     <ClInclude Include="src/vector_buffer.hpp" />
+    <ClInclude Include="src\mips\instruction.hpp" />
+    <ClInclude Include="src\mips\mips.hpp" />
     <ClInclude Include="stc/strtools.hpp" />
     <ClInclude Include="src/x86/x86.hpp" />
     <ClInclude Include="src/x86/assembler.hpp" />
