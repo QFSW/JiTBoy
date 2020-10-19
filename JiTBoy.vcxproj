@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\mips\register_file.cpp" />
     <ClCompile Include="src\compiler.cpp" />
     <ClCompile Include="src/executable_allocator.cpp" />
     <ClCompile Include="src/label_generator.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="src/x86/assembler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\mips\register_file.hpp" />
     <ClInclude Include="src\compiler.hpp" />
     <ClInclude Include="src/executable_allocator.hpp" />
     <ClInclude Include="src/label_generator.hpp" />

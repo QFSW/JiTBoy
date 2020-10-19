@@ -19,6 +19,24 @@ uint32_t return_8()
 
 int main_test()
 {
+    mips::RegisterFile regs;
+    Compiler compiler(regs, allocator);
+
+    std::vector<mips::Instruction> mcode =
+    {
+        mips::InstructionR
+        {
+            mips::OpcodeR::ADD,
+            mips::Register::r3,
+            mips::Register::r4,
+            mips::Register::r5
+        }
+    };
+
+    compiler.compile(mcode);
+	
+    return 0;
+	
     using namespace x86;
 	
     Assembler code;
