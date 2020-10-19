@@ -135,3 +135,14 @@ void Compiler::compile_call(void (*const f)())
 		_assembler.call(offset);
 	});
 }
+
+void Compiler::compile_jump(const uint32_t addr)
+{
+	using namespace x86;
+	_assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, _jump_handler_obj);
+	_assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::EDX, addr);
+	_linker.resolve(_jump_handler_label, [&] { return _assembler.size(); }, [&](const int32_t offset)
+	{
+		_assembler.call(offset);
+	});
+}
