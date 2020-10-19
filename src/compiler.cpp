@@ -93,6 +93,8 @@ void Compiler::compile(mips::InstructionR instr)
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src1, addr, static_cast<int32_t>(instr.src1) * 4);
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src2, addr, static_cast<int32_t>(instr.src2) * 4);
 	_assembler.instr<Op>(src1, src2);
+
+	if (instr.dst == mips::Register::zero) return;
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::RM>(addr, src1, static_cast<int32_t>(instr.dst) * 4);
 }
 
@@ -114,6 +116,8 @@ void Compiler::compile(mips::InstructionI instr)
 
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src, addr, static_cast<int32_t>(instr.src) * 4);
 	_assembler.instr_imm<Op, Ext>(src, instr.constant);
+
+	if (instr.dst == mips::Register::zero) return;
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::RM>(addr, src, static_cast<int32_t>(instr.dst) * 4);
 }
 
