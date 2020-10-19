@@ -6,6 +6,7 @@
 #include <linker.hpp>
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
+#include <compiler.hpp>
 
 ExecutableAllocator<4096> allocator;
 LabelGenerator label_gen;
