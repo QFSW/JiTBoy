@@ -17,7 +17,7 @@ int32_t Linker::resolve_begin(const std::string& name, const uint32_t current) c
 {
 	if (_local_map.find(name) == _local_map.end())
 	{
-		return std::numeric_limits<int32_t>::max();
+		return 0;
 	}
 	
 	return _local_map.at(name) - current;

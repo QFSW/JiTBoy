@@ -46,8 +46,21 @@ Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block)
 
 	auto const buffer = _allocator.alloc(_assembler.size());
 	_assembler.copy(buffer);
+	_linker.terminate_local(buffer);
 	_allocator.commit(buffer, _assembler.size());
 	_assembler.reset();
+
+	if constexpr (debug)
+	{
+		if (!_linker.global_map().empty())
+		{
+			_debug_stream << "\nGlobally resolved linker symbols\n";
+			for (const auto& [label, ptr] : _linker.global_map())
+			{
+				_debug_stream << strtools::catf("%s: %p\n", label.c_str(), ptr);
+			}
+		}
+	}
 
 	return reinterpret_cast<func>(buffer);
 }
@@ -107,4 +120,14 @@ void Compiler::compile(mips::InstructionI instr)
 void Compiler::compile(const mips::InstructionJ instr)
 {
 	// TODO: implement
+}
+
+void Compiler::compile_call(void (*const f)())
+{
+	const auto label = _label_generator.generate("func");
+	_linker.label_global(label, f);
+	_linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
+	{
+		_assembler.call(offset);
+	});
 }
