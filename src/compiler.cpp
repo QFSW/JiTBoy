@@ -6,6 +6,7 @@
 Compiler::Compiler(mips::RegisterFile& regs, Allocator& allocator)
 	: _regs(regs)
 	, _allocator(allocator)
+	, _jump_handler_obj(0)
 {
 }
 
@@ -86,6 +87,8 @@ void Compiler::compile(const mips::InstructionR instr)
 template <x86::Opcode Op>
 void Compiler::compile(mips::InstructionR instr)
 {
+	if (instr.dst == mips::Register::zero) return;
+	
 	const auto addr = x86::Register::EDX;
 	const auto src1 = x86::Register::EAX;
 	const auto src2 = x86::Register::ECX;
@@ -93,8 +96,6 @@ void Compiler::compile(mips::InstructionR instr)
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src1, addr, static_cast<int32_t>(instr.src1) * 4);
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src2, addr, static_cast<int32_t>(instr.src2) * 4);
 	_assembler.instr<Op>(src1, src2);
-
-	if (instr.dst == mips::Register::zero) return;
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::RM>(addr, src1, static_cast<int32_t>(instr.dst) * 4);
 }
 
@@ -111,13 +112,13 @@ void Compiler::compile(const mips::InstructionI instr)
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile(mips::InstructionI instr)
 {
+	if (instr.dst == mips::Register::zero) return;
+	
 	const auto addr = x86::Register::EDX;
 	const auto src = x86::Register::EAX;
 
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src, addr, static_cast<int32_t>(instr.src) * 4);
 	_assembler.instr_imm<Op, Ext>(src, instr.constant);
-
-	if (instr.dst == mips::Register::zero) return;
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::RM>(addr, src, static_cast<int32_t>(instr.dst) * 4);
 }
 
@@ -138,6 +139,9 @@ void Compiler::compile_call(void (*const f)())
 
 void Compiler::compile_jump(const uint32_t addr)
 {
+	if (!_jump_handler_obj)
+		throw std::logic_error("Cannot compile a jump as no jump handler has been set");
+	
 	using namespace x86;
 	_assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, _jump_handler_obj);
 	_assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::EDX, addr);

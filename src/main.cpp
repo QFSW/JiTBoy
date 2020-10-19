@@ -44,6 +44,13 @@ int main_test()
             mips::Register::r4,
             mips::Register::r5
         },
+        mips::InstructionR
+        {
+            mips::OpcodeR::ADD,
+            mips::Register::r0,
+            mips::Register::r4,
+            mips::Register::r5
+        },
     };
 
     auto time = benchmark::measure([&]
