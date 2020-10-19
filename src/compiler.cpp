@@ -91,11 +91,9 @@ void Compiler::compile(mips::InstructionR instr)
 	
 	const auto addr = x86::Register::EDX;
 	const auto src1 = x86::Register::EAX;
-	const auto src2 = x86::Register::ECX;
 
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src1, addr, static_cast<int32_t>(instr.src1) * 4);
-	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src2, addr, static_cast<int32_t>(instr.src2) * 4);
-	_assembler.instr<Op>(src1, src2);
+	_assembler.instr<Op, x86::InstrMode::MR>(src1, addr, static_cast<int32_t>(instr.src2) * 4);
 	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::RM>(addr, src1, static_cast<int32_t>(instr.dst) * 4);
 }
 
