@@ -60,7 +60,7 @@ int main_test()
         std::cout << runtime.get_debug();
     });
 
-    std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "mus" << std::endl;
+    std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;
 
     return 0;
 }
