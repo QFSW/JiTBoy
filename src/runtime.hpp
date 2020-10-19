@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include <mips/register_file.hpp>
+#include <config.hpp>
 #include <compiler.hpp>
 
 class Runtime
@@ -21,7 +21,7 @@ private:
 	Compiler _compiler;
 	std::map<uint64_t, Compiler::func> _blocks;
 
-	static constexpr bool debug = true;
+	static constexpr bool debug = config::debug;
 	std::stringstream _debug_stream;
 };
 

@@ -23,9 +23,6 @@ int main_test()
 {
     std::vector<mips::Instruction> code =
     {
-        // addi $4, $4, 55
-        // addi $5, $5, 5
-        // add  $3, $4, $5
         mips::InstructionI
         {
             mips::OpcodeI::ADDI,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <config.hpp>
 #include <executable_allocator.hpp>
 #include <x86/assembler.hpp>
 #include <mips/instruction.hpp>
@@ -31,7 +32,7 @@ private:
 	template <x86::Opcode Op, x86::OpcodeExt Ext>
 	void compile(mips::InstructionI instr);
 
-	static constexpr bool debug = true;
+	static constexpr bool debug = config::debug;
 	std::stringstream _debug_stream;
 };
 

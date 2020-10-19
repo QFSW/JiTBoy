@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <sstream>
 
+#include <config.hpp>
 #include <vector_buffer.hpp>
 #include <utils/strtools.hpp>
 #include <x86/x86.hpp>
@@ -124,7 +125,7 @@ namespace x86
 
 		static constexpr bool is_8_bit(int32_t val);
 
-		static constexpr bool debug = true;
+		static constexpr bool debug = config::debug;
 		std::stringstream _debug_stream;
 	};
 

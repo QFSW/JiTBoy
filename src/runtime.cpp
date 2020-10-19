@@ -28,9 +28,11 @@ void Runtime::execute(const std::vector<mips::Instruction>& code)
 
 	if constexpr (debug)
 	{
+		_debug_stream << "Register file (zeroed registers omitted)\n";
 		for (int i = 0; i < _regs.size(); i++)
 		{
-			_debug_stream << strtools::catf("$%d: %d\n", i, _regs.data()[i]);
+			const auto reg = _regs[i];
+			if (reg > 0) _debug_stream << strtools::catf("$%d: %d\n", i, reg);
 		}
 	}
 }
