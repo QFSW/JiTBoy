@@ -6,7 +6,7 @@
 
 namespace mips
 {
-	enum class Opcode : uint8_t
+	enum class OpcodeR : uint8_t
 	{
 		ADD   = 0b100000,
 		ADDU  = 0b100001,
@@ -34,8 +34,10 @@ namespace mips
 		SRAV  = 0b000111,
 		SRL   = 0b000010,
 		SRLV  = 0b000110,
-		
+	};
 
+	enum class OpcodeI : uint8_t
+	{
 		ADDI  = 0b001000,
 		ADDIU = 0b001001,
 		ANDI  = 0b001100,

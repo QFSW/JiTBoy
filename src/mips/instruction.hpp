@@ -8,7 +8,7 @@ namespace mips
 {
 	struct InstructionR
 	{
-		Opcode op;
+		OpcodeR op;
 		Register dst;
 		Register src1;
 		Register src2;
@@ -17,7 +17,7 @@ namespace mips
 
 	struct InstructionI
 	{
-		Opcode op;
+		OpcodeI op;
 		Register dst;
 		Register src;
 		uint16_t constant;
