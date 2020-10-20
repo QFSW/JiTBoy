@@ -6,7 +6,7 @@
 
 namespace x86
 {
-	enum Opcode : uint8_t
+	enum class Opcode : uint8_t
 	{
 		ADD = 0x00,
 		ADC = 0x10,

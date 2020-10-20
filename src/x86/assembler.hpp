@@ -283,12 +283,12 @@ namespace x86
 
 		if (is_near)
 		{
-			_buffer.write(JMP_8);
+			_buffer.write(Opcode::JMP_8);
 			_buffer.write<int8_t>(offset);
 		}
 		else
 		{
-			_buffer.write(JMP_32);
+			_buffer.write(Opcode::JMP_32);
 			_buffer.write<int32_t>(offset);
 		}
 
@@ -308,14 +308,14 @@ namespace x86
 
 		if (is_near)
 		{
-			constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_8);
+			constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Opcode::Jcc_8);
 			
 			_buffer.write(op);
 			_buffer.write<int8_t>(offset);
 		}
 		else
 		{
-			constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Jcc_32);
+			constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Opcode::Jcc_32);
 			
 			_buffer.write(OpcodePrefix::Jcc_32);
 			_buffer.write(op);
@@ -333,7 +333,7 @@ namespace x86
 	{
 		offset = adjust_offset<Adjust>(offset, 5);
 
-		_buffer.write(CALL);
+		_buffer.write(Opcode::CALL);
 		_buffer.write<int32_t>(offset);
 
 		if constexpr (debug)
@@ -349,7 +349,7 @@ namespace x86
 	template <CondCode Cond, InstrMode Mode, RegisterSize Size>
 	void Assembler::move_cond(const Register dst, const Register src)
 	{
-		constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
+		constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(Opcode::CMOVcc) | static_cast<uint8_t>(Cond));
 
 		if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
 		else if constexpr (Size == RegisterSize::Reg16) _buffer.write(OpcodePrefix::Size16);
@@ -378,7 +378,7 @@ namespace x86
 	template <CondCode Cond, InstrMode Mode, RegisterSize Size>
 	void Assembler::move_cond(const Register dst, const Register src, const int32_t addr_offset)
 	{
-		constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(CMOVcc) | static_cast<uint8_t>(Cond));
+		constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(Opcode::CMOVcc) | static_cast<uint8_t>(Cond));
 
 		if constexpr (Size == RegisterSize::Reg8) throw std::logic_error("CMOVcc does not support 8 bit operands");
 		else if constexpr (Size == RegisterSize::Reg16) _buffer.write(OpcodePrefix::Size16);
@@ -444,9 +444,9 @@ namespace x86
 	{
 		switch (Op)
 		{
-		case MOV_I:
-		case CALL:
-		case RET:
+		case Opcode::MOV_I:
+		case Opcode::CALL:
+		case Opcode::RET:
 			return false;
 		default:
 			return true;
