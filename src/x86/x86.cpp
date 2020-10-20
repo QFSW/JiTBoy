@@ -43,6 +43,13 @@ namespace x86
 				case OpcodeExt::AND_I: return "AND";
 				default: return "???";
 			}
+			case SAL_I: switch (ext)
+			{
+				case OpcodeExt::SAL_I: return "SAL";
+				case OpcodeExt::SAR_I: return "SAR";
+				case OpcodeExt::SHR_I: return "SHR";
+				default: return "???";
+			}
 			default: return "???";
 		}
 	}

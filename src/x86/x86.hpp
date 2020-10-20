@@ -37,6 +37,10 @@ namespace x86
 		OR_I  = 0x80,
 		XOR_I = 0x80,
 		CMP_I = 0x80,
+		SAL_I = 0xC0,
+		SAR_I = 0xC0,
+		SHL_I = 0xC0,
+		SHR_I = 0xC0,
 
 		ADD_I_EAX = 0x50,
 
@@ -71,7 +75,11 @@ namespace x86
 		AND_I = 4,
 		OR_I  = 1,
 		XOR_I = 6,
-		CMP_I = 7
+		CMP_I = 7,
+		SAL_I = 4,
+		SAR_I = 7,
+		SHL_I = 4,
+		SHR_I = 5
 	};
 
 	enum class OpcodePrefix : uint8_t
