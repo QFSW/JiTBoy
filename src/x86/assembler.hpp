@@ -160,7 +160,6 @@ namespace x86
 	template <Opcode Op, InstrMode Mode, RegisterSize Size>
 	void Assembler::instr(const Register dst, const Register src, const int32_t addr_offset)
 	{
-		// TODO: when offset is 0, hand off to the normal function
 		write_opcode<Op, Mode, Size>();
 		
 		if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, src, addr_offset);

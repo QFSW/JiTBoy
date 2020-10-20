@@ -19,9 +19,7 @@ Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block)
 
 		for (const auto instr : block)
 		{
-			std::visit(functional::overload {
-				[&](const auto& x) { _debug_stream << x << "\n"; }
-			}, instr);
+			_debug_stream << instr << "\n";
 		}
 
 		_debug_stream << "\n";
@@ -33,9 +31,7 @@ Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block)
 	
 	for (const auto instr : block)
 	{
-		std::visit(functional::overload {
-			[&](const auto& x) { compile(x); }
-		}, instr);
+		compile(instr);
 	}
 
 	_assembler.instr<x86::Opcode::RET>();
@@ -69,6 +65,13 @@ Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block)
 std::string Compiler::get_debug() const
 {
 	return _debug_stream.str();
+}
+
+void Compiler::compile(const mips::Instruction instr)
+{
+	std::visit(functional::overload{
+		[&](const auto& x) { compile(x); }
+	}, instr);
 }
 
 void Compiler::compile(const mips::InstructionR instr)

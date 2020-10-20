@@ -1,5 +1,7 @@
 #include "instruction.hpp"
+
 #include <ostream>
+#include <utils/functional.hpp>
 
 namespace mips
 {
@@ -27,6 +29,15 @@ namespace mips
 	{
 		os << opcode_to_string(instr.op)
 		<< " " << instr.target;
+
+		return os;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Instruction& instr)
+	{
+		std::visit(functional::overload{
+			[&](const auto& x) { os << x; }
+		}, instr);
 
 		return os;
 	}

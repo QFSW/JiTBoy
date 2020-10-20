@@ -6,24 +6,24 @@ namespace x86
 	{
 		switch (op)
 		{
-			case ADD: return "ADD";
-			case ADC: return "ADC";
-			case SUB: return "SUB";
-			case MOV: return "MOV";
-			case INC: return "INC";
-			case NEG: return "NEG";
-			case CMP: return "CMP";
-			case AND: return "AND";
-			case OR: return "OR";
-			case XOR: return "XOR";
-			case PUSH: return "PUSH";
-			case POP: return "POP";
-			case NOP: return "NOP";
-			case RET: return "RET";
-			case ENTER: return "ENTER";
-			case LEAVE: return "LEAVE";
-			case CALL: return "CALL";
-			default: return "???";
+			case Opcode::ADD:   return "ADD";
+			case Opcode::ADC:   return "ADC";
+			case Opcode::SUB:   return "SUB";
+			case Opcode::MOV:   return "MOV";
+			case Opcode::INC:   return "INC";
+			case Opcode::NEG:   return "NEG";
+			case Opcode::CMP:   return "CMP";
+			case Opcode::AND:   return "AND";
+			case Opcode::OR:    return "OR";
+			case Opcode::XOR:   return "XOR";
+			case Opcode::PUSH:  return "PUSH";
+			case Opcode::POP:   return "POP";
+			case Opcode::NOP:   return "NOP";
+			case Opcode::RET:   return "RET";
+			case Opcode::ENTER: return "ENTER";
+			case Opcode::LEAVE: return "LEAVE";
+			case Opcode::CALL:  return "CALL";
+			default:			return "???";
 		}
 	}
 
@@ -31,19 +31,19 @@ namespace x86
 	{
 		switch (op)
 		{
-			case MOV_I: switch (ext)
+			case Opcode::MOV_I: switch (ext)
 			{
 				case OpcodeExt::MOV_I: return "MOV";
 				default: return "???";
 			}
-			case CMP_I: switch (ext)
+			case Opcode::CMP_I: switch (ext)
 			{
 				case OpcodeExt::CMP_I: return "CMP";
 				case OpcodeExt::ADD_I: return "ADD";
 				case OpcodeExt::AND_I: return "AND";
 				default: return "???";
 			}
-			case SAL_I: switch (ext)
+			case Opcode::SAL_I: switch (ext)
 			{
 				case OpcodeExt::SAL_I: return "SAL";
 				case OpcodeExt::SAR_I: return "SAR";
@@ -123,23 +123,23 @@ namespace x86
 	{
 		switch (cond)
 		{
-			case CondCode::A: return "A";
+			case CondCode::A:  return "A";
 			case CondCode::AE: return "AE";
-			case CondCode::B: return "B";
+			case CondCode::B:  return "B";
 			case CondCode::BE: return "BE";
-			case CondCode::E: return "E";
-			case CondCode::G: return "G";
+			case CondCode::E:  return "E";
+			case CondCode::G:  return "G";
 			case CondCode::GE: return "GE";
-			case CondCode::L: return "L";
+			case CondCode::L:  return "L";
 			case CondCode::LE: return "LE";
 			case CondCode::NE: return "NE";
 			case CondCode::NO: return "NO";
 			case CondCode::NP: return "NP";
 			case CondCode::NS: return "NS";
-			case CondCode::O: return "O";
-			case CondCode::P: return "P";
-			case CondCode::S: return "S";
-			default: return "???";
+			case CondCode::O:  return "O";
+			case CondCode::P:  return "P";
+			case CondCode::S:  return "S";
+			default:		   return "???";
 		}
 	}
 }

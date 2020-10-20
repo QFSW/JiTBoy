@@ -31,7 +31,8 @@ private:
 
 	std::string _jump_handler_label;
 	uint32_t _jump_handler_obj;
-	
+
+	void compile(mips::Instruction instr);
 	void compile(mips::InstructionR instr);
 	void compile(mips::InstructionI instr);
 	void compile(mips::InstructionJ instr);

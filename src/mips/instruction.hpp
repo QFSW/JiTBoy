@@ -34,4 +34,5 @@ namespace mips
 	std::ostream& operator<<(std::ostream& os, const InstructionR& instr);
 	std::ostream& operator<<(std::ostream& os, const InstructionI& instr);
 	std::ostream& operator<<(std::ostream& os, const InstructionJ& instr);
+	std::ostream& operator<<(std::ostream& os, const Instruction& instr);
 }
