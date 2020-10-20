@@ -25,7 +25,8 @@ namespace mips
 
 	struct InstructionJ
 	{
-		
+		OpcodeJ op;
+		uint32_t target;
 	};
 
 	using Instruction = std::variant<InstructionR, InstructionI, InstructionJ>;

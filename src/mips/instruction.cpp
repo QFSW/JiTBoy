@@ -25,7 +25,8 @@ namespace mips
 
 	std::ostream& operator<<(std::ostream& os, const InstructionJ& instr)
 	{
-		os << "???";
+		os << opcode_to_string(instr.op)
+		<< " " << instr.target;
 
 		return os;
 	}

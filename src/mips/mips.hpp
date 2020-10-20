@@ -62,6 +62,12 @@ namespace mips
 		LWL   = 0b100010,
 		LWR   = 0b100110,
 	};
+
+	enum class OpcodeJ : uint8_t
+	{
+		J     = 0b000010,
+		JAL   = 0b000011
+	};
 	
 	enum class Register : uint8_t
 	{
@@ -140,5 +146,6 @@ namespace mips
 
 	const char* opcode_to_string(OpcodeR op);
 	const char* opcode_to_string(OpcodeI op);
+	const char* opcode_to_string(OpcodeJ op);
 	std::string reg_to_string(Register reg);
 }

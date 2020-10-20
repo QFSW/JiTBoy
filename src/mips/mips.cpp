@@ -68,6 +68,16 @@ namespace mips
 			default:             return "???";
 		}
 	}
+
+	const char* opcode_to_string(const OpcodeJ op)
+	{
+		switch (op)
+		{
+			case OpcodeJ::J:     return "j";
+			case OpcodeJ::JAL:   return "jal";
+			default:             return "???";
+		}
+	}
 	
 	std::string reg_to_string(const Register reg)
 	{
