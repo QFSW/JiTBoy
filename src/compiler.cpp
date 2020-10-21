@@ -105,16 +105,15 @@ void Compiler::compile(const mips::InstructionR instr)
 }
 
 template <x86::Opcode Op>
-void Compiler::compile(mips::InstructionR instr)
+void Compiler::compile(const mips::InstructionR instr)
 {
 	if (instr.dst == mips::Register::zero) return;
 	
-	const auto addr = x86::Register::EDX;
-	const auto src1 = x86::Register::EAX;
-
-	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src1, addr, static_cast<int32_t>(instr.src1) * 4);
-	_assembler.instr<Op, x86::InstrMode::MR>(src1, addr, static_cast<int32_t>(instr.src2) * 4);
-	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::RM>(addr, src1, static_cast<int32_t>(instr.dst) * 4);
+	const auto acc = x86::Register::EAX;
+	
+	compile_reg_load(acc, instr.src1);
+	compile_reg_load<Op>(acc, instr.src2);
+	compile_reg_write(instr.dst, acc);
 }
 
 void Compiler::compile(const mips::InstructionI instr)
@@ -129,21 +128,44 @@ void Compiler::compile(const mips::InstructionI instr)
 }
 
 template <x86::Opcode Op, x86::OpcodeExt Ext>
-void Compiler::compile(mips::InstructionI instr)
+void Compiler::compile(const mips::InstructionI instr)
 {
 	if (instr.dst == mips::Register::zero) return;
-	
-	const auto addr = x86::Register::EDX;
-	const auto src = x86::Register::EAX;
 
-	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::MR>(src, addr, static_cast<int32_t>(instr.src) * 4);
-	_assembler.instr_imm<Op, Ext>(src, instr.constant);
-	_assembler.instr<x86::Opcode::MOV, x86::InstrMode::RM>(addr, src, static_cast<int32_t>(instr.dst) * 4);
+	if (instr.dst == instr.src)
+	{
+		_assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, instr.constant, calc_reg_offset(instr.src));
+	}
+	else
+	{
+		const auto acc = x86::Register::EAX;
+
+		compile_reg_load(acc, instr.src);
+		_assembler.instr_imm<Op, Ext>(acc, instr.constant);
+		compile_reg_write(instr.dst, acc);
+	}
 }
 
 void Compiler::compile(const mips::InstructionJ instr)
 {
 	// TODO: implement
+}
+
+constexpr uint32_t Compiler::calc_reg_offset(mips::Register reg)
+{
+	return static_cast<int32_t>(reg) * sizeof(int32_t);
+}
+
+template <x86::Opcode Op>
+void Compiler::compile_reg_load(const x86::Register dst, const mips::Register src)
+{
+	_assembler.instr<Op, x86::InstrMode::MR>(dst, addr_reg, calc_reg_offset(src));
+}
+
+template <x86::Opcode Op>
+void Compiler::compile_reg_write(const mips::Register dst, const x86::Register src)
+{
+	_assembler.instr<Op, x86::InstrMode::RM>(addr_reg, src, calc_reg_offset(dst));
 }
 
 void Compiler::compile_call(void (*const f)())

@@ -34,10 +34,20 @@ private:
 	std::string _jump_handler_label;
 	uint32_t _jump_handler_obj;
 
+	static constexpr x86::Register addr_reg = x86::Register::EDX;
+
 	void compile(mips::Instruction instr);
 	void compile(mips::InstructionR instr);
 	void compile(mips::InstructionI instr);
 	void compile(mips::InstructionJ instr);
+
+	static constexpr uint32_t calc_reg_offset(mips::Register reg);
+
+	template <x86::Opcode Op = x86::Opcode::MOV>
+	void compile_reg_load(x86::Register dst, mips::Register src);
+
+	template <x86::Opcode Op = x86::Opcode::MOV>
+	void compile_reg_write(mips::Register dst, x86::Register src);
 
 	template <x86::Opcode Op>
 	void compile(mips::InstructionR instr);
