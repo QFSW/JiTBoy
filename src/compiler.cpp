@@ -50,6 +50,9 @@ Compiler::Result Compiler::compile(const std::vector<mips::Instruction>& block, 
 
 	if constexpr (debug)
 	{
+		const auto usage = 100 * _allocator.get_used() / static_cast<float>(_allocator.get_total());
+		_debug_stream << strtools::catf("\nAllocated %db of executable memory - %f%% used\n", size, usage);
+		
 		if (!_linker.global_map().empty())
 		{
 			_debug_stream << "\nGlobally resolved linker symbols\n";
