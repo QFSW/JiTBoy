@@ -10,12 +10,12 @@ Compiler::Compiler(mips::RegisterFile& regs, Allocator& allocator)
 {
 }
 
-Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block)
+Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block, const Config config)
 {
 	if constexpr (debug)
 	{
 		std::stringstream().swap(_debug_stream);
-		_debug_stream << "Compiling basic block\n";
+		_debug_stream << strtools::catf("Compiling basic block with -O%d\n", config.o_level);
 
 		for (const auto instr : block)
 		{

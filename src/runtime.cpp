@@ -12,7 +12,7 @@ void Runtime::execute(const std::vector<mips::Instruction>& code)
 	Compiler::func func;
 	if (_blocks.find(addr) == _blocks.end())
 	{
-		func = _compiler.compile(code);
+		func = _compiler.compile(code, Compiler::Config());
 		_blocks[addr] = func;
 
 		if constexpr (debug)

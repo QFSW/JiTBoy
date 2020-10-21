@@ -13,10 +13,15 @@ class Compiler
 public:
 	using Allocator = ExecutableAllocator<4096>;
 	typedef void(*func)();
+
+	struct Config
+	{
+		int o_level = 0;
+	};
 	
 	Compiler(mips::RegisterFile& regs, Allocator& allocator);
 	
-	func compile(const std::vector<mips::Instruction>& block);
+	func compile(const std::vector<mips::Instruction>& block, Config config);
 	[[nodiscard]] std::string get_debug() const;
 
 	template <typename T, void(T::* F)(int)>
