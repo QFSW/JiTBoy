@@ -93,11 +93,13 @@ void Compiler::compile(const mips::InstructionR instr)
 {
 	switch (instr.op)
 	{
-		case mips::OpcodeR::ADD: compile<x86::Opcode::ADD>(instr); break;
-		case mips::OpcodeR::SUB: compile<x86::Opcode::SUB>(instr); break;
-		case mips::OpcodeR::AND: compile<x86::Opcode::AND>(instr); break;
-		case mips::OpcodeR::OR: compile<x86::Opcode::OR>(instr); break;
-		case mips::OpcodeR::XOR: compile<x86::Opcode::XOR>(instr); break;
+		case mips::OpcodeR::ADDU: compile<x86::Opcode::ADD>(instr); break;
+		case mips::OpcodeR::ADD:  compile<x86::Opcode::ADD>(instr); break;
+		case mips::OpcodeR::SUBU: compile<x86::Opcode::SUB>(instr); break;
+		case mips::OpcodeR::SUB:  compile<x86::Opcode::SUB>(instr); break;
+		case mips::OpcodeR::AND:  compile<x86::Opcode::AND>(instr); break;
+		case mips::OpcodeR::OR:   compile<x86::Opcode::OR>(instr); break;
+		case mips::OpcodeR::XOR:  compile<x86::Opcode::XOR>(instr); break;
 		default: throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(instr.op) + " is not supported");
 	}
 }
@@ -119,8 +121,9 @@ void Compiler::compile(const mips::InstructionI instr)
 {
 	switch (instr.op)
 	{
-		case mips::OpcodeI::ADDI: compile<x86::Opcode::ADD_I, x86::OpcodeExt::ADD_I>(instr); break;
-		case mips::OpcodeI::ANDI: compile<x86::Opcode::AND_I, x86::OpcodeExt::AND_I>(instr); break;
+		case mips::OpcodeI::ADDIU: compile<x86::Opcode::ADD_I, x86::OpcodeExt::ADD_I>(instr); break;
+		case mips::OpcodeI::ADDI:  compile<x86::Opcode::ADD_I, x86::OpcodeExt::ADD_I>(instr); break;
+		case mips::OpcodeI::ANDI:  compile<x86::Opcode::AND_I, x86::OpcodeExt::AND_I>(instr); break;
 		default: throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(instr.op) + " is not supported");
 	}
 }
