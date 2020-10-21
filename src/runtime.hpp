@@ -19,7 +19,7 @@ private:
 	mips::RegisterFile _regs;
 	Compiler::Allocator _allocator;
 	Compiler _compiler;
-	std::map<uint64_t, Compiler::func> _blocks;
+	std::map<uint64_t, Compiler::Result> _blocks;
 
 	static constexpr bool debug = config::debug;
 	std::stringstream _debug_stream;

@@ -9,22 +9,22 @@ void Runtime::execute(const std::vector<mips::Instruction>& code)
 {
 	const uint64_t addr = 0;
 
-	Compiler::func func;
+	Compiler::Result block;
 	if (_blocks.find(addr) == _blocks.end())
 	{
-		func = _compiler.compile(code, Compiler::Config());
-		_blocks[addr] = func;
+		block = _compiler.compile(code, Compiler::Config());
+		_blocks[addr] = block;
 
 		if constexpr (debug)
 		{
 			_debug_stream << _compiler.get_debug() << "\n"
-						  << strtools::catf("Registering compiled block %p to 0x%x\n", func, addr);
+						  << strtools::catf("Registering compiled block %p to 0x%x\n", block, addr);
 		}
 	}
-	else func = _blocks[addr];
+	else block = _blocks[addr];
 
 	if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", addr);
-	func();
+	block();
 
 	if constexpr (debug)
 	{

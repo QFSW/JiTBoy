@@ -10,7 +10,7 @@ Compiler::Compiler(mips::RegisterFile& regs, Allocator& allocator)
 {
 }
 
-Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block, const Config config)
+Compiler::Result Compiler::compile(const std::vector<mips::Instruction>& block, const Config config)
 {
 	if constexpr (debug)
 	{
@@ -41,10 +41,11 @@ Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block, co
 		_debug_stream << "Generated x86 instructions\n" << _assembler.get_debug();
 	}
 
-	auto const buffer = _allocator.alloc(_assembler.size());
+	auto const size = _assembler.size();
+	auto const buffer = _allocator.alloc(size);
 	_assembler.copy(buffer);
 	_linker.terminate_local(buffer);
-	_allocator.commit(buffer, _assembler.size());
+	_allocator.commit(buffer, size);
 	_assembler.reset();
 
 	if constexpr (debug)
@@ -59,7 +60,12 @@ Compiler::func Compiler::compile(const std::vector<mips::Instruction>& block, co
 		}
 	}
 
-	return reinterpret_cast<func>(buffer);
+	return Result
+	(
+		reinterpret_cast<Result::func>(buffer),
+		size,
+		config
+	);
 }
 
 std::string Compiler::get_debug() const
