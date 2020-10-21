@@ -69,4 +69,17 @@ namespace x86
 	{
 		return _debug_stream.str();
 	}
+
+	std::string Assembler::debug_offset(const int32_t offset)
+	{
+		std::stringstream ss;
+		if (offset)
+		{
+			ss << " " << (offset > 0 ? '+' : '-')
+			   << " "
+			   << abs(offset);
+		}
+
+		return ss.str();
+	}
 }

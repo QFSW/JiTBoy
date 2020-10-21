@@ -93,6 +93,12 @@ namespace x86
 		
 		#pragma endregion 
 
+		#pragma region Debug
+
+		std::string debug_offset(int32_t offset);
+		
+		#pragma endregion 
+		
 	private:
 		VectorBuffer _buffer;
 
@@ -173,18 +179,11 @@ namespace x86
 			const auto reg1 = reg_to_string(dst, Size);
 			const auto reg2 = reg_to_string(src, Size);
 
-			std::stringstream offset;
-			if (addr_offset)
-			{
-				offset << " " << (addr_offset > 0 ? '+' : '-')
-					<< " "
-					<< abs(addr_offset);
-			}
-
+			const std::string offset = debug_offset(addr_offset);
 
 			using namespace strtools;
-			if constexpr (Mode == InstrMode::RM) _debug_stream << catf("[%s%s] %s", reg1, offset.str().c_str(), reg2);
-			else if constexpr (Mode == InstrMode::MR) _debug_stream << catf("%s [%s%s]", reg1, reg2, offset.str().c_str());
+			if constexpr (Mode == InstrMode::RM) _debug_stream << catf("[%s%s] %s", reg1, offset.c_str(), reg2);
+			else if constexpr (Mode == InstrMode::MR) _debug_stream << catf("%s [%s%s]", reg1, reg2, offset.c_str());
 
 			_debug_stream << "\n";
 		}
@@ -253,7 +252,12 @@ namespace x86
 
 		if constexpr (debug)
 		{
-			_debug_stream << "???\n";
+			_debug_stream << opcode_imm_to_string(Op, Ext) << " ";
+
+			const auto reg = reg_to_string(dst, Size);
+			const auto offset = debug_offset(addr_offset);
+
+			_debug_stream << strtools::catf("[%s%s] %d", reg, offset.c_str(), imm) << "\n";
 		}
 	}
 
