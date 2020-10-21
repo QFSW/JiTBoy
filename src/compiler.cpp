@@ -52,6 +52,12 @@ Compiler::Result Compiler::compile(const std::vector<mips::Instruction>& block, 
 	{
 		const auto usage = 100 * _allocator.get_used() / static_cast<float>(_allocator.get_total());
 		_debug_stream << strtools::catf("\nAllocated %db of executable memory - %f%% used\n", size, usage);
+
+		for (size_t i = 0; i < size; ++i)
+		{
+			_debug_stream << strtools::catf("%02x ", buffer[i]);
+		}
+		_debug_stream << "\n";
 		
 		if (!_linker.global_map().empty())
 		{
