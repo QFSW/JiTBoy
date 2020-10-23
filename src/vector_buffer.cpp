@@ -2,20 +2,20 @@
 
 VectorBuffer::VectorBuffer(const size_t capacity)
 {
-	_buffer.reserve(capacity);
+    _buffer.reserve(capacity);
 }
 
 void VectorBuffer::reset()
 {
-	_buffer.clear();
+    _buffer.clear();
 }
 
 void VectorBuffer::copy(void* ptr) const
 {
-	memcpy(ptr, _buffer.data(), _buffer.size());
+    memcpy(ptr, _buffer.data(), _buffer.size());
 }
 
 size_t VectorBuffer::size() const noexcept
 {
-	return _buffer.size();
+    return _buffer.size();
 }

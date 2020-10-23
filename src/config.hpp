@@ -2,5 +2,5 @@
 
 namespace config
 {
-	constexpr bool debug = true;
+    constexpr bool debug = true;
 }

@@ -8,20 +8,20 @@
 class Runtime
 {
 public:
-	Runtime();
+    Runtime();
 
-	void execute(const std::vector<mips::Instruction>& code);
-	
-	[[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _regs; }
-	[[nodiscard]] std::string get_debug() const;
-	
+    void execute(const std::vector<mips::Instruction>& code);
+    
+    [[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _regs; }
+    [[nodiscard]] std::string get_debug() const;
+    
 private:
-	mips::RegisterFile _regs;
-	Compiler::Allocator _allocator;
-	Compiler _compiler;
-	std::map<uint64_t, Compiler::Result> _blocks;
+    mips::RegisterFile _regs;
+    Compiler::Allocator _allocator;
+    Compiler _compiler;
+    std::map<uint64_t, Compiler::Result> _blocks;
 
-	static constexpr bool debug = config::debug;
-	std::stringstream _debug_stream;
+    static constexpr bool debug = config::debug;
+    std::stringstream _debug_stream;
 };
 

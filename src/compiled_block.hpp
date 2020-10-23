@@ -3,13 +3,13 @@
 
 struct CompiledBlock
 {
-	typedef void(*func)();
-	CompiledBlock();
-	CompiledBlock(func code, size_t size, CompilerConfig config);
-	
-	func code;
-	size_t size;
-	CompilerConfig config;
+    typedef void(*func)();
+    CompiledBlock();
+    CompiledBlock(func code, size_t size, CompilerConfig config);
+    
+    func code;
+    size_t size;
+    CompilerConfig config;
 
-	void operator()() const;
+    void operator()() const;
 };

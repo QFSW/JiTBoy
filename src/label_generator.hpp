@@ -5,9 +5,9 @@
 class LabelGenerator
 {
 public:
-	[[nodiscard]] std::string generate(const std::string& name);
+    [[nodiscard]] std::string generate(const std::string& name);
 
 private:
-	std::unordered_map<std::string, size_t> _registered_names;
+    std::unordered_map<std::string, size_t> _registered_names;
 };
 

@@ -68,7 +68,7 @@ int main_test()
 int main_x86()
 {
     using namespace x86;
-	
+    
     Assembler code;
     code.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::EAX, 0); // EAX = 0
     code.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::EDX, 11); // EDX = 11
@@ -82,14 +82,14 @@ int main_x86()
     code.instr_imm<Opcode::CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0);
     linker.resolve(label_skp, [&]{ return code.size(); }, [&](const int32_t offset)
     {
-		code.jump_cond<CondCode::E>(offset);
+        code.jump_cond<CondCode::E>(offset);
     });
 
     const auto label_start = label_gen.generate("loop_start");
     linker.label(label_start, code.size());
     code.instr<Opcode::ADD>(Register::EAX, Register::EDX); // EAX += EDX
     code.instr<Opcode::DEC, OpcodeExt::DEC>(Register::EBX); // EBX--
-	
+    
     code.instr_imm<Opcode::CMP_I, OpcodeExt::CMP_I>(Register::EBX, 0); // Jump back to routine if EBX == 0
     linker.resolve(label_start, [&] { return code.size(); }, [&](const int32_t offset)
     {
@@ -108,7 +108,7 @@ int main_x86()
         code.call(offset);
     });
     code.instr<Opcode::LEAVE>();
-	
+    
     code.instr<Opcode::RET>();
 
     std::cout << "Generated instructions of size " << code.size() << std::endl;
@@ -117,30 +117,30 @@ int main_x86()
     auto const buffer = allocator.alloc(code.size());
 
     std::cout << "Allocated executable memory - "
-			  << allocator.get_used() << "b, "
-			  << allocator.get_used() * 100 / static_cast<float>(allocator.get_total()) << "% used"
-			  << std::endl;
-	
+              << allocator.get_used() << "b, "
+              << allocator.get_used() * 100 / static_cast<float>(allocator.get_total()) << "% used"
+              << std::endl;
+    
     code.copy(buffer);
     linker.terminate_local(buffer);
-	
+    
     std::cout << "Globally resolved linker symbols" << std::endl;
     for (const auto& [label, ptr] : linker.global_map())
     {
         printf("%s: %p\n", label.c_str(), ptr);
     }
-	
+    
     allocator.commit(buffer, code.size());
 
     printf("\n");
-	for (size_t i = 0; i < code.size(); ++i)
-	{
+    for (size_t i = 0; i < code.size(); ++i)
+    {
         printf("%02x ", buffer[i]);
-	}
+    }
     printf("\n\n");
 
     std::cout << "Committed instructions to executable memory" << std::endl;
-	
+    
     volatile uint8_t ptr[4] = { 5, 10, 15, 20 };
     auto const function_ptr = reinterpret_cast<std::int32_t(*)(void*)>(buffer);
     auto const result = function_ptr(const_cast<uint8_t*>(ptr));
@@ -154,19 +154,19 @@ int main_x86()
     }
 
     std::cout << std::endl;
-	
+    
     return 0;
 }
 
 int main()
 {
-	try
-	{
+    try
+    {
         return main_test();
-	}
-	catch (std::exception &e)
-	{
+    }
+    catch (std::exception &e)
+    {
         std::cerr << "JiTBoy failed!\n" << e.what();
         std::exit(-1);
-	}
+    }
 }
