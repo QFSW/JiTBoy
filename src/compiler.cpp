@@ -9,7 +9,7 @@ Compiler::Compiler(mips::RegisterFile& regs, Allocator& allocator)
     , _jump_handler_obj(0)
 { }
 
-Compiler::Result Compiler::compile(const Input& block, const Config config)
+CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)
 {
     if constexpr (debug)
     {
@@ -68,9 +68,9 @@ Compiler::Result Compiler::compile(const Input& block, const Config config)
         }
     }
 
-    return Result
+    return CompiledBlock
     (
-        reinterpret_cast<Result::func>(buffer),
+        reinterpret_cast<CompiledBlock::func>(buffer),
         size,
         config
     );

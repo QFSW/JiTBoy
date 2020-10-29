@@ -13,14 +13,10 @@
 class Compiler
 {    
 public:
-    using Config = CompilerConfig;
-    using Input = SourceBlock;
-    using Result = CompiledBlock;
     using Allocator = ExecutableAllocator<4096>;
-    
     Compiler(mips::RegisterFile& regs, Allocator& allocator);
-    
-    Result compile(const Input& block, Config config);
+
+    CompiledBlock compile(const SourceBlock& block, CompilerConfig config);
     [[nodiscard]] std::string get_debug() const;
 
     template <typename T, void(T::* F)(int)>

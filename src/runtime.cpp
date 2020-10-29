@@ -9,10 +9,10 @@ void Runtime::execute(const std::vector<mips::Instruction>& code)
 {
     const SourceBlock input(code, 0);
 
-    Compiler::Result block;
+    CompiledBlock block;
     if (_blocks.find(input.addr) == _blocks.end())
     {
-        block = _compiler.compile(input, Compiler::Config());
+        block = _compiler.compile(input, CompilerConfig());
         _blocks[input.addr] = block;
 
         if constexpr (debug)
