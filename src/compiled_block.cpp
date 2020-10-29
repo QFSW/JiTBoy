@@ -5,7 +5,7 @@ CompiledBlock::CompiledBlock()
     , size(0)
 { }
 
-CompiledBlock::CompiledBlock(func code, size_t size, CompilerConfig config)
+CompiledBlock::CompiledBlock(const func code, const size_t size, const CompilerConfig config)
     : code(code)
     , size(size)
     , config(config)

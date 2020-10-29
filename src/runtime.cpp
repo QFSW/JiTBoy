@@ -7,23 +7,23 @@ Runtime::Runtime()
 
 void Runtime::execute(const std::vector<mips::Instruction>& code)
 {
-    const uint64_t addr = 0;
+    const SourceBlock input(code, 0);
 
     Compiler::Result block;
-    if (_blocks.find(addr) == _blocks.end())
+    if (_blocks.find(input.addr) == _blocks.end())
     {
-        block = _compiler.compile(code, Compiler::Config());
-        _blocks[addr] = block;
+        block = _compiler.compile(input, Compiler::Config());
+        _blocks[input.addr] = block;
 
         if constexpr (debug)
         {
             _debug_stream << _compiler.get_debug() << "\n"
-                          << strtools::catf("Registering compiled block %p to 0x%x\n", block.code, addr);
+                          << strtools::catf("Registering compiled block %p to 0x%x\n", block.code, input.addr);
         }
     }
-    else block = _blocks[addr];
+    else block = _blocks[input.addr];
 
-    if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", addr);
+    if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", input.addr);
     block();
 
     if constexpr (debug)

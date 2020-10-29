@@ -173,6 +173,7 @@
     <ClCompile Include="src/linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />
+    <ClCompile Include="src\source_block.cpp" />
     <ClCompile Include="src\utils\strtools.cpp" />
     <ClCompile Include="src/x86/x86.cpp" />
     <ClCompile Include="src/x86/assembler.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="src/vector_buffer.hpp" />
     <ClInclude Include="src\mips\instruction.hpp" />
     <ClInclude Include="src\mips\mips.hpp" />
+    <ClInclude Include="src\source_block.hpp" />
     <ClInclude Include="src\utils\functional.hpp" />
     <ClInclude Include="stc/strtools.hpp" />
     <ClInclude Include="src/x86/x86.hpp" />

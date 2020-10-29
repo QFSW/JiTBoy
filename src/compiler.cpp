@@ -9,14 +9,14 @@ Compiler::Compiler(mips::RegisterFile& regs, Allocator& allocator)
     , _jump_handler_obj(0)
 { }
 
-Compiler::Result Compiler::compile(const std::vector<mips::Instruction>& block, const Config config)
+Compiler::Result Compiler::compile(const Input& block, const Config config)
 {
     if constexpr (debug)
     {
         std::stringstream().swap(_debug_stream);
         _debug_stream << strtools::catf("Compiling basic block with -O%d\n", config.o_level);
 
-        for (const auto instr : block)
+        for (const auto instr : block.code)
         {
             _debug_stream << instr << "\n";
         }
@@ -28,7 +28,7 @@ Compiler::Result Compiler::compile(const std::vector<mips::Instruction>& block, 
     const auto addr = x86::Register::EDX;
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(addr, reg_file);
     
-    for (const auto instr : block)
+    for (const auto instr : block.code)
     {
         compile(instr);
     }
