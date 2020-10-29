@@ -4,6 +4,7 @@
 #include <x86/x86.hpp>
 #include <x86/assembler.hpp>
 #include <mips/instruction.hpp>
+#include <mips/encoding.hpp>
 #include <linker.hpp>
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
@@ -51,6 +52,7 @@ int main_test()
             mips::Register::r4,
             mips::Register::r5
         },
+        mips::decode_instruction(0x214a0032)
     };
 
     auto time = benchmark::measure([&]
