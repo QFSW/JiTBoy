@@ -1,6 +1,4 @@
 #include "encoding.hpp"
-
-#include <stdexcept>
 #include <utils/functional.hpp>
 
 namespace mips
@@ -76,16 +74,45 @@ namespace mips
 
     uint32_t encode_instruction(InstructionR instr)
     {
-        throw std::logic_error("Encoding R instructions is not implemented");
+        const uint8_t op = 0;
+        const uint8_t funct = static_cast<uint8_t>(instr.op);
+        const uint8_t rs = static_cast<uint8_t>(instr.src1);
+        const uint8_t rt = static_cast<uint8_t>(instr.src2);
+        const uint8_t rd = static_cast<uint8_t>(instr.dst);
+        const uint8_t shamt = instr.shamt;
+
+        uint32_t binary = 0;
+        binary |= funct;
+        binary |= op << (32 - 6);
+        binary |= rs << (32 - (6 + 5));
+        binary |= rt << (32 - (6 + 5 + 5));
+        binary |= shamt << (32 - (6 + 5 + 5 + 5 + 5));
+        return binary;
     }
 
-    uint32_t encode_instruction(InstructionI instr)
+    uint32_t encode_instruction(const InstructionI instr)
     {
-        throw std::logic_error("Encoding I instructions is not implemented");
+        const uint16_t constant = instr.constant;
+        const uint8_t op = static_cast<uint8_t>(instr.op);
+        const uint8_t rs = static_cast<uint8_t>(instr.src);
+        const uint8_t rt = static_cast<uint8_t>(instr.dst);
+
+        uint32_t binary = 0;
+        binary |= constant;
+        binary |= op << (32 - 6);
+        binary |= rs << (32 - (6 + 5));
+        binary |= rt << (32 - (6 + 5 + 5));
+        return binary;
     }
 
-    uint32_t encode_instruction(InstructionJ instr)
+    uint32_t encode_instruction(const InstructionJ instr)
     {
-        throw std::logic_error("Encoding J instructions is not implemented");
+        const uint32_t target = instr.target;
+        const uint8_t op = static_cast<uint8_t>(instr.op);
+
+        uint32_t binary = 0;
+        binary |= target;
+        binary |= op << (32 - 6);
+        return binary;
     }
 }
