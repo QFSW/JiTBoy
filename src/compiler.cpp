@@ -99,7 +99,7 @@ void Compiler::compile(const mips::InstructionR instr)
         case mips::OpcodeR::AND:  compile<x86::Opcode::AND>(instr); break;
         case mips::OpcodeR::OR:   compile<x86::Opcode::OR>(instr); break;
         case mips::OpcodeR::XOR:  compile<x86::Opcode::XOR>(instr); break;
-        default: throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(instr.op) + " is not supported");
+        default: throw_invalid_instr(instr);
     }
 }
 
@@ -122,7 +122,7 @@ void Compiler::compile(const mips::InstructionI instr)
         case mips::OpcodeI::ADDIU: compile<x86::Opcode::ADD_I, x86::OpcodeExt::ADD_I>(instr); break;
         case mips::OpcodeI::ADDI:  compile<x86::Opcode::ADD_I, x86::OpcodeExt::ADD_I>(instr); break;
         case mips::OpcodeI::ANDI:  compile<x86::Opcode::AND_I, x86::OpcodeExt::AND_I>(instr); break;
-        default: throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(instr.op) + " is not supported");
+        default: throw_invalid_instr(instr);
     }
 }
 
@@ -147,7 +147,19 @@ void Compiler::compile(const mips::InstructionI instr)
 
 void Compiler::compile(const mips::InstructionJ instr)
 {
-    // TODO: implement
+    switch (instr.op)
+    {
+        case mips::OpcodeJ::J:
+        case mips::OpcodeJ::JAL:
+        default: throw_invalid_instr(instr);
+    }
+}
+
+void Compiler::throw_invalid_instr(mips::Instruction instr)
+{
+    std::visit(functional::overload{
+        [&](const auto& x) { throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(x.op) + " is not supported"); }
+    }, instr);
 }
 
 constexpr uint32_t Compiler::calc_reg_offset(mips::Register reg)

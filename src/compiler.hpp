@@ -39,6 +39,8 @@ private:
     void compile(mips::InstructionI instr);
     void compile(mips::InstructionJ instr);
 
+    void throw_invalid_instr(mips::Instruction instr);
+
     static constexpr uint32_t calc_reg_offset(mips::Register reg);
 
     template <x86::Opcode Op = x86::Opcode::MOV>
