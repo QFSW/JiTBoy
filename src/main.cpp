@@ -5,6 +5,7 @@
 #include <x86/assembler.hpp>
 #include <mips/instruction.hpp>
 #include <mips/encoding.hpp>
+#include <mips/parsing.hpp>
 #include <linker.hpp>
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
@@ -27,8 +28,8 @@ int main_test()
         mips::InstructionI
         {
             mips::OpcodeI::ADDI,
-            mips::Register::r4,
-            mips::Register::r4,
+            mips::parse_register("$4"),
+            mips::parse_register("$4"),
             55
         },
         mips::InstructionI

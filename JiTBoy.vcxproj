@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\mips\parsing.cpp" />
     <ClCompile Include="src\compiled_block.cpp" />
     <ClCompile Include="src\mips\encoding.cpp" />
     <ClCompile Include="src\mips\instruction.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="src/x86/assembler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\mips\parsing.hpp" />
     <ClInclude Include="src\benchmark.hpp" />
     <ClInclude Include="src\compiled_block.hpp" />
     <ClInclude Include="src\compiler_config.hpp" />
