@@ -25,11 +25,12 @@ int main_test()
 {
     std::vector<mips::Instruction> code =
     {
+        mips::Parser::parse_instruction("addi $4 $4 55"),
         mips::InstructionI
         {
             mips::OpcodeI::ADDI,
-            mips::parse_register("$4"),
-            mips::parse_register("$4"),
+            mips::Parser::parse_register("$4"),
+            mips::Parser::parse_register("$4"),
             55
         },
         mips::InstructionI

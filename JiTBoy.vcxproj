@@ -176,9 +176,9 @@
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />
     <ClCompile Include="src\source_block.cpp" />
-    <ClCompile Include="src\utils\strtools.cpp" />
     <ClCompile Include="src/x86/x86.cpp" />
     <ClCompile Include="src/x86/assembler.cpp" />
+    <ClCompile Include="src\utils\strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\mips\parsing.hpp" />

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <sstream>
+#include <vector>
 
 namespace strtools
 {
@@ -19,5 +20,17 @@ namespace strtools
 		ss << t;
 		return ss.str();
 	}
+
+	template <typename Out>
+	void split(const std::string& str, char delim, Out result)
+	{
+		std::istringstream iss(str);
+		std::string item;
+		while (std::getline(iss, item, delim)) {
+			*result++ = item;
+		}
+	}
+
+	std::vector<std::string> split(const std::string& str, char delim);
 }
 

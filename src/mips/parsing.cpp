@@ -3,9 +3,41 @@
 #include <map>
 #include <stdexcept>
 
+#include <utils/strtools.hpp>
+
 namespace mips
 {
-    Register parse_register(const std::string& reg)
+    Instruction Parser::parse_instruction(const std::string& instr)
+    {
+        const auto parts = strtools::split(instr, ' ');
+
+        if (parts.empty())
+            throw std::logic_error("Cannot parse empty instruction");
+
+        const auto& op = parts[0];
+
+        if (op == "add")  return parse_instruction_r(OpcodeR::ADD, parts);
+        if (op == "addu") return parse_instruction_r(OpcodeR::ADDU, parts);
+
+        throw std::logic_error("Could not parse opcode " + op);
+    }
+
+    InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::vector<std::string>& parts)
+    {
+        throw std::logic_error("Parsing R type instructions not implemented");
+    }
+
+    InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::vector<std::string>& parts)
+    {
+        throw std::logic_error("Parsing I type instructions not implemented");
+    }
+
+    InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::vector<std::string>& parts)
+    {
+        throw std::logic_error("Parsing J type instructions not implemented");
+    }
+
+    Register Parser::parse_register(const std::string& reg)
     {
         static const std::map<std::string, Register> reg_mapping =
         {
