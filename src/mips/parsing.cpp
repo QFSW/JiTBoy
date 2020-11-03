@@ -40,7 +40,46 @@ namespace mips
             { "$28", Register::r28 },
             { "$29", Register::r29 },
             { "$30", Register::r30 },
-            { "$31", Register::r31 }
+            { "$31", Register::r31 },
+
+            { "$zero", Register::zero },
+            { "$at", Register::at },
+
+            { "$v0", Register::v0 },
+            { "$v1", Register::v1 },
+
+            { "$a0", Register::a0 },
+            { "$a1", Register::a1 },
+            { "$a2", Register::a2 },
+            { "$a3", Register::a3 },
+
+            { "$t0", Register::t0 },
+            { "$t1", Register::t1 },
+            { "$t2", Register::t2 },
+            { "$t3", Register::t3 },
+            { "$t4", Register::t4 },
+            { "$t5", Register::t5 },
+            { "$t6", Register::t6 },
+            { "$t7", Register::t7 },
+            { "$t8", Register::t8 },
+            { "$t9", Register::t9 },
+
+            { "$s0", Register::s0 },
+            { "$s1", Register::s1 },
+            { "$s2", Register::s2 },
+            { "$s3", Register::s3 },
+            { "$s4", Register::s4 },
+            { "$s5", Register::s5 },
+            { "$s6", Register::s6 },
+            { "$s7", Register::s7 },
+
+            { "$k0", Register::k0 },
+            { "$k1", Register::k1 },
+
+            { "$gp", Register::gp },
+            { "$sp", Register::sp },
+            { "$fp", Register::fp },
+            { "$ra", Register::ra },
         };
 
         if (reg_mapping.find(reg) == reg_mapping.end())
