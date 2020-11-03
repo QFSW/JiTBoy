@@ -16,16 +16,27 @@ namespace mips
 
         const auto& op = parts[0];
 
-        if (op == "add")  return parse_instruction_r(OpcodeR::ADD, instr, parts);
-        if (op == "addu") return parse_instruction_r(OpcodeR::ADDU, instr, parts);
-        if (op == "sub")  return parse_instruction_r(OpcodeR::SUB, instr, parts);
-        if (op == "subu") return parse_instruction_r(OpcodeR::SUBU, instr, parts);
-        if (op == "and")  return parse_instruction_r(OpcodeR::AND, instr, parts);
-        if (op == "or")   return parse_instruction_r(OpcodeR::OR, instr, parts);
-        if (op == "nor")  return parse_instruction_r(OpcodeR::NOR, instr, parts);
-        if (op == "xor")  return parse_instruction_r(OpcodeR::XOR, instr, parts);
+        if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr, parts);
+        if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr, parts);
+        if (op == "sub")    return parse_instruction_r(OpcodeR::SUB, instr, parts);
+        if (op == "subu")   return parse_instruction_r(OpcodeR::SUBU, instr, parts);
+        if (op == "and")    return parse_instruction_r(OpcodeR::AND, instr, parts);
+        if (op == "or")     return parse_instruction_r(OpcodeR::OR, instr, parts);
+        if (op == "nor")    return parse_instruction_r(OpcodeR::NOR, instr, parts);
+        if (op == "xor")    return parse_instruction_r(OpcodeR::XOR, instr, parts);
 
-        if (op == "addi") return parse_instruction_i(OpcodeI::ADDI, instr, parts);
+        if (op == "mult")   return parse_instruction_r_no_dst(OpcodeR::MULT, instr, parts);
+        if (op == "multu")  return parse_instruction_r_no_dst(OpcodeR::MULTU, instr, parts);
+        if (op == "div")    return parse_instruction_r_no_dst(OpcodeR::DIV, instr, parts);
+        if (op == "divu")   return parse_instruction_r_no_dst(OpcodeR::DIVU, instr, parts);
+
+        if (op == "addi")   return parse_instruction_i(OpcodeI::ADDI, instr, parts);
+        if (op == "addiu")  return parse_instruction_i(OpcodeI::ADDIU, instr, parts);
+        if (op == "andi")   return parse_instruction_i(OpcodeI::ANDI, instr, parts);
+        if (op == "ori")    return parse_instruction_i(OpcodeI::ORI, instr, parts);
+        if (op == "xori")   return parse_instruction_i(OpcodeI::XORI, instr, parts);
+        if (op == "slti")   return parse_instruction_i(OpcodeI::SLTI, instr, parts);
+        if (op == "sltiu")  return parse_instruction_i(OpcodeI::SLTIU, instr, parts);
 
         throw std::logic_error("Could not parse opcode " + op);
     }
@@ -51,7 +62,7 @@ namespace mips
     InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts)
     {
         if (parts.size() != 4)
-            throw std::logic_error("Could not parse R type instructions should have 4 parts - cannot parse " + instr);
+            throw std::logic_error("This R type instruction should have 4 parts - cannot parse " + instr);
 
         Register dst = parse_register(parts[1]);
         Register src1 = parse_register(parts[2]);
@@ -67,10 +78,28 @@ namespace mips
         };
     }
 
+    InstructionR Parser::parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts)
+    {
+        if (parts.size() != 3)
+            throw std::logic_error("This R type instruction should have 3 parts - cannot parse " + instr);
+
+        Register src1 = parse_register(parts[1]);
+        Register src2 = parse_register(parts[2]);
+
+        return InstructionR
+        {
+            .op = opcode,
+            .dst = Register::zero,
+            .src1 = src1,
+            .src2 = src2,
+            .shamt = 0
+        };
+    }
+
     InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts)
     {
         if (parts.size() != 4)
-            throw std::logic_error("Could not parse R type instructions should have 4 parts - cannot parse " + instr);
+            throw std::logic_error("This I type instruction should have 4 parts - cannot parse " + instr);
 
         Register dst = parse_register(parts[1]);
         Register src = parse_register(parts[2]);
