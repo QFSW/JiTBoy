@@ -16,23 +16,76 @@ namespace mips
 
         const auto& op = parts[0];
 
-        if (op == "add")  return parse_instruction_r(OpcodeR::ADD, parts);
-        if (op == "addu") return parse_instruction_r(OpcodeR::ADDU, parts);
+        if (op == "add")  return parse_instruction_r(OpcodeR::ADD, instr, parts);
+        if (op == "addu") return parse_instruction_r(OpcodeR::ADDU, instr, parts);
+        if (op == "sub")  return parse_instruction_r(OpcodeR::SUB, instr, parts);
+        if (op == "subu") return parse_instruction_r(OpcodeR::SUBU, instr, parts);
+        if (op == "and")  return parse_instruction_r(OpcodeR::AND, instr, parts);
+        if (op == "or")   return parse_instruction_r(OpcodeR::OR, instr, parts);
+        if (op == "nor")  return parse_instruction_r(OpcodeR::NOR, instr, parts);
+        if (op == "xor")  return parse_instruction_r(OpcodeR::XOR, instr, parts);
+
+        if (op == "addi") return parse_instruction_i(OpcodeI::ADDI, instr, parts);
 
         throw std::logic_error("Could not parse opcode " + op);
     }
 
-    InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::vector<std::string>& parts)
+    std::vector<Instruction> Parser::parse_instructions(const std::string& assembly)
     {
-        throw std::logic_error("Parsing R type instructions not implemented");
+        const auto lines = strtools::split(assembly, '\n');
+
+        std::vector<Instruction> instrs;
+        instrs.reserve(lines.size());
+
+        for (const auto& line : lines)
+        {
+            if (!line.empty())
+            {
+                instrs.push_back(parse_instruction(line));
+            }
+        }
+
+        return instrs;
     }
 
-    InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::vector<std::string>& parts)
+    InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts)
     {
-        throw std::logic_error("Parsing I type instructions not implemented");
+        if (parts.size() != 4)
+            throw std::logic_error("Could not parse R type instructions should have 4 parts - cannot parse " + instr);
+
+        Register dst = parse_register(parts[1]);
+        Register src1 = parse_register(parts[2]);
+        Register src2 = parse_register(parts[3]);
+
+        return InstructionR
+        {
+            .op = opcode,
+            .dst = dst,
+            .src1 = src1,
+            .src2 = src2,
+            .shamt = 0
+        };
     }
 
-    InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::vector<std::string>& parts)
+    InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts)
+    {
+        if (parts.size() != 4)
+            throw std::logic_error("Could not parse R type instructions should have 4 parts - cannot parse " + instr);
+
+        Register dst = parse_register(parts[1]);
+        Register src = parse_register(parts[2]);
+        uint16_t constant = parse_constant(parts[3]);
+
+        return InstructionI
+        {
+            .op = opcode,
+            .dst = dst,
+            .src = src,
+            .constant = constant
+        };
+    }
+
+    InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr, const std::vector<std::string>& parts)
     {
         throw std::logic_error("Parsing J type instructions not implemented");
     }
@@ -120,5 +173,10 @@ namespace mips
         }
 
         return reg_mapping.at(reg);
+    }
+
+    uint16_t Parser::parse_constant(const std::string& value)
+    {
+        return std::atoi(value.c_str());
     }
 }

@@ -23,39 +23,13 @@ uint32_t return_8()
 
 int main_test()
 {
-    std::vector<mips::Instruction> code =
-    {
-        mips::Parser::parse_instruction("addi $4 $4 55"),
-        mips::InstructionI
-        {
-            mips::OpcodeI::ADDI,
-            mips::Parser::parse_register("$4"),
-            mips::Parser::parse_register("$4"),
-            55
-        },
-        mips::InstructionI
-        {
-            mips::OpcodeI::ADDI,
-            mips::Register::r5,
-            mips::Register::r5,
-            5
-        },
-        mips::InstructionR
-        {
-            mips::OpcodeR::ADD,
-            mips::Register::r3,
-            mips::Register::r4,
-            mips::Register::r5
-        },
-        mips::InstructionR
-        {
-            mips::OpcodeR::ADD,
-            mips::Register::r0,
-            mips::Register::r4,
-            mips::Register::r5
-        },
-        mips::decode_instruction(0x214a0032)
-    };
+    const auto assembly =
+        "addi $4 $4 55\n"
+        "addi $5 $5 5\n"
+        "add $3 $4 $5\n"
+        "add $0 $4 $5\n";
+
+    const auto code = mips::Parser::parse_instructions(assembly);
 
     auto time = benchmark::measure([&]
     {
