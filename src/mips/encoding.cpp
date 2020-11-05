@@ -68,7 +68,7 @@ namespace mips
     uint32_t encode_instruction(Instruction instr)
     {
         return std::visit(functional::overload{
-            [&](const auto& x) { return encode_instruction(x); }
+            [](const auto& x) { return encode_instruction(x); }
         }, instr);
     }
 
