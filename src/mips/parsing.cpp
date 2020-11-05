@@ -26,6 +26,9 @@ namespace mips
         if (op == "xor")    return parse_instruction_r(OpcodeR::XOR, instr, parts);
         if (op == "slt")    return parse_instruction_r(OpcodeR::SLT, instr, parts);
         if (op == "sltu")   return parse_instruction_r(OpcodeR::SLTU, instr, parts);
+        if (op == "sllv")   return parse_instruction_r(OpcodeR::SLLV, instr, parts);
+        if (op == "srav")   return parse_instruction_r(OpcodeR::SRAV, instr, parts);
+        if (op == "srlv")   return parse_instruction_r(OpcodeR::SRLV, instr, parts);
 
         if (op == "mult")   return parse_instruction_r_no_dst(OpcodeR::MULT, instr, parts);
         if (op == "multu")  return parse_instruction_r_no_dst(OpcodeR::MULTU, instr, parts);
