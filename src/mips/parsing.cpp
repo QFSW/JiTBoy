@@ -43,6 +43,9 @@ namespace mips
         if (op == "slti")   return parse_instruction_i(OpcodeI::SLTI, instr, parts);
         if (op == "sltiu")  return parse_instruction_i(OpcodeI::SLTIU, instr, parts);
 
+        if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr, parts);
+        if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr, parts);
+
         throw std::logic_error("Could not parse opcode " + op);
     }
 
@@ -121,7 +124,16 @@ namespace mips
 
     InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr, const std::vector<std::string>& parts)
     {
-        throw std::logic_error("Parsing J type instructions not implemented");
+        if (parts.size() != 2)
+            throw std::logic_error("This J type instruction should have 2 parts - cannot parse " + instr);
+
+        uint32_t target = parse_constant(parts[1]);
+
+        return InstructionJ
+        {
+            .op = opcode,
+            .target = target
+        };
     }
 
     Register Parser::parse_register(const std::string& reg)
