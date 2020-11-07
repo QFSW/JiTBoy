@@ -34,10 +34,10 @@ private:
 
     static constexpr x86::Register addr_reg = x86::Register::EDX;
 
-    void compile(mips::Instruction instr);
-    void compile(mips::InstructionR instr);
-    void compile(mips::InstructionI instr);
-    void compile(mips::InstructionJ instr);
+    void compile(mips::Instruction instr, uint32_t addr);
+    void compile(mips::InstructionR instr, uint32_t addr);
+    void compile(mips::InstructionI instr, uint32_t addr);
+    void compile(mips::InstructionJ instr, uint32_t addr);
 
     void throw_invalid_instr(mips::Instruction instr);
 

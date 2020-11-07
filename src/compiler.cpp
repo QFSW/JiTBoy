@@ -27,10 +27,10 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
     const auto reg_file = reinterpret_cast<uint32_t>(_regs.data());
     const auto addr = x86::Register::EDX;
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(addr, reg_file);
-    
-    for (const auto& instr : block.code)
+
+    for (uint32_t i = 0; i < block.code.size(); i++)
     {
-        compile(instr);
+        compile(block.code[i], block.addr + i * 4);
     }
 
     _assembler.instr<x86::Opcode::RET>();
@@ -81,14 +81,14 @@ std::string Compiler::get_debug() const
     return _debug_stream.str();
 }
 
-void Compiler::compile(const mips::Instruction instr)
+void Compiler::compile(const mips::Instruction instr, const uint32_t addr)
 {
     std::visit(functional::overload{
-        [&](const auto& x) { compile(x); }
+        [&](const auto& x) { compile(x, addr); }
     }, instr);
 }
 
-void Compiler::compile(const mips::InstructionR instr)
+void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
 {
     switch (instr.op)
     {
@@ -115,7 +115,7 @@ void Compiler::compile(const mips::InstructionR instr)
     compile_reg_write(instr.dst, acc);
 }
 
-void Compiler::compile(const mips::InstructionI instr)
+void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
 {
     switch (instr.op)
     {
@@ -147,7 +147,7 @@ void Compiler::compile(const mips::InstructionI instr)
     }
 }
 
-void Compiler::compile(const mips::InstructionJ instr)
+void Compiler::compile(const mips::InstructionJ instr, uint32_t addr)
 {
     switch (instr.op)
     {
