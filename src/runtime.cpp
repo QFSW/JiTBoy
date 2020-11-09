@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <mips/utils.hpp>
 
 Runtime::Runtime()
     : _compiler(_regs, _allocator)
@@ -28,7 +29,18 @@ SourceBlock Runtime::partition_block(const uint32_t addr) const
         throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
 
     const size_t start_index = (addr - instruction_mem_addr) / 4;
-    auto code = std::span<const mips::Instruction>(_source.data() + start_index, _source.size() - start_index);
+    uint32_t end_index = start_index;
+    for (; end_index < _source.size(); end_index++)
+    {
+        const auto& instr = _source[end_index];
+        if (mips::utils::is_branch_instr(instr))
+        {
+            end_index++;
+            break;
+        }
+    }
+
+    auto code = std::span<const mips::Instruction>(_source.data() + start_index, end_index - start_index);
     return SourceBlock(std::move(code), addr);
 }
 
@@ -63,7 +75,7 @@ void Runtime::execute(const uint32_t addr)
     {
         const CompiledBlock block = get_or_compile_block(_current_pc);
 
-        if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", addr);
+        if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", _current_pc);
         _current_pc = block();
 
         if constexpr (debug)

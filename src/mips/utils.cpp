@@ -4,7 +4,7 @@
 
 namespace mips::utils
 {
-    constexpr bool is_branch_instr(const Instruction& instr)
+    bool is_branch_instr(const Instruction& instr)
     {
         return std::visit(functional::overload{
             [](const InstructionR& x)
