@@ -25,9 +25,19 @@ int main_test()
         "addi $5 $5 5\n"
         "add $3 $4 $5\n"
         "add $0 $4 $5\n"
-        "jal 0\n";
+        "jal 280\n"
+
+        "addi $3 $3 0\n"
+        "addi $1 $1 1\n";
 
     auto code = mips::Parser::parse_instructions(assembly);
+
+    std::cout << "Loaded assembly\n";
+    for (const auto& instr : code)
+    {
+        std::cout << instr << "\n";
+    }
+    std::cout << "\n";
 
     auto time = benchmark::measure([&]
     {

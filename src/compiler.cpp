@@ -13,7 +13,7 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
     if constexpr (debug)
     {
         std::stringstream().swap(_debug_stream);
-        _debug_stream << strtools::catf("Compiling basic block with -O%d\n", config.o_level);
+        _debug_stream << strtools::catf("Compiling block 0x%x with -O%d\n", block.addr, config.o_level);
 
         for (const auto& instr : block.code)
         {

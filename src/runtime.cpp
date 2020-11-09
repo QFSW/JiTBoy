@@ -28,8 +28,8 @@ SourceBlock Runtime::partition_block(const uint32_t addr) const
         throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
 
     const size_t start_index = (addr - instruction_mem_addr) / 4;
-
-    return SourceBlock(_source, addr);
+    auto code = std::span<const mips::Instruction>(_source.data() + start_index, _source.size() - start_index);
+    return SourceBlock(std::move(code), addr);
 }
 
 CompiledBlock Runtime::get_or_compile_block(const uint32_t addr)
@@ -58,18 +58,23 @@ void Runtime::execute(std::vector<mips::Instruction>&& code)
 
 void Runtime::execute(const uint32_t addr)
 {
-    const CompiledBlock block = get_or_compile_block(addr);
-
-    if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", addr);
-    _current_pc = block();
-
-    if constexpr (debug)
+    _current_pc = addr;
+    while (valid_pc(_current_pc))
     {
-        _debug_stream << "Register file (zeroed registers omitted)\n";
-        for (int i = 0; i < _regs.size(); i++)
+        const CompiledBlock block = get_or_compile_block(_current_pc);
+
+        if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", addr);
+        _current_pc = block();
+
+        if constexpr (debug)
         {
-            const auto reg = _regs[i];
-            if (reg > 0) _debug_stream << strtools::catf("$%d: %d\n", i, reg);
+            _debug_stream << "Register file (zeroed registers omitted)\n";
+            for (int i = 0; i < _regs.size(); i++)
+            {
+                const auto reg = _regs[i];
+                if (reg > 0) _debug_stream << strtools::catf("$%d: %d\n", i, reg);
+            }
+            _debug_stream << "\n";
         }
     }
 }
