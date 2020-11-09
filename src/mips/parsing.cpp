@@ -132,7 +132,7 @@ namespace mips
         return InstructionJ
         {
             .op = opcode,
-            .target = target
+            .target = target >> 2
         };
     }
 

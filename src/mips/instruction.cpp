@@ -28,7 +28,7 @@ namespace mips
     std::ostream& operator<<(std::ostream& os, const InstructionJ& instr)
     {
         os << opcode_to_string(instr.op)
-        << " " << instr.target;
+        << " " << (instr.target << 2);
 
         return os;
     }

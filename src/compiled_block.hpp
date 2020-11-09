@@ -1,9 +1,11 @@
 #pragma once
+
+#include <cstdint>
 #include <compiler_config.hpp>
 
 struct CompiledBlock
 {
-    typedef void(*func)();
+    typedef uint32_t(__fastcall *func)();
     CompiledBlock();
     CompiledBlock(func code, size_t size, CompilerConfig config);
     
@@ -11,5 +13,5 @@ struct CompiledBlock
     size_t size;
     CompilerConfig config;
 
-    void operator()() const;
+    uint32_t operator()() const;
 };

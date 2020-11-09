@@ -6,7 +6,6 @@
 Compiler::Compiler(mips::RegisterFile& regs, Allocator& allocator)
     : _regs(regs)
     , _allocator(allocator)
-    , _jump_handler_obj(0)
 { }
 
 CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)
@@ -33,7 +32,8 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
         compile(block.code[i], block.addr + i * 4);
     }
 
-    _assembler.instr<x86::Opcode::RET>();
+    const uint32_t target = block.addr + block.code.size() * 4;
+    compile_jump(target);
 
     if constexpr (debug)
     {
@@ -63,7 +63,7 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
             _debug_stream << "\nGlobally resolved linker symbols\n";
             for (const auto& [label, ptr] : _linker.global_map())
             {
-                _debug_stream << strtools::catf("%s: %p\n", label.c_str(), ptr);
+                _debug_stream << strtools::catf("%s: 0x%p\n", label.c_str(), ptr);
             }
         }
     }
@@ -135,7 +135,7 @@ void Compiler::compile(const mips::InstructionI instr)
 
     if (instr.dst == instr.src)
     {
-        _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, instr.constant, calc_reg_offset(instr.src));
+        compile_reg_write<Op, Ext>(instr.dst, instr.constant);
     }
     else
     {
@@ -147,12 +147,22 @@ void Compiler::compile(const mips::InstructionI instr)
     }
 }
 
-void Compiler::compile(const mips::InstructionJ instr, uint32_t addr)
+void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
 {
     switch (instr.op)
     {
-        case mips::OpcodeJ::J:
         case mips::OpcodeJ::JAL:
+        {
+            const uint32_t link = addr + 4;
+            compile_reg_write(mips::Register::ra, link);
+            [[fallthrough]];
+        }
+        case mips::OpcodeJ::J:
+        {
+            const uint32_t target = (0xF0000000 & addr) | (instr.target << 2);
+            compile_jump(target);
+            break;
+        }
         default: throw_invalid_instr(instr);
     }
 }
@@ -181,6 +191,12 @@ void Compiler::compile_reg_write(const mips::Register dst, const x86::Register s
     _assembler.instr<Op, x86::InstrMode::RM>(addr_reg, src, calc_reg_offset(dst));
 }
 
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_reg_write(const mips::Register dst, const uint32_t imm)
+{
+    _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, imm, calc_reg_offset(dst));
+}
+
 void Compiler::compile_call(void (*const f)())
 {
     const auto label = _label_generator.generate("func");
@@ -191,16 +207,8 @@ void Compiler::compile_call(void (*const f)())
     });
 }
 
-void Compiler::compile_jump(const uint32_t addr)
+void Compiler::compile_jump(const uint32_t target)
 {
-    if (!_jump_handler_obj)
-        throw std::logic_error("Cannot compile a jump as no jump handler has been set");
-    
-    using namespace x86;
-    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, _jump_handler_obj);
-    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::EDX, addr);
-    _linker.resolve(_jump_handler_label, [&] { return _assembler.size(); }, [&](const int32_t offset)
-    {
-        _assembler.call(offset);
-    });
+    _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target);
+    _assembler.instr<x86::Opcode::RET>();
 }

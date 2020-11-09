@@ -5,6 +5,7 @@
 
 Runtime::Runtime()
     : _compiler(_regs, _allocator)
+    , _current_pc(instruction_mem_addr)
 { }
 
 void Runtime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
@@ -12,11 +13,21 @@ void Runtime::load_source(std::vector<mips::Instruction>&& code, const uint32_t 
     _source = std::move(code);
 }
 
+bool Runtime::valid_pc(const uint32_t addr) const noexcept
+{
+    if (addr < instruction_mem_addr)
+        return false;
+    if (addr >= instruction_mem_addr + _source.size() * 4)
+        return false;
+    return true;
+}
+
 SourceBlock Runtime::partition_block(const uint32_t addr) const
 {
-    const size_t index = (addr - instruction_mem_addr) / 4;
-    if (index >= _source.size())
+    if (!valid_pc(addr))
         throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
+
+    const size_t start_index = (addr - instruction_mem_addr) / 4;
 
     return SourceBlock(_source, addr);
 }
@@ -33,7 +44,7 @@ CompiledBlock Runtime::get_or_compile_block(const uint32_t addr)
     if constexpr (debug)
     {
         _debug_stream << _compiler.get_debug() << "\n"
-            << strtools::catf("Registering compiled block %p to 0x%x\n", block.code, input.addr);
+            << strtools::catf("Registering compiled block 0x%p to 0x%x\n", block.code, input.addr);
     }
 
     return block;
@@ -50,7 +61,7 @@ void Runtime::execute(const uint32_t addr)
     const CompiledBlock block = get_or_compile_block(addr);
 
     if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", addr);
-    block();
+    _current_pc = block();
 
     if constexpr (debug)
     {

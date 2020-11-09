@@ -24,7 +24,8 @@ int main_test()
         "addi $4 $4 55\n"
         "addi $5 $5 5\n"
         "add $3 $4 $5\n"
-        "add $0 $4 $5\n";
+        "add $0 $4 $5\n"
+        "jal 0\n";
 
     auto code = mips::Parser::parse_instructions(assembly);
 

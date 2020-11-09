@@ -18,9 +18,6 @@ public:
 
     CompiledBlock compile(const SourceBlock& block, CompilerConfig config);
     [[nodiscard]] std::string get_debug() const;
-
-    template <typename T, void(T::* F)(int)>
-    void set_jump_handler(T& obj);
     
 private:
     LabelGenerator _label_generator;
@@ -29,10 +26,8 @@ private:
     mips::RegisterFile& _regs;
     Allocator& _allocator;
 
-    std::string _jump_handler_label;
-    uint32_t _jump_handler_obj;
-
     static constexpr x86::Register addr_reg = x86::Register::EDX;
+    static constexpr x86::Register return_reg = x86::Register::EAX;
 
     void compile(mips::Instruction instr, uint32_t addr);
     void compile(mips::InstructionR instr, uint32_t addr);
@@ -49,6 +44,9 @@ private:
     template <x86::Opcode Op = x86::Opcode::MOV>
     void compile_reg_write(mips::Register dst, x86::Register src);
 
+    template <x86::Opcode Op = x86::Opcode::MOV_I, x86::OpcodeExt Ext = x86::OpcodeExt::MOV_I>
+    void compile_reg_write(mips::Register dst, uint32_t imm);
+
     template <x86::Opcode Op>
     void compile(mips::InstructionR instr);
 
@@ -56,7 +54,7 @@ private:
     void compile(mips::InstructionI instr);
 
     void compile_call(void (*f)());
-    void compile_jump(uint32_t addr);
+    void compile_jump(uint32_t target);
 
     template <typename T, void(T::* F)()>
     void compile_call(T& obj);
@@ -70,14 +68,6 @@ private:
     static constexpr bool debug = config::debug;
     std::stringstream _debug_stream;
 };
-
-template <typename T, void(T::* F)(int)>
-void Compiler::set_jump_handler(T& obj)
-{
-    _jump_handler_obj = reinterpret_cast<uint32_t>(&obj);
-    _jump_handler_label = _label_generator.generate("jump_handler");
-    _linker.label_global(_jump_handler_label, &proxy_call_arg<T, int, F>);
-}
 
 template <typename T, void(T::* F)()>
 void Compiler::compile_call(T& obj)
