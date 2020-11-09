@@ -1,16 +1,13 @@
 #include <iostream>
 #include <fstream>
 
-#include <x86/x86.hpp>
-#include <x86/assembler.hpp>
-#include <mips/instruction.hpp>
-#include <mips/encoding.hpp>
 #include <mips/parsing.hpp>
 #include <linker.hpp>
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
 #include <runtime.hpp>
 #include <benchmark.hpp>
+#include <utils/utils.hpp>
 
 ExecutableAllocator<4096> allocator;
 LabelGenerator label_gen;
@@ -29,12 +26,12 @@ int main_test()
         "add $3 $4 $5\n"
         "add $0 $4 $5\n";
 
-    const auto code = mips::Parser::parse_instructions(assembly);
+    auto code = mips::Parser::parse_instructions(assembly);
 
     auto time = benchmark::measure([&]
     {
         Runtime runtime;
-        runtime.execute(code);
+        runtime.execute(utils::copy(code));
         std::cout << runtime.get_debug();
     });
 
