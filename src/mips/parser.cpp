@@ -7,6 +7,8 @@
 
 namespace mips
 {
+    const std::regex Parser::comment_regex(R"(\s*;.+)");
+
     Instruction Parser::parse_instruction(const std::string& instr)
     {
         const auto parts = strtools::split(instr, ' ');
@@ -58,10 +60,10 @@ namespace mips
 
         for (const auto& line : lines)
         {
-            if (!line.empty())
-            {
-                instrs.push_back(parse_instruction(line));
-            }
+            if (line.empty()) continue;
+            if (std::regex_match(line, comment_regex)) continue;
+
+            instrs.push_back(parse_instruction(line));
         }
 
         return instrs;
