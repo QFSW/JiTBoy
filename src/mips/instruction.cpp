@@ -9,10 +9,23 @@ namespace mips
 {
     std::ostream& operator<<(std::ostream& os, const InstructionR& instr)
     {
-        os << opcode_to_string(instr.op)
-        << " " << reg_to_string(instr.dst)
-        << " " << reg_to_string(instr.src1)
-        << " " << reg_to_string(instr.src2);
+        switch (instr.op)
+        {
+            case OpcodeR::JR:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.src1);
+                break;
+            }
+            default:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.dst)
+                << " " << reg_to_string(instr.src1)
+                << " " << reg_to_string(instr.src2);
+                break;
+            }
+        }
 
         return os;
     }
