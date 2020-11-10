@@ -1,17 +1,9 @@
 #include <iostream>
-#include <fstream>
 
-#include <mips/parser.hpp>
-#include <linker.hpp>
-#include <executable_allocator.hpp>
-#include <label_generator.hpp>
 #include <runtime.hpp>
 #include <benchmark.hpp>
 #include <utils/utils.hpp>
-
-ExecutableAllocator<4096> allocator;
-LabelGenerator label_gen;
-Linker linker;
+#include <mips/loader.hpp>
 
 uint32_t return_8()
 {
@@ -20,17 +12,8 @@ uint32_t return_8()
 
 int main_test()
 {
-    const auto assembly =
-        "addi $4 $4 55\n"
-        "addi $5 $5 5\n"
-        "add $3 $4 $5\n"
-        "add $0 $4 $5\n"
-        "jal 280\n"
-
-        "addi $3 $3 0\n"
-        "addi $1 $1 1\n";
-
-    auto code = mips::Parser::parse_instructions(assembly);
+    constexpr auto asm_path = "resources/test_main.s";
+    auto code = mips::Loader::load_assembly(asm_path);
 
     std::cout << "Loaded assembly\n";
     for (const auto& instr : code)
