@@ -25,8 +25,9 @@ int main_test()
     auto time = benchmark::measure([&]
     {
         Runtime runtime;
+
+        auto _ = utils::finally([&] { std::cout << runtime.get_debug(); });
         runtime.execute(utils::copy(code));
-        std::cout << runtime.get_debug();
     });
 
     std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;
