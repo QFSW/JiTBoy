@@ -1,6 +1,8 @@
 #include "instruction.hpp"
 
 #include <ostream>
+
+#include <utils/strtools.hpp>
 #include <utils/functional.hpp>
 
 namespace mips
@@ -28,7 +30,7 @@ namespace mips
     std::ostream& operator<<(std::ostream& os, const InstructionJ& instr)
     {
         os << opcode_to_string(instr.op)
-        << " " << (instr.target << 2);
+        << strtools::catf(" 0x%x", instr.target << 2);
 
         return os;
     }
