@@ -244,6 +244,12 @@ namespace mips
 
     uint16_t Parser::parse_constant(const std::string& value)
     {
-        return std::atoi(value.c_str());
+        if (value.starts_with("0x"))
+            return std::stoull(&value[2], nullptr, 16);
+
+        if (value.starts_with("0b"))
+            return std::stoull(&value[2], nullptr, 10);
+
+        return std::stoull(value, nullptr, 10);
     }
 }

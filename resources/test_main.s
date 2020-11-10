@@ -12,4 +12,10 @@ jr $0
 addi $3 $0 0
 addi $1 $0 1
 addi $6 $0 6
+jal 0x12c
 jr $0
+
+
+;func
+addi $1 $1 100
+jr $ra
