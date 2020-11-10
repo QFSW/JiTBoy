@@ -3,7 +3,7 @@ addi $4 $4 55
 addi $5 $5 5
 add $3 $4 $5
 add $0 $4 $5
-jal 280
+jal 284
 
 ; block 2
 jr $0

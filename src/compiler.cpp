@@ -1,7 +1,7 @@
 #include "compiler.hpp"
 
+#include <mips/utils.hpp>
 #include <utils/functional.hpp>
-#include <iostream>
 
 Compiler::Compiler(mips::RegisterFile& regs, Allocator& allocator)
     : _regs(regs)
@@ -32,8 +32,11 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
         compile(block.code[i], block.addr + i * 4);
     }
 
-    const uint32_t target = block.addr + block.code.size() * 4;
-    compile_jump(target);
+    if (!mips::utils::is_branch_instr(block.code.back()))
+    {
+        const uint32_t target = block.addr + block.code.size() * 4;
+        compile_jump(target);
+    }
 
     if constexpr (debug)
     {
