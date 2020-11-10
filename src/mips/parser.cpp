@@ -37,6 +37,8 @@ namespace mips
         if (op == "div")    return parse_instruction_r_no_dst(OpcodeR::DIV, instr, parts);
         if (op == "divu")   return parse_instruction_r_no_dst(OpcodeR::DIVU, instr, parts);
 
+        if (op == "jr")     return parse_instruction_r_1_src(OpcodeR::JR, instr, parts);
+
         if (op == "addi")   return parse_instruction_i(OpcodeI::ADDI, instr, parts);
         if (op == "addiu")  return parse_instruction_i(OpcodeI::ADDIU, instr, parts);
         if (op == "andi")   return parse_instruction_i(OpcodeI::ANDI, instr, parts);
@@ -102,6 +104,23 @@ namespace mips
             .dst = Register::zero,
             .src1 = src1,
             .src2 = src2,
+            .shamt = 0
+        };
+    }
+
+    InstructionR Parser::parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts)
+    {
+        if (parts.size() != 2)
+            throw std::logic_error("This R type instruction should have 2 parts - cannot parse " + instr);
+
+        Register src = parse_register(parts[1]);
+
+        return InstructionR
+        {
+            .op = opcode,
+            .dst = Register::zero,
+            .src1 = src,
+            .src2 = Register::zero,
             .shamt = 0
         };
     }

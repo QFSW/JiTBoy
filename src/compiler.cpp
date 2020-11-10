@@ -99,6 +99,7 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::AND:  compile<x86::Opcode::AND>(instr); break;
         case mips::OpcodeR::OR:   compile<x86::Opcode::OR>(instr); break;
         case mips::OpcodeR::XOR:  compile<x86::Opcode::XOR>(instr); break;
+        case mips::OpcodeR::JR:   compile_jump(instr.src1); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -210,5 +211,11 @@ void Compiler::compile_call(void (*const f)())
 void Compiler::compile_jump(const uint32_t target)
 {
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target);
+    _assembler.instr<x86::Opcode::RET>();
+}
+
+void Compiler::compile_jump(const mips::Register target)
+{
+    compile_reg_load(return_reg, target);
     _assembler.instr<x86::Opcode::RET>();
 }

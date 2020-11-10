@@ -55,6 +55,7 @@ private:
 
     void compile_call(void (*f)());
     void compile_jump(uint32_t target);
+    void compile_jump(mips::Register target);
 
     template <typename T, void(T::* F)()>
     void compile_call(T& obj);
