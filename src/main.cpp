@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <mips/parsing.hpp>
+#include <mips/parser.hpp>
 #include <linker.hpp>
 #include <executable_allocator.hpp>
 #include <label_generator.hpp>
