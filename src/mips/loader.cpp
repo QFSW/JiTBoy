@@ -1,9 +1,6 @@
 #include "loader.hpp"
 
-#include <fstream>
-#include <sstream>
-#include <stdexcept>
-
+#include <utils/io.hpp>
 #include <mips/encoding.hpp>
 #include <mips/parser.hpp>
 
@@ -11,15 +8,21 @@ namespace mips
 {
     std::vector<Instruction> Loader::load_assembly(const std::string& filepath)
     {
-        const std::ifstream file(filepath);
-        std::stringstream buf;
-        buf << file.rdbuf();
-
-        return Parser::parse_instructions(buf.str());
+        const std::string raw = io::read_text_file(filepath);
+        return Parser::parse_instructions(raw);
     }
 
     std::vector<Instruction> Loader::load_binary(const std::string& filepath)
     {
+        const std::vector<uint8_t> raw = io::read_binary_file(filepath);
+        if (raw.size() % 4 > 0)
+            throw std::runtime_error("MIPS instruction binary must be word aligned");
+
+        std::vector<Instruction> result;
+        result.reserve(raw.size() / 4);
+
+        // Interpret byte vector
+
         throw std::logic_error("Binary loader not implemented");
     }
 }

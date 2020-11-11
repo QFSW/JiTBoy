@@ -180,6 +180,7 @@
     <ClCompile Include="src\source_block.cpp" />
     <ClCompile Include="src/x86/x86.cpp" />
     <ClCompile Include="src/x86/assembler.cpp" />
+    <ClCompile Include="src\utils\io.cpp" />
     <ClCompile Include="src\utils\strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +204,7 @@
     <ClInclude Include="src\source_block.hpp" />
     <ClInclude Include="src\utils\detail\final_act.hpp" />
     <ClInclude Include="src\utils\functional.hpp" />
+    <ClInclude Include="src\utils\io.hpp" />
     <ClInclude Include="src\utils\utils.hpp" />
     <ClInclude Include="stc/strtools.hpp" />
     <ClInclude Include="src/x86/x86.hpp" />
