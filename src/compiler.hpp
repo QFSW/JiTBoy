@@ -9,6 +9,7 @@
 #include <label_generator.hpp>
 #include <compiled_block.hpp>
 #include <source_block.hpp>
+#include <utils/utils.hpp>
 
 class Compiler
 {    
@@ -60,12 +61,6 @@ private:
     template <typename T, void(T::* F)()>
     void compile_call(T& obj);
 
-    template <typename T, void(T::* F)()>
-    static void __fastcall proxy_call(T* obj);
-
-    template <typename T, typename A, void(T::* F)(A)>
-    static void __fastcall proxy_call_arg(T* obj, A a);
-
     static constexpr bool debug = config::debug;
     std::stringstream _debug_stream;
 };
@@ -78,21 +73,9 @@ void Compiler::compile_call(T& obj)
     _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, addr);
 
     const auto label = _label_generator.generate("member_func");
-    _linker.label_global(label, &proxy_call<T, F>);
+    _linker.label_global(label, &utils::instance_proxy<>::call<T, void, F>);
     _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
     {
         _assembler.call(offset);
     });
-}
-
-template <typename T, void(T::* F)()>
-void __fastcall Compiler::proxy_call(T* obj)
-{
-    return (obj->*F)();
-}
-
-template <typename T, typename A, void(T::* F)(A)>
-void __fastcall Compiler::proxy_call_arg(T* obj, A a)
-{
-    return (obj->*F)(a);
 }

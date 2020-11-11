@@ -22,4 +22,14 @@ namespace utils
     {
         return detail::final_act(std::move(f));
     }
+
+    template <typename...Args>
+    struct instance_proxy
+    {
+        template <typename T, typename R, R(T::* F)(Args...)>
+        static R __fastcall call(T* obj, Args...args)
+        {
+            return (obj->*F)(std::forward(args...));
+        }
+    };
 }
