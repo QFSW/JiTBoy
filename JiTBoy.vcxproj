@@ -205,6 +205,7 @@
     <ClInclude Include="src\utils\detail\final_act.hpp" />
     <ClInclude Include="src\utils\functional.hpp" />
     <ClInclude Include="src\utils\io.hpp" />
+    <ClInclude Include="src\utils\traits.hpp" />
     <ClInclude Include="src\utils\utils.hpp" />
     <ClInclude Include="src\utils\variadic.hpp" />
     <ClInclude Include="stc/strtools.hpp" />
