@@ -248,7 +248,7 @@ namespace mips
             return std::stoul(&value[2], nullptr, 16);
 
         if (value.starts_with("0b"))
-            return std::stoul(&value[2], nullptr, 10);
+            return std::stoul(&value[2], nullptr, 2);
 
         return std::stoul(value, nullptr, 10);
     }
