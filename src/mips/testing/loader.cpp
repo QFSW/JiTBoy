@@ -1,6 +1,7 @@
 #include "loader.hpp"
 
 #include <utils/io.hpp>
+#include <utils/strtools.hpp>
 #include <iostream>
 
 namespace mips::testing
@@ -27,8 +28,17 @@ namespace mips::testing
         tests.reserve(files.size());
         for (const auto& file : files)
         {
-            std::cout << "   - " << file.generic_string() << "\n";
-            tests.push_back(load_test(file));
+            std::cout << "   - " << file.generic_string();
+            try
+            {
+                tests.push_back(load_test(file));
+                std::cout << colorize(" success\n", strtools::AnsiColor::Green);
+            }
+            catch (const std::exception& e)
+            {
+                std::cout << colorize(" error\n", strtools::AnsiColor::Red);
+                std::cout << e.what() << "\n";
+            }
         }
 
         return tests;

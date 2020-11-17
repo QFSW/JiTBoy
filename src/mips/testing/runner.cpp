@@ -21,11 +21,11 @@ namespace mips::testing
                 runtime.execute(utils::copy(test.code));
                 pass_count++;
 
-                std::cout << strtools::colorize(" pass\n", strtools::AnsiColor::Green);
+                std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
             }
             catch (const std::exception& e)
             {
-                std::cout << strtools::colorize(" faulted\n", strtools::AnsiColor::Red);
+                std::cout << colorize(" faulted\n", strtools::AnsiColor::Red);
                 std::cout << e.what() << "\n";
                 std::cout << runtime.get_debug();
             }
