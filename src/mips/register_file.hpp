@@ -1,4 +1,5 @@
 #pragma once
+
 #include <mips/mips.hpp>
 
 namespace mips
@@ -10,10 +11,10 @@ namespace mips
         [[nodiscard]] uint32_t* data() noexcept { return _regs; }
         [[nodiscard]] const uint32_t* data() const noexcept { return _regs; }
 
-        uint32_t& operator[] (const size_t index) { return _regs[index]; }
-        uint32_t& operator[] (Register reg) { return _regs[static_cast<size_t>(reg)]; }
-        const uint32_t& operator[] (Register reg) const { return _regs[static_cast<size_t>(reg)]; }
-        const uint32_t& operator[] (const size_t index) const { return _regs[index]; }
+        uint32_t& operator[](size_t index);
+        uint32_t& operator[](Register reg);
+        const uint32_t& operator[](Register reg) const;
+        const uint32_t& operator[](size_t index) const;
         
     private:
         static constexpr size_t reg_count = 32;

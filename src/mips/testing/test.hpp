@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <mips/instruction.hpp>
+#include <mips/testing/assertion.hpp>
 
 namespace mips::testing
 {
@@ -11,7 +12,7 @@ namespace mips::testing
         std::string name;
         std::string src;
         std::vector<Instruction> code;
-        // assertions
+        std::vector<Assertion> assertions;
         // initializers
     };
 }

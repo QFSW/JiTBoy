@@ -171,6 +171,7 @@
     <ClCompile Include="src\compiled_block.cpp" />
     <ClCompile Include="src\mips\encoding.cpp" />
     <ClCompile Include="src\mips\instruction.cpp" />
+    <ClCompile Include="src\mips\testing\assertion.cpp" />
     <ClCompile Include="src\mips\testing\loader.cpp" />
     <ClCompile Include="src\mips\testing\parser.cpp" />
     <ClCompile Include="src\mips\testing\runner.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\compiler_config.hpp" />
     <ClInclude Include="src\config.hpp" />
     <ClInclude Include="src\mips\encoding.hpp" />
+    <ClInclude Include="src\mips\testing\assertion.hpp" />
     <ClInclude Include="src\mips\testing\loader.hpp" />
     <ClInclude Include="src\mips\testing\test.hpp" />
     <ClInclude Include="src\mips\testing\parser.hpp" />

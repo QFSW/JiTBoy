@@ -9,7 +9,7 @@ namespace mips::testing
     Test Loader::load_test(const std::filesystem::path& filepath)
     {
         const std::string raw = io::read_text_file(filepath.generic_string());
-        Test test = _parser.parse(raw);
+        Test test = _parser.parse_test(raw);
         test.src = filepath.generic_string();
 
         if (test.name.empty())
