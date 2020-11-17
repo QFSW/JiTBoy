@@ -13,7 +13,7 @@ namespace mips::testing
         std::cout << "Running tests\n";
 
         size_t pass_count = 0;
-        std::vector<std::tuple< Test, std::string>> failures;
+        std::vector<std::tuple<Test, std::string>> failures;
 
         for (const auto& test : tests)
         {

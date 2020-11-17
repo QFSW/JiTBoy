@@ -1,8 +1,9 @@
 #include "loader.hpp"
 
+#include <iostream>
+#include <sstream>
 #include <utils/io.hpp>
 #include <utils/strtools.hpp>
-#include <iostream>
 
 namespace mips::testing
 {
@@ -20,10 +21,12 @@ namespace mips::testing
 
     std::vector<Test> Loader::load_tests(const std::string& dir_path)
     {
+        namespace fs = std::filesystem;
         std::cout << "Loading tests from " << dir_path << "\n";
 
         std::vector<Test> tests;
-        std::vector<std::filesystem::path> files = io::get_files_recursive(dir_path);
+        std::vector<fs::path> files = io::get_files_recursive(dir_path);
+        std::vector<std::tuple<fs::path, std::string>> failures;
 
         tests.reserve(files.size());
         for (const auto& file : files)
@@ -37,8 +40,18 @@ namespace mips::testing
             catch (const std::exception& e)
             {
                 std::cout << colorize(" error\n", strtools::AnsiColor::Red);
-                std::cout << e.what() << "\n";
+
+                std::stringstream ss;
+                ss << e.what() << "\n";
+                failures.push_back(std::tuple(file, ss.str()));
             }
+        }
+
+        for (const auto& [file, err] : failures)
+        {
+            std::cout << "\n";
+            std::cout << colorize(file.generic_string(), strtools::AnsiColor::Red) << "\n";
+            std::cout << err;
         }
 
         return tests;
