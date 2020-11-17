@@ -18,6 +18,9 @@ namespace mips::testing
 
             try
             {
+                for (const auto& initializer : test.initializers)
+                    initializer.invoke(runtime.get_regs());
+
                 runtime.execute(utils::copy(test.code));
                 pass_count++;
 

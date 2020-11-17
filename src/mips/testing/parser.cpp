@@ -18,8 +18,6 @@ namespace mips::testing
     Test Parser::parse_test(const std::string& raw)
     {
         Test test;
-        test.code = mips::Parser::parse_instructions(raw);
-
         for (const auto& line : strtools::split(raw, '\n'))
         {
             std::smatch matches;
@@ -33,8 +31,12 @@ namespace mips::testing
 
             if (std::regex_search(line, matches, assert_regex))
                 test.assertions.push_back(parse_assertion(matches[1]));
+
+            if (std::regex_search(line, matches, init_regex))
+                test.initializers.push_back(parse_initializer(matches[1]));
         }
 
+        test.code = mips::Parser::parse_instructions(raw);
         return test;
     }
 
@@ -53,4 +55,18 @@ namespace mips::testing
         throw std::runtime_error(raw + " is not a valid assertion");
     }
 
+    Initializer Parser::parse_initializer(const std::string& raw)
+    {
+        static const std::regex reg(R"(\s*(\S+)\s*=\s*(\S+)\s*)");
+
+        std::smatch matches;
+        if (std::regex_search(raw, matches, reg) && matches.size() == 3)
+        {
+            const Register left = mips::Parser::parse_register(matches[1]);
+            const uint32_t right = mips::Parser::parse_constant(matches[2]);
+            return Initializer(left, right);
+        }
+
+        throw std::runtime_error(raw + " is not a valid initializer");
+    }
 }

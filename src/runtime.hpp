@@ -13,7 +13,8 @@ public:
     void load_source(std::vector<mips::Instruction>&& code, uint32_t addr = instruction_mem_addr);
     void execute(std::vector<mips::Instruction>&& code);
     void execute(uint32_t addr);
-    
+
+    [[nodiscard]] mips::RegisterFile& get_regs() noexcept { return _regs; }
     [[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _regs; }
     [[nodiscard]] std::string get_debug() const;
     

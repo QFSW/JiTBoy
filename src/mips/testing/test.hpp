@@ -4,6 +4,7 @@
 #include <vector>
 #include <mips/instruction.hpp>
 #include <mips/testing/assertion.hpp>
+#include <mips/testing/initializer.hpp>
 
 namespace mips::testing
 {
@@ -13,7 +14,7 @@ namespace mips::testing
         std::string src;
         std::vector<Instruction> code;
         std::vector<Assertion> assertions;
-        // initializers
+        std::vector<Initializer> initializers;
     };
 }
 
