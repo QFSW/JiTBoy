@@ -22,7 +22,6 @@ namespace mips::testing
                     initializer.invoke(runtime.get_regs());
 
                 runtime.execute(utils::copy(test.code));
-                pass_count++;
 
                 bool failed = false;
                 for (const auto& assertion : test.assertions)
@@ -38,7 +37,10 @@ namespace mips::testing
                 }
 
                 if (!failed)
+                {
+                    pass_count++;
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
+                }
             }
             catch (const std::exception& e)
             {
