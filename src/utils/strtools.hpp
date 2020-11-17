@@ -36,5 +36,19 @@ namespace strtools
 	}
 
 	std::vector<std::string> split(const std::string& str, char delim);
+
+	enum class AnsiColor
+	{
+	    Black = 30,
+		Blue = 34,
+		Green = 32,
+		Cyan = 36,
+		Red = 31,
+		Purple = 35,
+		Brown = 33,
+		Gray = 37
+	};
+
+	std::string colorize(const std::string& str, AnsiColor col);
 }
 

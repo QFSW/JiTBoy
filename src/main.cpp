@@ -4,6 +4,8 @@
 #include <benchmark.hpp>
 #include <utils/utils.hpp>
 #include <mips/loader.hpp>
+#include <mips/testing/loader.hpp>
+#include <mips/testing/runner.hpp>
 
 uint32_t return_8()
 {
@@ -35,11 +37,25 @@ int main_test()
     return 0;
 }
 
+int test_bench()
+{
+    using namespace mips::testing;
+    Loader loader;
+    Runner runner;
+
+    const auto tests = loader.load_tests("tests/mips");
+    std::cout << "\n";
+    runner.run(tests);
+
+    std::cout << "\n";
+    return 0;
+}
+
 int main()
 {
     try
     {
-        return main_test();
+        return test_bench();
     }
     catch (std::exception &e)
     {
