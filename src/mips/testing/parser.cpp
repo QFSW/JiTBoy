@@ -3,13 +3,12 @@
 #include <stdexcept>
 #include <mips/parser.hpp>
 #include <utils/strtools.hpp>
-#include <iostream>
 
 namespace mips::testing
 {
     std::regex Parser::gen_regex(const std::string& id)
     {
-        return std::regex(R"(\s*;\s*)" + id + ":(.+)");
+        return std::regex(R"(\s*;\s*)" + id + R"(:\s*(.+))");
     }
 
     const std::regex Parser::assert_regex = gen_regex("assert");
