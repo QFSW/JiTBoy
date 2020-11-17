@@ -14,6 +14,7 @@ namespace mips::testing
     const std::regex Parser::assert_regex = gen_regex("assert");
     const std::regex Parser::init_regex = gen_regex("init");
     const std::regex Parser::name_regex = gen_regex("name");
+    const std::regex Parser::desc_regex = gen_regex("desc");
 
     Test Parser::parse_test(const std::string& raw)
     {
@@ -27,6 +28,14 @@ namespace mips::testing
                     throw std::runtime_error("Test cannot contain more than 1 name directive");
 
                 test.name = matches[1];
+            }
+
+            if (std::regex_search(line, matches, desc_regex))
+            {
+                if (!test.description.empty())
+                    throw std::runtime_error("Test cannot contain more than 1 desc directive");
+
+                test.description = matches[1];
             }
 
             if (std::regex_search(line, matches, assert_regex))

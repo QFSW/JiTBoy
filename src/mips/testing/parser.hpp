@@ -18,5 +18,6 @@ namespace mips::testing
         static const std::regex assert_regex;
         static const std::regex init_regex;
         static const std::regex name_regex;
+        static const std::regex desc_regex;
     };
 }

@@ -11,6 +11,7 @@ namespace mips::testing
     struct Test
     {
         std::string name;
+        std::string description;
         std::string src;
         std::vector<Instruction> code;
         std::vector<Assertion> assertions;
