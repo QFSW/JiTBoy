@@ -1,6 +1,8 @@
 ﻿#include "runner.hpp"
 
+#include <map>
 #include <iostream>
+#include <sstream>
 #include <runtime.hpp>
 #include <utils/strtools.hpp>
 
@@ -11,6 +13,8 @@ namespace mips::testing
         std::cout << "Running tests\n";
 
         size_t pass_count = 0;
+        std::vector<std::tuple< Test, std::string>> failures;
+
         for (const auto& test : tests)
         {
             Runtime runtime;
@@ -24,6 +28,7 @@ namespace mips::testing
                 runtime.execute(utils::copy(test.code));
 
                 bool failed = false;
+                std::stringstream ss;
                 for (const auto& assertion : test.assertions)
                 {
                     if (!assertion.evaluate(runtime.get_regs()))
@@ -32,11 +37,16 @@ namespace mips::testing
                             std::cout << colorize(" failed\n", strtools::AnsiColor::Red);
 
                         failed = true;
-                        std::cout << "Assertion failed: " << assertion << "\n";
+                        ss << "Assertion failed: " << assertion << "\n";
                     }
                 }
 
-                if (!failed)
+                if (failed)
+                {
+                    ss << runtime.get_debug();
+                    failures.push_back(std::tuple(test, ss.str()));
+                }
+                else
                 {
                     pass_count++;
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
@@ -45,12 +55,23 @@ namespace mips::testing
             catch (const std::exception& e)
             {
                 std::cout << colorize(" faulted\n", strtools::AnsiColor::Red);
-                std::cout << e.what() << "\n";
-                std::cout << runtime.get_debug();
+
+                std::stringstream ss;
+                ss << e.what() << "\n";
+                ss << runtime.get_debug();
+                failures.push_back(std::tuple(test, ss.str()));
             }
         }
 
-        std::cout << strtools::catf("\n%d/%d tests passed", pass_count, tests.size());
+        std::cout << strtools::catf("\n%d/%d tests passed\n", pass_count, tests.size());
+
+        for (const auto& [test, err] : failures)
+        {
+            std::cout << "\n";
+            std::cout << strtools::colorize(test.name, strtools::AnsiColor::Red) << "\n";
+            std::cout << test.description << "\n";
+            std::cout << err;
+        }
     }
 
 }
