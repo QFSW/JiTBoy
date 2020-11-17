@@ -10,7 +10,9 @@ namespace mips::testing
     public:
         Assertion(Register left, uint32_t right);
 
-        bool evaluate(const RegisterFile& regs) const;
+        [[nodiscard]] bool evaluate(const RegisterFile& regs) const;
+        friend std::ostream& operator<<(std::ostream& os, const Assertion& assertion);
+
     private:
         Register _left;
         uint32_t _right;

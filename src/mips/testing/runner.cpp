@@ -21,7 +21,21 @@ namespace mips::testing
                 runtime.execute(utils::copy(test.code));
                 pass_count++;
 
-                std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
+                bool failed = false;
+                for (const auto& assertion : test.assertions)
+                {
+                    if (!assertion.evaluate(runtime.get_regs()))
+                    {
+                        if (!failed)
+                            std::cout << colorize(" failed\n", strtools::AnsiColor::Red);
+
+                        failed = true;
+                        std::cout << "Assertion failed: " << assertion << "\n";
+                    }
+                }
+
+                if (!failed)
+                    std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
             }
             catch (const std::exception& e)
             {
