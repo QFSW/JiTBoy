@@ -102,15 +102,8 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::OR:   compile<x86::Opcode::OR>(instr); break;
         case mips::OpcodeR::XOR:  compile<x86::Opcode::XOR>(instr); break;
         case mips::OpcodeR::JR:   compile_jump(instr.src1); break;
-        case mips::OpcodeR::SLT:
-        {
-            using namespace x86;
-            compile_reg_load(acc1_reg, instr.src1);
-            compile_reg_load<Opcode::CMP>(acc1_reg, instr.src2);
-            compile_reg_write(instr.dst, 0);
-            _assembler.set_cond<CondCode::L, InstrMode::RM>(addr_reg, calc_reg_offset(instr.dst));
-            break;
-        }
+        case mips::OpcodeR::SLT:  compile_compare<x86::CondCode::L>(instr); break;
+        case mips::OpcodeR::SLTU: compile_compare<x86::CondCode::B>(instr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -173,6 +166,15 @@ void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
         }
         default: throw_invalid_instr(instr);
     }
+}
+
+template <x86::CondCode Cond>
+void Compiler::compile_compare(const mips::InstructionR instr)
+{
+    compile_reg_load(acc1_reg, instr.src1);
+    compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.src2);
+    compile_reg_write(instr.dst, 0);
+    _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.dst));
 }
 
 void Compiler::throw_invalid_instr(mips::Instruction instr)

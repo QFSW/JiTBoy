@@ -56,6 +56,9 @@ private:
     template <x86::Opcode Op, x86::OpcodeExt Ext>
     void compile(mips::InstructionI instr);
 
+    template <x86::CondCode Cond>
+    void compile_compare(mips::InstructionR instr);
+
     void compile_call(void (*f)());
     void compile_jump(uint32_t target);
     void compile_jump(mips::Register target);
