@@ -88,6 +88,12 @@ namespace x86
         template <CondCode Cond, InstrMode Mode, RegisterSize Size = RegisterSize::Reg32>
         void move_cond(Register dst, Register src, int32_t addr_offset);
 
+        template <CondCode Cond, InstrMode Mode = InstrMode::RR>
+        void set_cond(Register dst);
+
+        template <CondCode Cond, InstrMode Mode = InstrMode::RR>
+        void set_cond(Register dst, int32_t addr_offset);
+
         void bswap(Register dst);
         void enter(uint16_t size, uint8_t nesting = 0);
         
@@ -395,6 +401,53 @@ namespace x86
         if constexpr (debug)
         {
             _debug_stream << "???\n";
+        }
+    }
+
+    template <CondCode Cond, InstrMode Mode>
+    void Assembler::set_cond(const Register dst)
+    {
+        constexpr auto src = static_cast<Register>(0);
+        constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(Opcode::SETcc) | static_cast<uint8_t>(Cond));
+
+        _buffer.write(OpcodePrefix::SETcc);
+
+        if constexpr (Mode == InstrMode::RR) instr<op, InstrMode::RR, RegisterSize::Reg8>(dst, src);
+        else if constexpr (Mode == InstrMode::RM) instr<op, InstrMode::RM, RegisterSize::Reg8>(dst, src);
+        else throw std::logic_error("Unsupported instruction mode");
+
+        if constexpr (debug)
+        {
+            _debug_stream << strtools::catf("SET%s ", cond_to_string(Cond));
+
+            const auto reg = reg_to_string(dst, RegisterSize::Reg8);
+
+            using namespace strtools;
+            if constexpr (Mode == InstrMode::RR) _debug_stream << catf("%s", reg);
+            else if constexpr (Mode == InstrMode::MR) _debug_stream << catf("[%s]", reg);
+
+            _debug_stream << "\n";
+        }
+    }
+
+    template <CondCode Cond, InstrMode Mode>
+    void Assembler::set_cond(const Register dst, const int32_t addr_offset)
+    {
+        constexpr auto src = static_cast<Register>(0);
+        constexpr auto op = static_cast<Opcode>(static_cast<uint8_t>(Opcode::SETcc) | static_cast<uint8_t>(Cond));
+
+        _buffer.write(OpcodePrefix::SETcc);
+
+        if constexpr (Mode == InstrMode::RM) instr<op, InstrMode::RM, RegisterSize::Reg8>(dst, src, addr_offset);
+        else throw std::logic_error("Unsupported instruction mode");
+
+        if constexpr (debug)
+        {
+            const auto cond = cond_to_string(Cond);
+            const auto reg = reg_to_string(dst, RegisterSize::Reg8);
+            const auto offset = debug_offset(addr_offset);
+
+            _debug_stream << strtools::catf("SET%s [%s%s]\n", cond, reg, offset.c_str());
         }
     }
 

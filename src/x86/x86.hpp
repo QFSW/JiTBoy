@@ -53,6 +53,7 @@ namespace x86
         CALL   = 0xE8,
 
         CMOVcc = 0x40,
+        SETcc  = 0x90,
         Jcc_8  = 0x70,
         Jcc_32 = 0x80
     };
@@ -88,6 +89,7 @@ namespace x86
         Size64 = 0x48,
         Lock   = 0xF0,
         CMOVcc = 0x0F,
+        SETcc  = 0x0F,
         Jcc_32 = 0x0F
     };
 

@@ -107,10 +107,8 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
             using namespace x86;
             compile_reg_load(acc1_reg, instr.src1);
             compile_reg_load<Opcode::CMP>(acc1_reg, instr.src2);
-            _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(acc1_reg, 1);
-            _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(acc2_reg, 0);
-            _assembler.move_cond<CondCode::L>(acc2_reg, acc1_reg);
-            compile_reg_write(instr.dst, acc2_reg);
+            compile_reg_write(instr.dst, 0);
+            _assembler.set_cond<CondCode::L, InstrMode::RM>(addr_reg, calc_reg_offset(instr.dst));
             break;
         }
         default: throw_invalid_instr(instr);
