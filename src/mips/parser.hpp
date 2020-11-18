@@ -15,7 +15,8 @@ namespace mips
         static std::vector<Instruction> parse_instructions(const std::string& assembly);
 
         static Register parse_register(const std::string& reg);
-        static uint16_t parse_constant(const std::string& value);
+        static uint32_t parse_constant_32(const std::string& value);
+        static uint16_t parse_constant_16(const std::string& value);
 
     private:
         static InstructionR parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts);

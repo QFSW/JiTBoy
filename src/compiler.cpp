@@ -24,8 +24,7 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
     }
     
     const auto reg_file = reinterpret_cast<uint32_t>(_regs.data());
-    const auto addr = x86::Register::EDX;
-    _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(addr, reg_file);
+    _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(addr_reg, reg_file);
 
     for (uint32_t i = 0; i < block.code.size(); i++)
     {
@@ -103,6 +102,17 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::OR:   compile<x86::Opcode::OR>(instr); break;
         case mips::OpcodeR::XOR:  compile<x86::Opcode::XOR>(instr); break;
         case mips::OpcodeR::JR:   compile_jump(instr.src1); break;
+        case mips::OpcodeR::SLT:
+        {
+            using namespace x86;
+            compile_reg_load(acc1_reg, instr.src1);
+            compile_reg_load<Opcode::CMP>(acc1_reg, instr.src2);
+            _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(acc1_reg, 1);
+            _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(acc2_reg, 0);
+            _assembler.move_cond<CondCode::L>(acc2_reg, acc1_reg);
+            compile_reg_write(instr.dst, acc2_reg);
+            break;
+        }
         default: throw_invalid_instr(instr);
     }
 }
@@ -112,11 +122,9 @@ void Compiler::compile(const mips::InstructionR instr)
 {
     if (instr.dst == mips::Register::zero) return;
     
-    const auto acc = x86::Register::EAX;
-    
-    compile_reg_load(acc, instr.src1);
-    compile_reg_load<Op>(acc, instr.src2);
-    compile_reg_write(instr.dst, acc);
+    compile_reg_load(acc1_reg, instr.src1);
+    compile_reg_load<Op>(acc1_reg, instr.src2);
+    compile_reg_write(instr.dst, acc1_reg);
 }
 
 void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
@@ -143,11 +151,9 @@ void Compiler::compile(const mips::InstructionI instr)
     }
     else
     {
-        const auto acc = x86::Register::EAX;
-
-        compile_reg_load(acc, instr.src);
-        _assembler.instr_imm<Op, Ext>(acc, instr.constant);
-        compile_reg_write(instr.dst, acc);
+        compile_reg_load(acc1_reg, instr.src);
+        _assembler.instr_imm<Op, Ext>(acc1_reg, instr.constant);
+        compile_reg_write(instr.dst, acc1_reg);
     }
 }
 

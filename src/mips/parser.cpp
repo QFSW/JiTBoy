@@ -132,7 +132,7 @@ namespace mips
 
         Register dst = parse_register(parts[1]);
         Register src = parse_register(parts[2]);
-        uint16_t constant = parse_constant(parts[3]);
+        uint16_t constant = parse_constant_16(parts[3]);
 
         return InstructionI
         {
@@ -148,7 +148,7 @@ namespace mips
         if (parts.size() != 2)
             throw std::logic_error("This J type instruction should have 2 parts - cannot parse " + instr);
 
-        uint32_t target = parse_constant(parts[1]);
+        uint32_t target = parse_constant_16(parts[1]);
 
         return InstructionJ
         {
@@ -242,7 +242,7 @@ namespace mips
         return reg_mapping.at(reg);
     }
 
-    uint16_t Parser::parse_constant(const std::string& value)
+    uint32_t Parser::parse_constant_32(const std::string& value)
     {
         if (value.starts_with("0x"))
             return std::stoul(&value[2], nullptr, 16);
@@ -251,5 +251,10 @@ namespace mips
             return std::stoul(&value[2], nullptr, 2);
 
         return std::stoul(value, nullptr, 10);
+    }
+
+    uint16_t Parser::parse_constant_16(const std::string& value)
+    {
+        return static_cast<uint16_t>(parse_constant_32(value));
     }
 }

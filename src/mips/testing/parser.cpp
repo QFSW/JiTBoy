@@ -57,7 +57,7 @@ namespace mips::testing
         if (std::regex_search(raw, matches, reg) && matches.size() == 3)
         {
             const Register left = mips::Parser::parse_register(matches[1]);
-            const uint32_t right = mips::Parser::parse_constant(matches[2]);
+            const uint32_t right = mips::Parser::parse_constant_32(matches[2]);
             return Assertion(left, right);
         }
 
@@ -72,7 +72,7 @@ namespace mips::testing
         if (std::regex_search(raw, matches, reg) && matches.size() == 3)
         {
             const Register left = mips::Parser::parse_register(matches[1]);
-            const uint32_t right = mips::Parser::parse_constant(matches[2]);
+            const uint32_t right = mips::Parser::parse_constant_32(matches[2]);
             return Initializer(left, right);
         }
 
