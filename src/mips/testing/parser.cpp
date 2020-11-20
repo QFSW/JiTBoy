@@ -19,9 +19,10 @@ namespace mips::testing
     Test Parser::parse_test(const std::string& raw)
     {
         Test test;
+        std::smatch matches;
+
         for (const auto& line : strtools::split(raw, '\n'))
         {
-            std::smatch matches;
             if (std::regex_search(line, matches, name_regex))
             {
                 if (!test.name.empty())
