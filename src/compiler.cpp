@@ -128,6 +128,7 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
         case mips::OpcodeI::ORI:   compile<x86::Opcode::OR_I, x86::OpcodeExt::OR_I>(instr); break;
         case mips::OpcodeI::XORI:  compile<x86::Opcode::XOR_I, x86::OpcodeExt::XOR_I>(instr); break;
         case mips::OpcodeI::BEQ:   compile_jump<x86::CondCode::E>(instr, addr); break;
+        case mips::OpcodeI::BNE:   compile_jump<x86::CondCode::NE>(instr, addr); break;
         default: throw_invalid_instr(instr);
     }
 }

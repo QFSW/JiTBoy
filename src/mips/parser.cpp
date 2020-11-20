@@ -50,6 +50,7 @@ namespace mips
         if (op == "sltiu")  return parse_instruction_i(OpcodeI::SLTIU, instr, parts);
 
         if (op == "beq")    return parse_instruction_i_branch(OpcodeI::BEQ, instr, parts);
+        if (op == "bne")    return parse_instruction_i_branch(OpcodeI::BNE, instr, parts);
 
         if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr, parts);
         if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr, parts);
