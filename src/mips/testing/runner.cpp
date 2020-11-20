@@ -63,8 +63,6 @@ namespace mips::testing
             }
         }
 
-        std::cout << strtools::catf("\n%d/%d tests passed\n", pass_count, tests.size());
-
         for (const auto& [test, err] : failures)
         {
             std::cout << "\n";
@@ -73,6 +71,8 @@ namespace mips::testing
                 std::cout << test.description << "\n";
             std::cout << err;
         }
+
+        std::cout << strtools::catf("\n%d/%d tests passed\n", pass_count, tests.size());
     }
 
 }

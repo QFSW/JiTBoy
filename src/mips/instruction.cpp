@@ -35,8 +35,6 @@ namespace mips
         switch (instr.op)
         {
             case OpcodeI::BEQ:
-            case OpcodeI::BGTZ:
-            case OpcodeI::BLEZ:
             case OpcodeI::BNE:
             {
                 os << opcode_to_string(instr.op)
