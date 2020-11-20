@@ -14,8 +14,9 @@ uint32_t return_8()
 
 int main_test()
 {
+    mips::Loader loader;
     constexpr auto asm_path = "resources/test_main.s";
-    auto code = mips::Loader::load_assembly(asm_path);
+    auto code = loader.load_assembly(asm_path);
 
     std::cout << "Loaded assembly\n";
     for (const auto& instr : code)

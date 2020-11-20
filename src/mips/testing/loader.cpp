@@ -7,7 +7,7 @@
 
 namespace mips::testing
 {
-    Test Loader::load_test(const std::filesystem::path& filepath)
+    Test Loader::load_test(const std::filesystem::path& filepath) const
     {
         const std::string raw = io::read_text_file(filepath.generic_string());
         Test test = _parser.parse_test(raw);
@@ -19,7 +19,7 @@ namespace mips::testing
         return test;
     }
 
-    std::vector<Test> Loader::load_tests(const std::string& dir_path)
+    std::vector<Test> Loader::load_tests(const std::string& dir_path) const
     {
         namespace fs = std::filesystem;
         std::cout << "Loading tests from " << dir_path << "\n";

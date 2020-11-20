@@ -2,17 +2,16 @@
 
 #include <utils/io.hpp>
 #include <mips/encoding.hpp>
-#include <mips/parser.hpp>
 
 namespace mips
 {
-    std::vector<Instruction> Loader::load_assembly(const std::string& filepath)
+    std::vector<Instruction> Loader::load_assembly(const std::string& filepath) const
     {
         const std::string raw = io::read_text_file(filepath);
-        return Parser::parse_instructions(raw);
+        return _parser.parse_instructions(raw);
     }
 
-    std::vector<Instruction> Loader::load_binary(const std::string& filepath)
+    std::vector<Instruction> Loader::load_binary(const std::string& filepath) const
     {
         const std::vector<uint8_t> raw = io::read_binary_file(filepath);
         if (raw.size() % 4 > 0)

@@ -127,6 +127,8 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
         case mips::OpcodeI::ANDI:  compile<x86::Opcode::AND_I, x86::OpcodeExt::AND_I>(instr); break;
         case mips::OpcodeI::ORI:   compile<x86::Opcode::OR_I, x86::OpcodeExt::OR_I>(instr); break;
         case mips::OpcodeI::XORI:  compile<x86::Opcode::XOR_I, x86::OpcodeExt::XOR_I>(instr); break;
+        case mips::OpcodeI::SLTI:  compile_compare<x86::CondCode::L>(instr); break;
+        case mips::OpcodeI::SLTIU: compile_compare<x86::CondCode::B>(instr); break;
         case mips::OpcodeI::BEQ:   compile_jump<x86::CondCode::E>(instr, addr); break;
         case mips::OpcodeI::BNE:   compile_jump<x86::CondCode::NE>(instr, addr); break;
         default: throw_invalid_instr(instr);
@@ -177,6 +179,14 @@ void Compiler::compile_compare(const mips::InstructionR instr)
     compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.rt);
     compile_reg_write(instr.rd, 0);
     _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.rd));
+}
+
+template <x86::CondCode Cond>
+void Compiler::compile_compare(const mips::InstructionI instr)
+{
+    _assembler.instr_imm<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I, x86::InstrMode::IM>(addr_reg, instr.constant, calc_reg_offset(instr.rs));
+    compile_reg_write(instr.rt, 0);
+    _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
 }
 
 template <x86::CondCode Cond>
