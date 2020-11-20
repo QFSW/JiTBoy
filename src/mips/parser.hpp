@@ -19,6 +19,7 @@ namespace mips
         static uint16_t parse_constant_16(const std::string& value);
 
     private:
+        static InstructionR parse_nop(const std::string& instr, const std::vector<std::string>& parts);
         static InstructionR parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts);
         static InstructionR parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts);
         static InstructionR parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts);

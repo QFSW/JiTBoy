@@ -18,6 +18,8 @@ namespace mips
 
         const auto& op = parts[0];
 
+        if (op == "nop")    return parse_nop(instr, parts);
+
         if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr, parts);
         if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr, parts);
         if (op == "sub")    return parse_instruction_r(OpcodeR::SUB, instr, parts);
@@ -69,6 +71,21 @@ namespace mips
         }
 
         return instrs;
+    }
+
+    InstructionR Parser::parse_nop(const std::string& instr, const std::vector<std::string>& parts)
+    {
+        if (parts.size() != 1)
+            throw std::logic_error("nop does not take any arguments - " + instr);
+
+        return InstructionR
+        {
+            .op = OpcodeR::SLL,
+            .dst = Register::zero,
+            .src1 = Register::zero,
+            .src2 = Register::zero,
+            .shamt = 0
+        };
     }
 
     InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts)
