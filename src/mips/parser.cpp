@@ -49,6 +49,8 @@ namespace mips
         if (op == "slti")   return parse_instruction_i(OpcodeI::SLTI, instr, parts);
         if (op == "sltiu")  return parse_instruction_i(OpcodeI::SLTIU, instr, parts);
 
+        if (op == "beq")    return parse_instruction_i_branch(OpcodeI::BEQ, instr, parts);
+
         if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr, parts);
         if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr, parts);
 
@@ -149,7 +151,25 @@ namespace mips
 
         Register dst = parse_register(parts[1]);
         Register src = parse_register(parts[2]);
-        uint16_t constant = parse_constant_16(parts[3]);
+        int16_t constant = parse_constant_16(parts[3]);
+
+        return InstructionI
+        {
+            .op = opcode,
+            .dst = dst,
+            .src = src,
+            .constant = constant
+        };
+    }
+
+    InstructionI Parser::parse_instruction_i_branch(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts)
+    {
+        if (parts.size() != 4)
+            throw std::logic_error("This I type instruction should have 4 parts - cannot parse " + instr);
+
+        Register dst = parse_register(parts[1]);
+        Register src = parse_register(parts[2]);
+        int16_t constant = static_cast<uint16_t>(parse_constant_32(parts[3]) >> 2);
 
         return InstructionI
         {

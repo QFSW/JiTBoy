@@ -184,12 +184,12 @@ void Compiler::compile_jump(const mips::InstructionI instr, const uint32_t addr)
     const uint32_t target_true = addr + (instr.constant << 2);
     const uint32_t target_false = addr + 4;
 
-    compile_reg_load(acc1_reg, instr.dst);
-    compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.src);
+    compile_reg_load(acc2_reg, instr.dst);
+    compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.src);
 
-    _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc1_reg, target_true);
+    _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc2_reg, target_true);
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
-    _assembler.move_cond<Cond>(return_reg, acc1_reg);
+    _assembler.move_cond<Cond>(return_reg, acc2_reg);
     _assembler.instr<x86::Opcode::RET>();
 }
 

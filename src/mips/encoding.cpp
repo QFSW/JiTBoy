@@ -39,7 +39,7 @@ namespace mips
         uint8_t opcode = 0b111111 & (binary >> (32 - 6));
         uint8_t rs = 0b11111 & (binary >> (32 - (6 + 5)));
         uint8_t rt = 0b11111 & (binary >> (32 - (6 + 5 + 5)));
-        uint16_t constant = 0xFFFF & binary;
+        int16_t constant = 0xFFFF & binary;
 
         if (opcode == 0b000001)
             opcode = rt;

@@ -20,7 +20,7 @@ namespace mips
         OpcodeI op;
         Register dst;
         Register src;
-        uint16_t constant;
+        int16_t constant;
     };
 
     struct InstructionJ
