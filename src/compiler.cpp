@@ -127,6 +127,7 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
         case mips::OpcodeI::ANDI:  compile<x86::Opcode::AND_I, x86::OpcodeExt::AND_I>(instr); break;
         case mips::OpcodeI::ORI:   compile<x86::Opcode::OR_I, x86::OpcodeExt::OR_I>(instr); break;
         case mips::OpcodeI::XORI:  compile<x86::Opcode::XOR_I, x86::OpcodeExt::XOR_I>(instr); break;
+        case mips::OpcodeI::BEQ:   compile_jump<x86::CondCode::E>(instr, addr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -175,6 +176,21 @@ void Compiler::compile_compare(const mips::InstructionR instr)
     compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.src2);
     compile_reg_write(instr.dst, 0);
     _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.dst));
+}
+
+template <x86::CondCode Cond>
+void Compiler::compile_jump(const mips::InstructionI instr, const uint32_t addr)
+{
+    const uint32_t target_true = addr + (instr.constant << 2);
+    const uint32_t target_false = addr + 4;
+
+    compile_reg_load(acc1_reg, instr.dst);
+    compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.src);
+
+    _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc1_reg, target_true);
+    _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
+    _assembler.move_cond<Cond>(return_reg, acc1_reg);
+    _assembler.instr<x86::Opcode::RET>();
 }
 
 void Compiler::throw_invalid_instr(mips::Instruction instr)
