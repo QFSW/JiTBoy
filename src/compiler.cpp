@@ -235,6 +235,7 @@ void Compiler::compile_reg_write(const mips::Register dst, const x86::Register s
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_reg_write(const mips::Register dst, const uint32_t imm)
 {
+    if (dst == mips::Register::zero) return;
     _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, imm, calc_reg_offset(dst));
 }
 
