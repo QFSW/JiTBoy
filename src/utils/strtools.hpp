@@ -10,7 +10,7 @@ namespace strtools
 	template <int BufSize = 1024, typename ...Args>
 	std::string catf(const char* format, Args...args)
 	{
-		static_assert(!traits::for_any<std::is_class, Args...>(), "strtools::catf does not work with classes");
+		static_assert(traits::for_none<std::is_class, Args...>(), "strtools::catf does not work with classes");
 
 		static char buf[BufSize];
 		sprintf_s(buf, format, args...);

@@ -27,4 +27,10 @@ namespace traits
     {
         return Trait<T>::value || for_any<Trait, Ts...>();
     }
+
+    template <template<class> typename Trait, typename...Ts>
+    constexpr bool for_none()
+    {
+        return !for_any<Trait, Ts...>();
+    }
 }
