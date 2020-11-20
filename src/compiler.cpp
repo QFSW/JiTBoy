@@ -175,6 +175,8 @@ void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
 template <x86::CondCode Cond>
 void Compiler::compile_compare(const mips::InstructionR instr)
 {
+    if (instr.rd == mips::Register::zero) return;
+
     compile_reg_load(acc1_reg, instr.rs);
     compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.rt);
     compile_reg_write(instr.rd, 0);
@@ -184,6 +186,8 @@ void Compiler::compile_compare(const mips::InstructionR instr)
 template <x86::CondCode Cond>
 void Compiler::compile_compare(const mips::InstructionI instr)
 {
+    if (instr.rt == mips::Register::zero) return;
+
     _assembler.instr_imm<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I, x86::InstrMode::IM>(addr_reg, instr.constant, calc_reg_offset(instr.rs));
     compile_reg_write(instr.rt, 0);
     _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
