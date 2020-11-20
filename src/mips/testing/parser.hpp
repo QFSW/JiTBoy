@@ -19,5 +19,8 @@ namespace mips::testing
         static const std::regex init_regex;
         static const std::regex name_regex;
         static const std::regex desc_regex;
+
+        static constexpr const char* reg_pattern = R"(\$[A-Za-z0-9]+)";
+        static constexpr const char* literal_pattern = R"([-+]?[A-Za-z0-9]+)";
     };
 }

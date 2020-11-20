@@ -51,7 +51,7 @@ namespace mips::testing
 
     Assertion Parser::parse_assertion(const std::string& raw)
     {
-        static const std::regex reg(R"(\s*(\S+)\s*==\s*(\S+)\s*)");
+        static const std::regex reg(strtools::catf(R"(\s*(%s)\s*==\s*(%s)\s*)", reg_pattern, literal_pattern));
 
         std::smatch matches;
         if (std::regex_search(raw, matches, reg) && matches.size() == 3)
@@ -66,7 +66,7 @@ namespace mips::testing
 
     Initializer Parser::parse_initializer(const std::string& raw)
     {
-        static const std::regex reg(R"(\s*(\S+)\s*=\s*(\S+)\s*)");
+        static const std::regex reg(strtools::catf(R"(\s*(%s)\s*=\s*(%s)\s*)", reg_pattern, literal_pattern));
 
         std::smatch matches;
         if (std::regex_search(raw, matches, reg) && matches.size() == 3)
