@@ -14,15 +14,15 @@ namespace mips
             case OpcodeR::JR:
             {
                 os << opcode_to_string(instr.op)
-                << " " << reg_to_string(instr.src1);
+                << " " << reg_to_string(instr.rs);
                 break;
             }
             default:
             {
                 os << opcode_to_string(instr.op)
-                << " " << reg_to_string(instr.dst)
-                << " " << reg_to_string(instr.src1)
-                << " " << reg_to_string(instr.src2);
+                << " " << reg_to_string(instr.rd)
+                << " " << reg_to_string(instr.rs)
+                << " " << reg_to_string(instr.rt);
                 break;
             }
         }
@@ -38,16 +38,16 @@ namespace mips
             case OpcodeI::BNE:
             {
                 os << opcode_to_string(instr.op)
-                << " " << reg_to_string(instr.dst)
-                << " " << reg_to_string(instr.src)
+                << " " << reg_to_string(instr.rt)
+                << " " << reg_to_string(instr.rs)
                 << " " << (instr.constant << 2);
                 break;
             }
             default:
             {
                 os << opcode_to_string(instr.op)
-                << " " << reg_to_string(instr.dst)
-                << " " << reg_to_string(instr.src)
+                << " " << reg_to_string(instr.rt)
+                << " " << reg_to_string(instr.rs)
                 << " " << instr.constant;
                 break;
             }

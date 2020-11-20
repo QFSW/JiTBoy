@@ -84,9 +84,9 @@ namespace mips
         return InstructionR
         {
             .op = OpcodeR::SLL,
-            .dst = Register::zero,
-            .src1 = Register::zero,
-            .src2 = Register::zero,
+            .rd = Register::zero,
+            .rs = Register::zero,
+            .rt = Register::zero,
             .shamt = 0
         };
     }
@@ -103,9 +103,9 @@ namespace mips
         return InstructionR
         {
             .op = opcode,
-            .dst = dst,
-            .src1 = src1,
-            .src2 = src2,
+            .rd = dst,
+            .rs = src1,
+            .rt = src2,
             .shamt = 0
         };
     }
@@ -121,9 +121,9 @@ namespace mips
         return InstructionR
         {
             .op = opcode,
-            .dst = Register::zero,
-            .src1 = src1,
-            .src2 = src2,
+            .rd = Register::zero,
+            .rs = src1,
+            .rt = src2,
             .shamt = 0
         };
     }
@@ -138,9 +138,9 @@ namespace mips
         return InstructionR
         {
             .op = opcode,
-            .dst = Register::zero,
-            .src1 = src,
-            .src2 = Register::zero,
+            .rd = Register::zero,
+            .rs = src,
+            .rt = Register::zero,
             .shamt = 0
         };
     }
@@ -157,8 +157,8 @@ namespace mips
         return InstructionI
         {
             .op = opcode,
-            .dst = dst,
-            .src = src,
+            .rt = dst,
+            .rs = src,
             .constant = constant
         };
     }
@@ -175,8 +175,8 @@ namespace mips
         return InstructionI
         {
             .op = opcode,
-            .dst = dst,
-            .src = src,
+            .rt = dst,
+            .rs = src,
             .constant = constant
         };
     }

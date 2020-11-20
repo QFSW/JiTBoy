@@ -101,7 +101,7 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::AND:  compile<x86::Opcode::AND>(instr); break;
         case mips::OpcodeR::OR:   compile<x86::Opcode::OR>(instr); break;
         case mips::OpcodeR::XOR:  compile<x86::Opcode::XOR>(instr); break;
-        case mips::OpcodeR::JR:   compile_jump(instr.src1); break;
+        case mips::OpcodeR::JR:   compile_jump(instr.rs); break;
         case mips::OpcodeR::SLT:  compile_compare<x86::CondCode::L>(instr); break;
         case mips::OpcodeR::SLTU: compile_compare<x86::CondCode::B>(instr); break;
         default: throw_invalid_instr(instr);
@@ -111,11 +111,11 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
 template <x86::Opcode Op>
 void Compiler::compile(const mips::InstructionR instr)
 {
-    if (instr.dst == mips::Register::zero) return;
+    if (instr.rd == mips::Register::zero) return;
     
-    compile_reg_load(acc1_reg, instr.src1);
-    compile_reg_load<Op>(acc1_reg, instr.src2);
-    compile_reg_write(instr.dst, acc1_reg);
+    compile_reg_load(acc1_reg, instr.rs);
+    compile_reg_load<Op>(acc1_reg, instr.rt);
+    compile_reg_write(instr.rd, acc1_reg);
 }
 
 void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
@@ -136,17 +136,17 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile(const mips::InstructionI instr)
 {
-    if (instr.dst == mips::Register::zero) return;
+    if (instr.rt == mips::Register::zero) return;
 
-    if (instr.dst == instr.src)
+    if (instr.rt == instr.rs)
     {
-        compile_reg_write<Op, Ext>(instr.dst, instr.constant);
+        compile_reg_write<Op, Ext>(instr.rt, instr.constant);
     }
     else
     {
-        compile_reg_load(acc1_reg, instr.src);
+        compile_reg_load(acc1_reg, instr.rs);
         _assembler.instr_imm<Op, Ext>(acc1_reg, instr.constant);
-        compile_reg_write(instr.dst, acc1_reg);
+        compile_reg_write(instr.rt, acc1_reg);
     }
 }
 
@@ -173,10 +173,10 @@ void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
 template <x86::CondCode Cond>
 void Compiler::compile_compare(const mips::InstructionR instr)
 {
-    compile_reg_load(acc1_reg, instr.src1);
-    compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.src2);
-    compile_reg_write(instr.dst, 0);
-    _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.dst));
+    compile_reg_load(acc1_reg, instr.rs);
+    compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.rt);
+    compile_reg_write(instr.rd, 0);
+    _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.rd));
 }
 
 template <x86::CondCode Cond>
@@ -185,8 +185,8 @@ void Compiler::compile_jump(const mips::InstructionI instr, const uint32_t addr)
     const uint32_t target_true = addr + (instr.constant << 2);
     const uint32_t target_false = addr + 4;
 
-    compile_reg_load(acc2_reg, instr.dst);
-    compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.src);
+    compile_reg_load(acc2_reg, instr.rs);
+    compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.rt);
 
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc2_reg, target_true);
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);

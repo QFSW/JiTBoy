@@ -27,9 +27,9 @@ namespace mips
         return InstructionR
         {
             .op = static_cast<OpcodeR>(funct),
-            .dst = static_cast<Register>(rd),
-            .src1 = static_cast<Register>(rs),
-            .src2 = static_cast<Register>(rt),
+            .rd = static_cast<Register>(rd),
+            .rs = static_cast<Register>(rs),
+            .rt = static_cast<Register>(rt),
             .shamt = shamt
         };
     }
@@ -47,8 +47,8 @@ namespace mips
         return InstructionI
         {
             .op = static_cast<OpcodeI>(opcode),
-            .dst = static_cast<Register>(rt),
-            .src = static_cast<Register>(rs),
+            .rt = static_cast<Register>(rt),
+            .rs = static_cast<Register>(rs),
             .constant = constant
         };
     }
@@ -76,9 +76,9 @@ namespace mips
     {
         const uint8_t op = 0;
         const uint8_t funct = static_cast<uint8_t>(instr.op);
-        const uint8_t rs = static_cast<uint8_t>(instr.src1);
-        const uint8_t rt = static_cast<uint8_t>(instr.src2);
-        const uint8_t rd = static_cast<uint8_t>(instr.dst);
+        const uint8_t rs = static_cast<uint8_t>(instr.rs);
+        const uint8_t rt = static_cast<uint8_t>(instr.rt);
+        const uint8_t rd = static_cast<uint8_t>(instr.rd);
         const uint8_t shamt = instr.shamt;
 
         uint32_t binary = 0;
@@ -94,8 +94,8 @@ namespace mips
     {
         const uint16_t constant = instr.constant;
         const uint8_t op = static_cast<uint8_t>(instr.op);
-        const uint8_t rs = static_cast<uint8_t>(instr.src);
-        const uint8_t rt = static_cast<uint8_t>(instr.dst);
+        const uint8_t rs = static_cast<uint8_t>(instr.rs);
+        const uint8_t rt = static_cast<uint8_t>(instr.rt);
 
         uint32_t binary = 0;
         binary |= constant;

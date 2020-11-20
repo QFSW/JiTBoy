@@ -9,17 +9,17 @@ namespace mips
     struct InstructionR
     {
         OpcodeR op;
-        Register dst;
-        Register src1;
-        Register src2;
+        Register rd; // dst
+        Register rs; // src1
+        Register rt; // src2
         uint8_t shamt;
     };
 
     struct InstructionI
     {
         OpcodeI op;
-        Register dst;
-        Register src;
+        Register rt; // dst
+        Register rs; // src
         int16_t constant;
     };
 
