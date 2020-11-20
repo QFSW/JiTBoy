@@ -42,7 +42,10 @@ namespace mips
         int16_t constant = 0xFFFF & binary;
 
         if (opcode == 0b000001)
+        {
             opcode = rt;
+            rt = 0;
+        }
 
         return InstructionI
         {
@@ -93,9 +96,23 @@ namespace mips
     uint32_t encode_instruction(const InstructionI instr)
     {
         const uint16_t constant = instr.constant;
-        const uint8_t op = static_cast<uint8_t>(instr.op);
         const uint8_t rs = static_cast<uint8_t>(instr.rs);
-        const uint8_t rt = static_cast<uint8_t>(instr.rt);
+        uint8_t op = static_cast<uint8_t>(instr.op);
+        uint8_t rt = static_cast<uint8_t>(instr.rt);
+
+        switch (instr.op)
+        {
+            case OpcodeI::BGEZ:
+            case OpcodeI::BGEZAL:
+            case OpcodeI::BLTZ:
+            case OpcodeI::BLTZAL:
+            {
+                rt = op;
+                op = 0b000001;
+                break;
+            }
+            default: break;
+        }
 
         uint32_t binary = 0;
         binary |= constant;
