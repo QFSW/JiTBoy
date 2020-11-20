@@ -68,8 +68,9 @@ namespace mips::testing
         for (const auto& [test, err] : failures)
         {
             std::cout << "\n";
-            std::cout << strtools::colorize(test.name, strtools::AnsiColor::Red) << "\n";
-            std::cout << test.description << "\n";
+            std::cout << colorize(test.name, strtools::AnsiColor::Red) << "\n";
+            if (!test.description.empty())
+                std::cout << test.description << "\n";
             std::cout << err;
         }
     }
