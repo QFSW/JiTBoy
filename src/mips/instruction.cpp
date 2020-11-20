@@ -32,10 +32,28 @@ namespace mips
 
     std::ostream& operator<<(std::ostream& os, const InstructionI& instr)
     {
-        os << opcode_to_string(instr.op)
-        << " " << reg_to_string(instr.dst)
-        << " " << reg_to_string(instr.src)
-        << " " << instr.constant;
+        switch (instr.op)
+        {
+            case OpcodeI::BEQ:
+            case OpcodeI::BGTZ:
+            case OpcodeI::BLEZ:
+            case OpcodeI::BNE:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.dst)
+                << " " << reg_to_string(instr.src)
+                << " " << (instr.constant << 2);
+                break;
+            }
+            default:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.dst)
+                << " " << reg_to_string(instr.src)
+                << " " << instr.constant;
+                break;
+            }
+        }
 
         return os;
     }

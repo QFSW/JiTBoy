@@ -12,6 +12,6 @@ beq $0 $2 16
 ; loop start
 add $3 $3 $2
 addi $1 $1 -1
-beq $0 $1 -12
+bne $0 $1 -8
 
 ; loop skip
