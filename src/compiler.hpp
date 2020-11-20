@@ -44,6 +44,9 @@ private:
     template <x86::Opcode Op = x86::Opcode::MOV>
     void compile_reg_load(x86::Register dst, mips::Register src);
 
+    template <x86::Opcode Op = x86::Opcode::MOV_I, x86::OpcodeExt Ext = x86::OpcodeExt::MOV_I>
+    void compile_reg_read(mips::Register src, uint32_t imm);
+
     template <x86::Opcode Op = x86::Opcode::MOV>
     void compile_reg_write(mips::Register dst, x86::Register src);
 

@@ -188,7 +188,7 @@ void Compiler::compile_compare(const mips::InstructionI instr)
 {
     if (instr.rt == mips::Register::zero) return;
 
-    _assembler.instr_imm<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I, x86::InstrMode::IM>(addr_reg, instr.constant, calc_reg_offset(instr.rs));
+    compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rs, instr.constant);
     compile_reg_write(instr.rt, 0);
     _assembler.set_cond<Cond, x86::InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
 }
@@ -199,8 +199,19 @@ void Compiler::compile_jump(const mips::InstructionI instr, const uint32_t addr)
     const uint32_t target_true = addr + (instr.constant << 2);
     const uint32_t target_false = addr + 4;
 
-    compile_reg_load(acc2_reg, instr.rs);
-    compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.rt);
+    if (instr.rs == mips::Register::zero)
+    {
+        compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rt, 0);
+    }
+    else if ((instr.rt == mips::Register::zero))
+    {
+        compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rs, 0);
+    }
+    else
+    {
+        compile_reg_load(acc2_reg, instr.rs);
+        compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.rt);
+    }
 
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc2_reg, target_true);
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
@@ -226,16 +237,27 @@ void Compiler::compile_reg_load(const x86::Register dst, const mips::Register sr
     _assembler.instr<Op, x86::InstrMode::MR>(dst, addr_reg, calc_reg_offset(src));
 }
 
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_reg_read(const mips::Register src, const uint32_t imm)
+{
+    _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, imm, calc_reg_offset(src));
+}
+
 template <x86::Opcode Op>
 void Compiler::compile_reg_write(const mips::Register dst, const x86::Register src)
 {
+    if (dst == mips::Register::zero)
+        throw std::logic_error("Cannot write to $zero");
+
     _assembler.instr<Op, x86::InstrMode::RM>(addr_reg, src, calc_reg_offset(dst));
 }
 
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_reg_write(const mips::Register dst, const uint32_t imm)
 {
-    if (dst == mips::Register::zero) return;
+    if (dst == mips::Register::zero)
+        throw std::logic_error("Cannot write to $zero");
+
     _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, imm, calc_reg_offset(dst));
 }
 
