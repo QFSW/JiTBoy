@@ -9,9 +9,9 @@ namespace mips::testing
     class Parser
     {
     public:
-        Test parse_test(const std::string& raw) const;
-        Assertion parse_assertion(const std::string& raw) const;
-        Initializer parse_initializer(const std::string& raw) const;
+        [[nodiscard]] Test parse_test(const std::string& raw) const;
+        [[nodiscard]] Assertion parse_assertion(const std::string& raw) const;
+        [[nodiscard]] Initializer parse_initializer(const std::string& raw) const;
 
     private:
         mips::Parser _mips_parser;

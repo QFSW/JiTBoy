@@ -10,8 +10,8 @@ namespace mips
     class Loader
     {
     public:
-        std::vector<Instruction> load_assembly(const std::string& filepath) const;
-        std::vector<Instruction> load_binary(const std::string& filepath) const;
+        [[nodiscard]] std::vector<Instruction> load_assembly(const std::string& filepath) const;
+        [[nodiscard]] std::vector<Instruction> load_binary(const std::string& filepath) const;
 
     private:
         Parser _parser;

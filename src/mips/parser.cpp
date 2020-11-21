@@ -316,7 +316,7 @@ namespace mips
 
             return std::stoul(value, nullptr, 10);
         }
-        catch (const std::invalid_argument& e)
+        catch (const std::invalid_argument&)
         {
             throw std::invalid_argument("Could not parse constant " + value);
         }
