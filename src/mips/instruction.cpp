@@ -43,6 +43,18 @@ namespace mips
                 << " " << (instr.constant << 2);
                 break;
             }
+            case OpcodeI::BGEZ:
+            case OpcodeI::BGTZ:
+            case OpcodeI::BLTZ:
+            case OpcodeI::BLEZ:
+            case OpcodeI::BGEZAL:
+            case OpcodeI::BLTZAL:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.rs)
+                << " " << (instr.constant << 2);
+                break;
+            }
             default:
             {
                 os << opcode_to_string(instr.op)

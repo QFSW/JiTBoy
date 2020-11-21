@@ -66,7 +66,10 @@ private:
     void compile_compare(mips::InstructionI instr);
 
     template <x86::CondCode Cond>
-    void compile_jump(mips::InstructionI instr, uint32_t addr);
+    void compile_branch(mips::InstructionI instr, uint32_t addr);
+
+    template <x86::CondCode Cond>
+    void compile_branch_and_link(mips::InstructionI instr, uint32_t addr);
 
     void compile_call(void (*f)());
     void compile_jump(uint32_t target);

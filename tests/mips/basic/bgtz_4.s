@@ -1,4 +1,4 @@
-; desc: bltz backwards not taken
+; desc: bgtz backwards not taken
 ;
 ; init: $3 = 0
 ; init: $4 = 1
@@ -9,6 +9,6 @@
 addi $3 $3 -1
 addi $3 $3 -1
 addi $3 $3 -1
-bltz $3 -12
+bgtz $3 -12
 
 addi $4 $0 1

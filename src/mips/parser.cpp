@@ -52,6 +52,13 @@ namespace mips
         if (op == "beq")    return parse_instruction_i_branch(OpcodeI::BEQ, instr, parts);
         if (op == "bne")    return parse_instruction_i_branch(OpcodeI::BNE, instr, parts);
 
+        if (op == "bgtz")   return parse_instruction_i_branch_no_dst(OpcodeI::BGTZ, instr, parts);
+        if (op == "blez")   return parse_instruction_i_branch_no_dst(OpcodeI::BLEZ, instr, parts);
+        if (op == "bgez")   return parse_instruction_i_branch_no_dst(OpcodeI::BGEZ, instr, parts);
+        if (op == "bltz")   return parse_instruction_i_branch_no_dst(OpcodeI::BLTZ, instr, parts);
+        if (op == "bgezal") return parse_instruction_i_branch_no_dst(OpcodeI::BGEZAL, instr, parts);
+        if (op == "bltzal") return parse_instruction_i_branch_no_dst(OpcodeI::BLTZAL, instr, parts);
+
         if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr, parts);
         if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr, parts);
 
@@ -176,6 +183,23 @@ namespace mips
         {
             .op = opcode,
             .rt = dst,
+            .rs = src,
+            .constant = constant
+        };
+    }
+
+    InstructionI Parser::parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    {
+        if (parts.size() != 3)
+            throw std::invalid_argument("This I type instruction should have 3 parts - cannot parse " + instr);
+
+        Register src = parse_register(parts[1]);
+        int16_t constant = static_cast<uint16_t>(parse_constant_32(parts[2]) >> 2);
+
+        return InstructionI
+        {
+            .op = opcode,
+            .rt = Register::zero,
             .rs = src,
             .constant = constant
         };

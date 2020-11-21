@@ -92,18 +92,19 @@ void Compiler::compile(const mips::Instruction instr, const uint32_t addr)
 
 void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
 {
+    using namespace x86;
     switch (instr.op)
     {
-        case mips::OpcodeR::ADDU: compile<x86::Opcode::ADD>(instr); break;
-        case mips::OpcodeR::ADD:  compile<x86::Opcode::ADD>(instr); break;
-        case mips::OpcodeR::SUBU: compile<x86::Opcode::SUB>(instr); break;
-        case mips::OpcodeR::SUB:  compile<x86::Opcode::SUB>(instr); break;
-        case mips::OpcodeR::AND:  compile<x86::Opcode::AND>(instr); break;
-        case mips::OpcodeR::OR:   compile<x86::Opcode::OR>(instr); break;
-        case mips::OpcodeR::XOR:  compile<x86::Opcode::XOR>(instr); break;
+        case mips::OpcodeR::ADDU: compile<Opcode::ADD>(instr); break;
+        case mips::OpcodeR::ADD:  compile<Opcode::ADD>(instr); break;
+        case mips::OpcodeR::SUBU: compile<Opcode::SUB>(instr); break;
+        case mips::OpcodeR::SUB:  compile<Opcode::SUB>(instr); break;
+        case mips::OpcodeR::AND:  compile<Opcode::AND>(instr); break;
+        case mips::OpcodeR::OR:   compile<Opcode::OR>(instr); break;
+        case mips::OpcodeR::XOR:  compile<Opcode::XOR>(instr); break;
         case mips::OpcodeR::JR:   compile_jump(instr.rs); break;
-        case mips::OpcodeR::SLT:  compile_compare<x86::CondCode::L>(instr); break;
-        case mips::OpcodeR::SLTU: compile_compare<x86::CondCode::B>(instr); break;
+        case mips::OpcodeR::SLT:  compile_compare<CondCode::L>(instr); break;
+        case mips::OpcodeR::SLTU: compile_compare<CondCode::B>(instr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -128,21 +129,24 @@ void Compiler::compile(const mips::InstructionR instr)
 
 void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
 {
+    using namespace x86;
     switch (instr.op)
     {
-        case mips::OpcodeI::ADDIU: compile<x86::Opcode::ADD_I, x86::OpcodeExt::ADD_I>(instr); break;
-        case mips::OpcodeI::ADDI:  compile<x86::Opcode::ADD_I, x86::OpcodeExt::ADD_I>(instr); break;
-        case mips::OpcodeI::ANDI:  compile<x86::Opcode::AND_I, x86::OpcodeExt::AND_I>(instr); break;
-        case mips::OpcodeI::ORI:   compile<x86::Opcode::OR_I, x86::OpcodeExt::OR_I>(instr); break;
-        case mips::OpcodeI::XORI:  compile<x86::Opcode::XOR_I, x86::OpcodeExt::XOR_I>(instr); break;
-        case mips::OpcodeI::SLTI:  compile_compare<x86::CondCode::L>(instr); break;
-        case mips::OpcodeI::SLTIU: compile_compare<x86::CondCode::B>(instr); break;
-        case mips::OpcodeI::BEQ:   compile_jump<x86::CondCode::E>(instr, addr); break;
-        case mips::OpcodeI::BNE:   compile_jump<x86::CondCode::NE>(instr, addr); break;
-        case mips::OpcodeI::BGTZ:  compile_jump<x86::CondCode::G>(instr, addr); break;
-        case mips::OpcodeI::BLEZ:  compile_jump<x86::CondCode::LE>(instr, addr); break;
-        case mips::OpcodeI::BGEZ:  compile_jump<x86::CondCode::GE>(instr, addr); break;
-        case mips::OpcodeI::BLTZ:  compile_jump<x86::CondCode::L>(instr, addr); break;
+        case mips::OpcodeI::ADDIU:  compile<Opcode::ADD_I, OpcodeExt::ADD_I>(instr); break;
+        case mips::OpcodeI::ADDI:   compile<Opcode::ADD_I, OpcodeExt::ADD_I>(instr); break;
+        case mips::OpcodeI::ANDI:   compile<Opcode::AND_I, OpcodeExt::AND_I>(instr); break;
+        case mips::OpcodeI::ORI:    compile<Opcode::OR_I,  OpcodeExt::OR_I>(instr); break;
+        case mips::OpcodeI::XORI:   compile<Opcode::XOR_I, OpcodeExt::XOR_I>(instr); break;
+        case mips::OpcodeI::SLTI:   compile_compare<CondCode::L>(instr); break;
+        case mips::OpcodeI::SLTIU:  compile_compare<CondCode::B>(instr); break;
+        case mips::OpcodeI::BEQ:    compile_branch<CondCode::E>(instr, addr); break;
+        case mips::OpcodeI::BNE:    compile_branch<CondCode::NE>(instr, addr); break;
+        case mips::OpcodeI::BGTZ:   compile_branch<CondCode::G>(instr, addr); break;
+        case mips::OpcodeI::BLEZ:   compile_branch<CondCode::LE>(instr, addr); break;
+        case mips::OpcodeI::BGEZ:   compile_branch<CondCode::GE>(instr, addr); break;
+        case mips::OpcodeI::BLTZ:   compile_branch<CondCode::L>(instr, addr); break;
+        case mips::OpcodeI::BGEZAL: compile_branch_and_link<CondCode::GE>(instr, addr); break;
+        case mips::OpcodeI::BLTZAL: compile_branch_and_link<CondCode::L>(instr, addr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -206,7 +210,7 @@ void Compiler::compile_compare(const mips::InstructionI instr)
 }
 
 template <x86::CondCode Cond>
-void Compiler::compile_jump(const mips::InstructionI instr, const uint32_t addr)
+void Compiler::compile_branch(const mips::InstructionI instr, const uint32_t addr)
 {
     const uint32_t target_true = addr + (instr.constant << 2);
     const uint32_t target_false = addr + 4;
@@ -229,6 +233,14 @@ void Compiler::compile_jump(const mips::InstructionI instr, const uint32_t addr)
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
     _assembler.move_cond<Cond>(return_reg, acc2_reg);
     _assembler.instr<x86::Opcode::RET>();
+}
+
+template <x86::CondCode Cond>
+void Compiler::compile_branch_and_link(const mips::InstructionI instr, const uint32_t addr)
+{
+    const uint32_t link = addr + 4;
+    compile_reg_write(mips::Register::ra, link);
+    compile_branch<Cond>(instr, addr);
 }
 
 void Compiler::throw_invalid_instr(mips::Instruction instr)
