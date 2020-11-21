@@ -112,10 +112,18 @@ template <x86::Opcode Op>
 void Compiler::compile(const mips::InstructionR instr)
 {
     if (instr.rd == mips::Register::zero) return;
-    
-    compile_reg_load(acc1_reg, instr.rs);
-    compile_reg_load<Op>(acc1_reg, instr.rt);
-    compile_reg_write(instr.rd, acc1_reg);
+
+    if (instr.rs == instr.rd)
+    {
+        compile_reg_load(acc1_reg, instr.rt);
+        compile_reg_write<Op>(instr.rd, acc1_reg);
+    }
+    else
+    {
+        compile_reg_load(acc1_reg, instr.rs);
+        compile_reg_load<Op>(acc1_reg, instr.rt);
+        compile_reg_write(instr.rd, acc1_reg);
+    }
 }
 
 void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
