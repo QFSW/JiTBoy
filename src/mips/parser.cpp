@@ -14,7 +14,7 @@ namespace mips
         const auto parts = strtools::split(instr, ' ');
 
         if (parts.empty())
-            throw std::logic_error("Cannot parse empty instruction");
+            throw std::invalid_argument("Cannot parse empty instruction");
 
         const auto& op = parts[0];
 
@@ -55,7 +55,7 @@ namespace mips
         if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr, parts);
         if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr, parts);
 
-        throw std::logic_error("Could not parse opcode " + op);
+        throw std::invalid_argument("Could not parse opcode " + op);
     }
 
     std::vector<Instruction> Parser::parse_instructions(const std::string& assembly) const
@@ -79,7 +79,7 @@ namespace mips
     InstructionR Parser::parse_nop(const std::string& instr, const std::vector<std::string>& parts) const
     {
         if (parts.size() != 1)
-            throw std::logic_error("nop does not take any arguments - cannot parse " + instr);
+            throw std::invalid_argument("nop does not take any arguments - cannot parse " + instr);
 
         return InstructionR
         {
@@ -94,7 +94,7 @@ namespace mips
     InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
     {
         if (parts.size() != 4)
-            throw std::logic_error("This R type instruction should have 4 parts - cannot parse " + instr);
+            throw std::invalid_argument("This R type instruction should have 4 parts - cannot parse " + instr);
 
         Register dst = parse_register(parts[1]);
         Register src1 = parse_register(parts[2]);
@@ -113,7 +113,7 @@ namespace mips
     InstructionR Parser::parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
     {
         if (parts.size() != 3)
-            throw std::logic_error("This R type instruction should have 3 parts - cannot parse " + instr);
+            throw std::invalid_argument("This R type instruction should have 3 parts - cannot parse " + instr);
 
         Register src1 = parse_register(parts[1]);
         Register src2 = parse_register(parts[2]);
@@ -131,7 +131,7 @@ namespace mips
     InstructionR Parser::parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
     {
         if (parts.size() != 2)
-            throw std::logic_error("This R type instruction should have 2 parts - cannot parse " + instr);
+            throw std::invalid_argument("This R type instruction should have 2 parts - cannot parse " + instr);
 
         Register src = parse_register(parts[1]);
 
@@ -148,7 +148,7 @@ namespace mips
     InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts) const
     {
         if (parts.size() != 4)
-            throw std::logic_error("This I type instruction should have 4 parts - cannot parse " + instr);
+            throw std::invalid_argument("This I type instruction should have 4 parts - cannot parse " + instr);
 
         Register dst = parse_register(parts[1]);
         Register src = parse_register(parts[2]);
@@ -166,7 +166,7 @@ namespace mips
     InstructionI Parser::parse_instruction_i_branch(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts) const
     {
         if (parts.size() != 4)
-            throw std::logic_error("This I type instruction should have 4 parts - cannot parse " + instr);
+            throw std::invalid_argument("This I type instruction should have 4 parts - cannot parse " + instr);
 
         Register dst = parse_register(parts[1]);
         Register src = parse_register(parts[2]);
@@ -184,7 +184,7 @@ namespace mips
     InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr, const std::vector<std::string>& parts) const
     {
         if (parts.size() != 2)
-            throw std::logic_error("This J type instruction should have 2 parts - cannot parse " + instr);
+            throw std::invalid_argument("This J type instruction should have 2 parts - cannot parse " + instr);
 
         uint32_t target = parse_constant_32(parts[1]);
 
@@ -282,13 +282,20 @@ namespace mips
 
     uint32_t Parser::parse_constant_32(const std::string& value) const
     {
-        if (value.starts_with("0x"))
-            return std::stoul(&value[2], nullptr, 16);
+        try
+        {
+            if (value.starts_with("0x"))
+                return std::stoul(&value[2], nullptr, 16);
 
-        if (value.starts_with("0b"))
-            return std::stoul(&value[2], nullptr, 2);
+            if (value.starts_with("0b"))
+                return std::stoul(&value[2], nullptr, 2);
 
-        return std::stoul(value, nullptr, 10);
+            return std::stoul(value, nullptr, 10);
+        }
+        catch (const std::invalid_argument& e)
+        {
+            throw std::invalid_argument("Could not parse constant " + value);
+        }
     }
 
     uint16_t Parser::parse_constant_16(const std::string& value) const
