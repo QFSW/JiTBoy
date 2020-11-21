@@ -1,9 +1,9 @@
-; desc: bgtz backwards taken
+; desc: bgtz backwards not taken
 ;
-; init: $3 = 2
+; init: $3 = 3
 ; init: $4 = 1
 ;
-; assert: $3 == -4
+; assert: $3 == 0
 ; assert: $4 == 1
 
 addi $3 $3 -1
