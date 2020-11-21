@@ -139,6 +139,8 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
         case mips::OpcodeI::SLTIU: compile_compare<x86::CondCode::B>(instr); break;
         case mips::OpcodeI::BEQ:   compile_jump<x86::CondCode::E>(instr, addr); break;
         case mips::OpcodeI::BNE:   compile_jump<x86::CondCode::NE>(instr, addr); break;
+        case mips::OpcodeI::BGTZ:  compile_jump<x86::CondCode::G>(instr, addr); break;
+        case mips::OpcodeI::BLEZ:  compile_jump<x86::CondCode::L>(instr, addr); break;
         default: throw_invalid_instr(instr);
     }
 }
