@@ -14,7 +14,8 @@ namespace mips
         if (parts.empty())
             throw std::invalid_argument("Cannot parse empty instruction");
 
-        const auto& op = parts[0];
+        static const auto parser = generate_parser<std::string>(R"((\w+).*)");
+        const auto [op] = parser.evaluate(instr);
 
         if (op == "nop")    return parse_nop(instr, parts);
 
@@ -102,7 +103,7 @@ namespace mips
 
     InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr) const
     {
-        static auto parser = generate_parser<Register, Register, Register>(R"(\w+ ?? ?? ??)");
+        static const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ?? ?? ??)");
         const auto [dst, src1, src2] = parser.evaluate(instr);
 
         return InstructionR
@@ -353,4 +354,5 @@ namespace mips
     template<> uint32_t Parser::Inner::parse(const std::string& raw) { return parse_constant_32(raw); }
     template<> uint16_t Parser::Inner::parse(const std::string& raw) { return parse_constant_16(raw); }
     template<> uint8_t Parser::Inner::parse(const std::string& raw) { return parse_constant_8(raw); }
+    template<> std::string Parser::Inner::parse(const std::string& raw) { return raw; }
 }

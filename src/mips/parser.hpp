@@ -60,9 +60,13 @@ namespace mips
         };
 
         std::string gen = pattern;
+
         variadic::loop_types<Ts...>::execute([&](const auto& type)
         {
-            const char* p;
+            if (!strtools::str_contains(gen, "??"))
+                return;
+
+            const char* p = nullptr;
             if (type == typeid(Register)) p = reg_pattern;
             else if (type == typeid(uint32_t)) p = literal_pattern;
             else if (type == typeid(uint16_t)) p = literal_pattern;
@@ -79,7 +83,7 @@ namespace mips
         }
 
         gen = strtools::catf(R"(^\s*%s\s*(?:#.*)?$)", gen.c_str());
-        std::regex reg(gen, std::regex_constants::icase | std::regex_constants::optimize);
+        std::regex reg(gen, std::regex_constants::optimize);
         return RegexParser<Inner, Ts...>(std::move(reg));
     }
 }

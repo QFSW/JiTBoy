@@ -30,4 +30,9 @@ namespace strtools
 	{
 		while (replace_substr(str, to_find, to_replace)) { }
 	}
+
+	bool str_contains(const std::string& str, const std::string& substr)
+	{
+		return str.find(substr) != std::string::npos;
+	}
 }
