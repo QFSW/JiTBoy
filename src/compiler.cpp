@@ -157,18 +157,7 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile(const mips::InstructionI instr)
 {
-    if (instr.rt == mips::Register::zero) return;
-
-    if (instr.rt == instr.rs)
-    {
-        compile_reg_write<Op, Ext>(instr.rt, instr.constant);
-    }
-    else
-    {
-        compile_reg_load(acc1_reg, instr.rs);
-        _assembler.instr_imm<Op, Ext>(acc1_reg, instr.constant);
-        compile_reg_write(instr.rt, acc1_reg);
-    }
+    compile_imm<Op, Ext>(instr.rt, instr.rs, instr.constant);
 }
 
 void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
@@ -194,17 +183,23 @@ void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_shift_imm(const mips::InstructionR instr)
 {
-    if (instr.rt == mips::Register::zero) return;
+    compile_imm<Op, Ext>(instr.rd, instr.rt, instr.sa);
+}
 
-    if (instr.rt == instr.rs)
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_imm(const mips::Register dst, const mips::Register src, const uint32_t imm)
+{
+    if (dst == mips::Register::zero) return;
+
+    if (dst == src)
     {
-        compile_reg_write<Op, Ext>(instr.rd, instr.sa);
+        compile_reg_write<Op, Ext>(dst, imm);
     }
     else
     {
-        compile_reg_load(acc1_reg, instr.rt);
-        _assembler.instr_imm<Op, Ext>(acc1_reg, instr.sa);
-        compile_reg_write(instr.rd, acc1_reg);
+        compile_reg_load(acc1_reg, src);
+        _assembler.instr_imm<Op, Ext>(acc1_reg, imm);
+        compile_reg_write(dst, acc1_reg);
     }
 }
 
