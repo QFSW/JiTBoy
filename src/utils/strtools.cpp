@@ -13,4 +13,13 @@ namespace strtools
 	{
 		return catf("\033[1;%dm%s\033[0m", col, str.c_str());
 	}
+
+	void replace_substr(std::string& str, const std::string& to_find, const std::string& to_replace)
+	{
+		size_t pos = str.find(to_find);
+		if (pos != std::string::npos)
+		{
+			str.replace(pos, to_find.size(), to_replace);
+		}
+	}
 }

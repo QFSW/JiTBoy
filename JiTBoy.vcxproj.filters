@@ -191,6 +191,9 @@
     <ClInclude Include="src\mips\testing\initializer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\regex_parser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\test_main.s" />

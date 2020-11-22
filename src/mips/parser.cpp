@@ -3,8 +3,6 @@
 #include <map>
 #include <stdexcept>
 
-#include <utils/strtools.hpp>
-
 namespace mips
 {
     const std::regex Parser::comment_regex(R"(\s*#.*)");
@@ -20,19 +18,19 @@ namespace mips
 
         if (op == "nop")    return parse_nop(instr, parts);
 
-        if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr, parts);
-        if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr, parts);
-        if (op == "sub")    return parse_instruction_r(OpcodeR::SUB, instr, parts);
-        if (op == "subu")   return parse_instruction_r(OpcodeR::SUBU, instr, parts);
-        if (op == "and")    return parse_instruction_r(OpcodeR::AND, instr, parts);
-        if (op == "or")     return parse_instruction_r(OpcodeR::OR, instr, parts);
-        if (op == "nor")    return parse_instruction_r(OpcodeR::NOR, instr, parts);
-        if (op == "xor")    return parse_instruction_r(OpcodeR::XOR, instr, parts);
-        if (op == "slt")    return parse_instruction_r(OpcodeR::SLT, instr, parts);
-        if (op == "sltu")   return parse_instruction_r(OpcodeR::SLTU, instr, parts);
-        if (op == "sllv")   return parse_instruction_r(OpcodeR::SLLV, instr, parts);
-        if (op == "srav")   return parse_instruction_r(OpcodeR::SRAV, instr, parts);
-        if (op == "srlv")   return parse_instruction_r(OpcodeR::SRLV, instr, parts);
+        if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr);
+        if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr);
+        if (op == "sub")    return parse_instruction_r(OpcodeR::SUB, instr);
+        if (op == "subu")   return parse_instruction_r(OpcodeR::SUBU, instr);
+        if (op == "and")    return parse_instruction_r(OpcodeR::AND, instr);
+        if (op == "or")     return parse_instruction_r(OpcodeR::OR, instr);
+        if (op == "nor")    return parse_instruction_r(OpcodeR::NOR, instr);
+        if (op == "xor")    return parse_instruction_r(OpcodeR::XOR, instr);
+        if (op == "slt")    return parse_instruction_r(OpcodeR::SLT, instr);
+        if (op == "sltu")   return parse_instruction_r(OpcodeR::SLTU, instr);
+        if (op == "sllv")   return parse_instruction_r(OpcodeR::SLLV, instr);
+        if (op == "srav")   return parse_instruction_r(OpcodeR::SRAV, instr);
+        if (op == "srlv")   return parse_instruction_r(OpcodeR::SRLV, instr);
 
         if (op == "sll")    return parse_instruction_r_sa(OpcodeR::SLL, instr, parts);
         if (op == "sra")    return parse_instruction_r_sa(OpcodeR::SRA, instr, parts);
@@ -102,14 +100,14 @@ namespace mips
         };
     }
 
-    InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr) const
     {
-        if (parts.size() != 4)
-            throw std::invalid_argument("This R type instruction should have 4 parts - cannot parse " + instr);
+        static auto parser = generate_parser<Register, Register, Register>(R"(\w+\s+??\s+??\s+??)");
 
-        Register dst = parse_register(parts[1]);
-        Register src1 = parse_register(parts[2]);
-        Register src2 = parse_register(parts[3]);
+        Register dst;
+        Register src1;
+        Register src2;
+        std::tie(dst, src1, src2) = parser.evaluate(instr);
 
         return InstructionR
         {
@@ -242,7 +240,7 @@ namespace mips
         };
     }
 
-    Register Parser::parse_register(const std::string& reg) const
+    Register Parser::parse_register(const std::string& reg)
     {
         static const std::map<std::string, Register> reg_mapping =
         {
@@ -327,7 +325,7 @@ namespace mips
         return reg_mapping.at(reg);
     }
 
-    uint32_t Parser::parse_constant_32(const std::string& value) const
+    uint32_t Parser::parse_constant_32(const std::string& value)
     {
         try
         {
@@ -345,13 +343,18 @@ namespace mips
         }
     }
 
-    uint16_t Parser::parse_constant_16(const std::string& value) const
+    uint16_t Parser::parse_constant_16(const std::string& value)
     {
         return static_cast<uint16_t>(parse_constant_32(value));
     }
 
-    uint8_t Parser::parse_constant_8(const std::string& value) const
+    uint8_t Parser::parse_constant_8(const std::string& value)
     {
         return static_cast<uint8_t>(parse_constant_32(value));
     }
+
+    template<> Register Parser::Inner::parse(const std::string& raw) { return parse_register(raw); }
+    template<> uint32_t Parser::Inner::parse(const std::string& raw) { return parse_constant_32(raw); }
+    template<> uint16_t Parser::Inner::parse(const std::string& raw) { return parse_constant_16(raw); }
+    template<> uint8_t Parser::Inner::parse(const std::string& raw) { return parse_constant_8(raw); }
 }
