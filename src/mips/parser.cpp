@@ -103,11 +103,7 @@ namespace mips
     InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr) const
     {
         static auto parser = generate_parser<Register, Register, Register>(R"(\w+ ?? ?? ??)");
-
-        Register dst;
-        Register src1;
-        Register src2;
-        std::tie(dst, src1, src2) = parser.evaluate(instr);
+        const auto [dst, src1, src2] = parser.evaluate(instr);
 
         return InstructionR
         {
