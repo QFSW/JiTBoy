@@ -94,7 +94,7 @@ namespace mips
             .rd = Register::zero,
             .rs = Register::zero,
             .rt = Register::zero,
-            .shamt = 0
+            .sa = 0
         };
     }
 
@@ -113,7 +113,7 @@ namespace mips
             .rd = dst,
             .rs = src1,
             .rt = src2,
-            .shamt = 0
+            .sa = 0
         };
     }
 
@@ -131,7 +131,7 @@ namespace mips
             .rd = Register::zero,
             .rs = src1,
             .rt = src2,
-            .shamt = 0
+            .sa = 0
         };
     }
 
@@ -148,7 +148,7 @@ namespace mips
             .rd = Register::zero,
             .rs = src,
             .rt = Register::zero,
-            .shamt = 0
+            .sa = 0
         };
     }
 

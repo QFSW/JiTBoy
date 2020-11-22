@@ -105,6 +105,9 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::JR:   compile_jump(instr.rs); break;
         case mips::OpcodeR::SLT:  compile_compare<CondCode::L>(instr); break;
         case mips::OpcodeR::SLTU: compile_compare<CondCode::B>(instr); break;
+        case mips::OpcodeR::SLL:  compile_shift_imm<Opcode::SHL_I, OpcodeExt::SHL_I>(instr); break;
+        case mips::OpcodeR::SRA:  compile_shift_imm<Opcode::SAR_I, OpcodeExt::SAR_I>(instr); break;
+        case mips::OpcodeR::SRL:  compile_shift_imm<Opcode::SHR_I, OpcodeExt::SHR_I>(instr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -185,6 +188,23 @@ void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
             break;
         }
         default: throw_invalid_instr(instr);
+    }
+}
+
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_shift_imm(const mips::InstructionR instr)
+{
+    if (instr.rt == mips::Register::zero) return;
+
+    if (instr.rt == instr.rs)
+    {
+        compile_reg_write<Op, Ext>(instr.rd, instr.sa);
+    }
+    else
+    {
+        compile_reg_load(acc1_reg, instr.rt);
+        _assembler.instr_imm<Op, Ext>(acc1_reg, instr.sa);
+        compile_reg_write(instr.rd, acc1_reg);
     }
 }
 

@@ -21,7 +21,7 @@ namespace mips
         uint8_t rs = 0b11111 & (binary >> (32 - (6 + 5)));
         uint8_t rt = 0b11111 & (binary >> (32 - (6 + 5 + 5)));
         uint8_t rd = 0b11111 & (binary >> (32 - (6 + 5 + 5 + 5)));
-        uint8_t shamt = 0b11111 & (binary >> (32 - (6 + 5 + 5 + 5 + 5)));
+        uint8_t sa = 0b11111 & (binary >> (32 - (6 + 5 + 5 + 5 + 5)));
         uint8_t funct = 0b111111 & binary;
 
         return InstructionR
@@ -30,7 +30,7 @@ namespace mips
             .rd = static_cast<Register>(rd),
             .rs = static_cast<Register>(rs),
             .rt = static_cast<Register>(rt),
-            .shamt = shamt
+            .sa = sa
         };
     }
 
@@ -82,7 +82,7 @@ namespace mips
         const uint8_t rs = static_cast<uint8_t>(instr.rs);
         const uint8_t rt = static_cast<uint8_t>(instr.rt);
         const uint8_t rd = static_cast<uint8_t>(instr.rd);
-        const uint8_t shamt = instr.shamt;
+        const uint8_t shamt = instr.sa;
 
         uint32_t binary = 0;
         binary |= funct;

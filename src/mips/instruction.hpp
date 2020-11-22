@@ -12,7 +12,7 @@ namespace mips
         Register rd; // dst
         Register rs; // src1
         Register rt; // src2
-        uint8_t shamt;
+        uint8_t sa;
     };
 
     struct InstructionI
