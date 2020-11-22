@@ -17,6 +17,16 @@ namespace mips
                 << " " << reg_to_string(instr.rs);
                 break;
             }
+            case OpcodeR::SLL:
+            case OpcodeR::SRA:
+            case OpcodeR::SRL:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.rd)
+                << " " << reg_to_string(instr.rs)
+                << " " << instr.sa;
+                break;
+            }
             default:
             {
                 os << opcode_to_string(instr.op)
