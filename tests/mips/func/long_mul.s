@@ -1,17 +1,17 @@
-; desc: basic long multiply algorithm without carry
-;
-; init: $1 = 20
-; init: $2 = 30
-; assert: $3 == 600
+# desc: basic long multiply algorithm without carry
+#
+# init: $1 = 20
+# init: $2 = 30
+# assert: $3 == 600
 
-; setup
+# setup
 addi $3 $0 0
 beq $0 $1 20
 beq $0 $2 16
 
-; loop start
+# loop start
 add $3 $3 $2
 addi $1 $1 -1
 bne $0 $1 -8
 
-; loop skip
+# loop skip

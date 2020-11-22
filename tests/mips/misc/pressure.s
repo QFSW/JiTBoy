@@ -1,38 +1,38 @@
-; name: register pressure
-; desc: utilizes every register
-;
-; assert: $0 == 0
-; assert: $1 == 1
-; assert: $2 == 2
-; assert: $3 == 3
-; assert: $4 == 4
-; assert: $5 == 5
-; assert: $6 == 6
-; assert: $7 == 7
-; assert: $8 == 8
-; assert: $9 == 9
-; assert: $10 == 10
-; assert: $11 == 11
-; assert: $12 == 12
-; assert: $13 == 13
-; assert: $14 == 14
-; assert: $15 == 15
-; assert: $16 == 16
-; assert: $17 == 17
-; assert: $18 == 18
-; assert: $19 == 19
-; assert: $20 == 20
-; assert: $21 == 21
-; assert: $22 == 22
-; assert: $23 == 23
-; assert: $24 == 24
-; assert: $25 == 25
-; assert: $26 == 26
-; assert: $27 == 27
-; assert: $28 == 28
-; assert: $29 == 29
-; assert: $30 == 30
-; assert: $31 == 31
+# name: register pressure
+# desc: utilizes every register
+#
+# assert: $0 == 0
+# assert: $1 == 1
+# assert: $2 == 2
+# assert: $3 == 3
+# assert: $4 == 4
+# assert: $5 == 5
+# assert: $6 == 6
+# assert: $7 == 7
+# assert: $8 == 8
+# assert: $9 == 9
+# assert: $10 == 10
+# assert: $11 == 11
+# assert: $12 == 12
+# assert: $13 == 13
+# assert: $14 == 14
+# assert: $15 == 15
+# assert: $16 == 16
+# assert: $17 == 17
+# assert: $18 == 18
+# assert: $19 == 19
+# assert: $20 == 20
+# assert: $21 == 21
+# assert: $22 == 22
+# assert: $23 == 23
+# assert: $24 == 24
+# assert: $25 == 25
+# assert: $26 == 26
+# assert: $27 == 27
+# assert: $28 == 28
+# assert: $29 == 29
+# assert: $30 == 30
+# assert: $31 == 31
 
 addi $0 $0 0
 addi $1 $0 1

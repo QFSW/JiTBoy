@@ -219,7 +219,7 @@ void Compiler::compile_branch(const mips::InstructionI instr, const uint32_t add
     {
         compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rt, 0);
     }
-    else if ((instr.rt == mips::Register::zero))
+    else if (instr.rt == mips::Register::zero)
     {
         compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rs, 0);
     }

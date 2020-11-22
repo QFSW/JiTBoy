@@ -7,7 +7,7 @@
 
 namespace mips
 {
-    const std::regex Parser::comment_regex(R"(\s*;.*)");
+    const std::regex Parser::comment_regex(R"(\s*#.*)");
 
     Instruction Parser::parse_instruction(const std::string& instr) const
     {

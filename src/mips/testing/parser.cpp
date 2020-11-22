@@ -8,7 +8,7 @@ namespace mips::testing
 {
     std::regex Parser::gen_regex(const std::string& id)
     {
-        return std::regex(R"(\s*;\s*)" + id + R"(:\s*(.+))");
+        return std::regex(R"(\s*#\s*)" + id + R"(:\s*(.+))");
     }
 
     const std::regex Parser::assert_regex = gen_regex("assert");
