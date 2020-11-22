@@ -21,6 +21,7 @@ namespace mips::utils
                 switch (x.op)
                 {
                     case OpcodeI::BEQ:
+                    case OpcodeI::BNE:
                     case OpcodeI::BGTZ:
                     case OpcodeI::BLEZ:
                     case OpcodeI::BGEZ:

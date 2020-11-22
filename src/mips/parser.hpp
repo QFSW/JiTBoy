@@ -17,10 +17,12 @@ namespace mips
         [[nodiscard]] Register parse_register(const std::string& reg) const;
         [[nodiscard]] uint32_t parse_constant_32(const std::string& value) const;
         [[nodiscard]] uint16_t parse_constant_16(const std::string& value) const;
+        [[nodiscard]] uint8_t parse_constant_8(const std::string& value) const;
 
     private:
         [[nodiscard]] InstructionR parse_nop(const std::string& instr, const std::vector<std::string>& parts) const;
         [[nodiscard]] InstructionR parse_instruction_r(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const;
+        [[nodiscard]] InstructionR parse_instruction_r_sa(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const;
         [[nodiscard]] InstructionR parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const;
         [[nodiscard]] InstructionR parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const;
         [[nodiscard]] InstructionI parse_instruction_i(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts) const;

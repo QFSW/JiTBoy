@@ -10,5 +10,6 @@ addi $3 $3 1
 addi $3 $3 1
 addi $3 $3 1
 bltz $3 -12
+nop
 
 addi $4 $0 1

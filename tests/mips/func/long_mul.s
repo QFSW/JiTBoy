@@ -6,12 +6,14 @@
 
 # setup
 addi $3 $0 0
-beq $0 $1 20
-beq $0 $2 16
+beq $0 $1 28
+beq $0 $2 24
+nop
 
 # loop start
 add $3 $3 $2
 addi $1 $1 -1
 bne $0 $1 -8
+nop
 
 # loop skip

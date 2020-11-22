@@ -34,6 +34,10 @@ namespace mips
         if (op == "srav")   return parse_instruction_r(OpcodeR::SRAV, instr, parts);
         if (op == "srlv")   return parse_instruction_r(OpcodeR::SRLV, instr, parts);
 
+        if (op == "sll")    return parse_instruction_r_sa(OpcodeR::SLL, instr, parts);
+        if (op == "sra")    return parse_instruction_r_sa(OpcodeR::SRA, instr, parts);
+        if (op == "srl")    return parse_instruction_r_sa(OpcodeR::SRL, instr, parts);
+
         if (op == "mult")   return parse_instruction_r_no_dst(OpcodeR::MULT, instr, parts);
         if (op == "multu")  return parse_instruction_r_no_dst(OpcodeR::MULTU, instr, parts);
         if (op == "div")    return parse_instruction_r_no_dst(OpcodeR::DIV, instr, parts);
@@ -114,6 +118,25 @@ namespace mips
             .rs = src1,
             .rt = src2,
             .sa = 0
+        };
+    }
+
+    InstructionR Parser::parse_instruction_r_sa(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    {
+        if (parts.size() != 4)
+            throw std::invalid_argument("This R type instruction should have 4 parts - cannot parse " + instr);
+
+        Register dst = parse_register(parts[1]);
+        Register src1 = parse_register(parts[2]);
+        uint8_t sa = parse_constant_8(parts[3]);
+
+        return InstructionR
+        {
+            .op = opcode,
+            .rd = dst,
+            .rs = src1,
+            .rt = Register::zero,
+            .sa = sa
         };
     }
 
@@ -325,5 +348,10 @@ namespace mips
     uint16_t Parser::parse_constant_16(const std::string& value) const
     {
         return static_cast<uint16_t>(parse_constant_32(value));
+    }
+
+    uint8_t Parser::parse_constant_8(const std::string& value) const
+    {
+        return static_cast<uint8_t>(parse_constant_32(value));
     }
 }
