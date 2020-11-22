@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <regex>
-#include <iostream>
 
 #include <mips/instruction.hpp>
 #include <utils/strtools.hpp>
@@ -54,6 +53,12 @@ namespace mips
     template <typename...Ts>
     RegexParser<Parser::Inner, Ts...> Parser::generate_parser(const std::string& pattern)
     {
+        static const std::vector<std::string> substitutions =
+        {
+            ",\\s*",
+            "\\s+"
+        };
+
         std::string gen = pattern;
         variadic::loop_types<Ts...>::execute([&](const auto& type)
         {
@@ -66,6 +71,12 @@ namespace mips
 
             strtools::replace_substr(gen, "??", strtools::catf("(%s)", p));
         });
+
+        for (const auto& sub : substitutions)
+        {
+            std::regex r(sub);
+            gen = std::regex_replace(gen, r, sub);
+        }
 
         return RegexParser<Inner, Ts...>(gen);
     }
