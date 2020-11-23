@@ -21,6 +21,16 @@ namespace mips
                 << " " << reg_to_string(instr.rs);
                 break;
             }
+            case OpcodeR::MULT:
+            case OpcodeR::MULTU:
+            case OpcodeR::DIV:
+            case OpcodeR::DIVU:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.rs)
+                << ", " << reg_to_string(instr.rt);
+                break;
+            }
             case OpcodeR::SLL:
             case OpcodeR::SRA:
             case OpcodeR::SRL:
