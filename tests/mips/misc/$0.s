@@ -2,4 +2,4 @@
 #
 # assert: $zero == 0
 
-addi $zero $zero 100
+addi $zero, $zero, 100

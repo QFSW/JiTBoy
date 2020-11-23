@@ -2,4 +2,4 @@
 # init: $1 = 2
 # assert: $3 == 0
 
-sltiu $3 $1 1
+sltiu $3, $1, 1

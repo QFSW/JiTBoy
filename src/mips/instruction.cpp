@@ -23,16 +23,16 @@ namespace mips
             {
                 os << opcode_to_string(instr.op)
                 << " " << reg_to_string(instr.rd)
-                << " " << reg_to_string(instr.rs)
-                << " " << instr.sa;
+                << ", " << reg_to_string(instr.rs)
+                << ", " << instr.sa;
                 break;
             }
             default:
             {
                 os << opcode_to_string(instr.op)
                 << " " << reg_to_string(instr.rd)
-                << " " << reg_to_string(instr.rs)
-                << " " << reg_to_string(instr.rt);
+                << ", " << reg_to_string(instr.rs)
+                << ", " << reg_to_string(instr.rt);
                 break;
             }
         }
@@ -49,8 +49,8 @@ namespace mips
             {
                 os << opcode_to_string(instr.op)
                 << " " << reg_to_string(instr.rt)
-                << " " << reg_to_string(instr.rs)
-                << " " << (instr.constant << 2);
+                << ", " << reg_to_string(instr.rs)
+                << ", " << (instr.constant << 2);
                 break;
             }
             case OpcodeI::BGEZ:
@@ -62,15 +62,15 @@ namespace mips
             {
                 os << opcode_to_string(instr.op)
                 << " " << reg_to_string(instr.rs)
-                << " " << (instr.constant << 2);
+                << ", " << (instr.constant << 2);
                 break;
             }
             default:
             {
                 os << opcode_to_string(instr.op)
                 << " " << reg_to_string(instr.rt)
-                << " " << reg_to_string(instr.rs)
-                << " " << instr.constant;
+                << ", " << reg_to_string(instr.rs)
+                << ", " << instr.constant;
                 break;
             }
         }

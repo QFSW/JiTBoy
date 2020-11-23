@@ -12,14 +12,20 @@ namespace mips
     {
     public:
         explicit RegexParser(std::regex&& pattern);
+        explicit RegexParser(std::regex&& pattern, std::string&& err_string);
         explicit RegexParser(Inner&& inner, std::regex&&);
+        explicit RegexParser(Inner&& inner, std::regex&&, std::string&& err_string);
+
         std::tuple<Ts...> evaluate(const std::string& raw) const;
 
     private:
         Inner _inner;
         std::regex _regex;
         std::smatch _matches;
+        std::string _err_string;
         std::function<std::tuple<Ts...>(const std::string&)> _evaluator;
+
+        static constexpr auto default_err = "Could not parse %s";
 
         template <typename A>
         std::tuple<A> parse(const std::smatch& m, int i);
@@ -34,11 +40,21 @@ namespace mips
     { }
 
     template <typename Inner, typename...Ts>
+    RegexParser<Inner, Ts...>::RegexParser(std::regex&& pattern, std::string&& err_string)
+        : RegexParser(Inner(), std::move(pattern), std::move(err_string))
+    { }
+
+    template <typename Inner, typename...Ts>
     RegexParser<Inner, Ts...>::RegexParser(Inner&& inner, std::regex&& pattern)
+        : RegexParser(Inner(), std::move(pattern), default_err)
+    { }
+
+    template <typename Inner, typename...Ts>
+    RegexParser<Inner, Ts...>::RegexParser(Inner&& inner, std::regex&& pattern, std::string&& err_string)
         : _inner(inner)
         , _regex(pattern)
+        , _err_string(err_string)
     {
-        _regex = std::regex(pattern);
         _evaluator = [&](const std::string& raw)
         {
             if (std::regex_search(raw, _matches, _regex) && _matches.size() == sizeof...(Ts) + 1)
@@ -46,7 +62,7 @@ namespace mips
                 return parse<Ts...>(_matches, 1);
             }
 
-            throw std::logic_error("Could not parse " + raw);
+            throw std::logic_error(strtools::catf(_err_string.c_str(), raw.c_str()));
         };
     }
 

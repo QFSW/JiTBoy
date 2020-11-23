@@ -9,15 +9,10 @@ namespace mips
 
     Instruction Parser::parse_instruction(const std::string& instr) const
     {
-        const auto parts = strtools::split(instr, ' ');
-
-        if (parts.empty())
-            throw std::invalid_argument("Cannot parse empty instruction");
-
-        static const auto parser = generate_parser<std::string>(R"((\w+).*)");
+        static const auto parser = generate_parser<std::string>(R"((\w+).*)", "Could not determine opcode from %s");
         const auto [op] = parser.evaluate(instr);
 
-        if (op == "nop")    return parse_nop(instr, parts);
+        if (op == "nop")    return parse_nop(instr);
 
         if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr);
         if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr);
@@ -33,37 +28,48 @@ namespace mips
         if (op == "srav")   return parse_instruction_r(OpcodeR::SRAV, instr);
         if (op == "srlv")   return parse_instruction_r(OpcodeR::SRLV, instr);
 
-        if (op == "sll")    return parse_instruction_r_sa(OpcodeR::SLL, instr, parts);
-        if (op == "sra")    return parse_instruction_r_sa(OpcodeR::SRA, instr, parts);
-        if (op == "srl")    return parse_instruction_r_sa(OpcodeR::SRL, instr, parts);
+        if (op == "sll")    return parse_instruction_r_sa(OpcodeR::SLL, instr);
+        if (op == "sra")    return parse_instruction_r_sa(OpcodeR::SRA, instr);
+        if (op == "srl")    return parse_instruction_r_sa(OpcodeR::SRL, instr);
 
-        if (op == "mult")   return parse_instruction_r_no_dst(OpcodeR::MULT, instr, parts);
-        if (op == "multu")  return parse_instruction_r_no_dst(OpcodeR::MULTU, instr, parts);
-        if (op == "div")    return parse_instruction_r_no_dst(OpcodeR::DIV, instr, parts);
-        if (op == "divu")   return parse_instruction_r_no_dst(OpcodeR::DIVU, instr, parts);
+        if (op == "mult")   return parse_instruction_r_no_dst(OpcodeR::MULT, instr);
+        if (op == "multu")  return parse_instruction_r_no_dst(OpcodeR::MULTU, instr);
+        if (op == "div")    return parse_instruction_r_no_dst(OpcodeR::DIV, instr);
+        if (op == "divu")   return parse_instruction_r_no_dst(OpcodeR::DIVU, instr);
 
-        if (op == "jr")     return parse_instruction_r_1_src(OpcodeR::JR, instr, parts);
+        if (op == "jr")     return parse_instruction_r_1_src(OpcodeR::JR, instr);
 
-        if (op == "addi")   return parse_instruction_i(OpcodeI::ADDI, instr, parts);
-        if (op == "addiu")  return parse_instruction_i(OpcodeI::ADDIU, instr, parts);
-        if (op == "andi")   return parse_instruction_i(OpcodeI::ANDI, instr, parts);
-        if (op == "ori")    return parse_instruction_i(OpcodeI::ORI, instr, parts);
-        if (op == "xori")   return parse_instruction_i(OpcodeI::XORI, instr, parts);
-        if (op == "slti")   return parse_instruction_i(OpcodeI::SLTI, instr, parts);
-        if (op == "sltiu")  return parse_instruction_i(OpcodeI::SLTIU, instr, parts);
+        if (op == "addi")   return parse_instruction_i(OpcodeI::ADDI, instr);
+        if (op == "addiu")  return parse_instruction_i(OpcodeI::ADDIU, instr);
+        if (op == "andi")   return parse_instruction_i(OpcodeI::ANDI, instr);
+        if (op == "ori")    return parse_instruction_i(OpcodeI::ORI, instr);
+        if (op == "xori")   return parse_instruction_i(OpcodeI::XORI, instr);
+        if (op == "slti")   return parse_instruction_i(OpcodeI::SLTI, instr);
+        if (op == "sltiu")  return parse_instruction_i(OpcodeI::SLTIU, instr);
 
-        if (op == "beq")    return parse_instruction_i_branch(OpcodeI::BEQ, instr, parts);
-        if (op == "bne")    return parse_instruction_i_branch(OpcodeI::BNE, instr, parts);
+        if (op == "beq")    return parse_instruction_i_branch(OpcodeI::BEQ, instr);
+        if (op == "bne")    return parse_instruction_i_branch(OpcodeI::BNE, instr);
 
-        if (op == "bgtz")   return parse_instruction_i_branch_no_dst(OpcodeI::BGTZ, instr, parts);
-        if (op == "blez")   return parse_instruction_i_branch_no_dst(OpcodeI::BLEZ, instr, parts);
-        if (op == "bgez")   return parse_instruction_i_branch_no_dst(OpcodeI::BGEZ, instr, parts);
-        if (op == "bltz")   return parse_instruction_i_branch_no_dst(OpcodeI::BLTZ, instr, parts);
-        if (op == "bgezal") return parse_instruction_i_branch_no_dst(OpcodeI::BGEZAL, instr, parts);
-        if (op == "bltzal") return parse_instruction_i_branch_no_dst(OpcodeI::BLTZAL, instr, parts);
+        if (op == "bgtz")   return parse_instruction_i_branch_no_dst(OpcodeI::BGTZ, instr);
+        if (op == "blez")   return parse_instruction_i_branch_no_dst(OpcodeI::BLEZ, instr);
+        if (op == "bgez")   return parse_instruction_i_branch_no_dst(OpcodeI::BGEZ, instr);
+        if (op == "bltz")   return parse_instruction_i_branch_no_dst(OpcodeI::BLTZ, instr);
+        if (op == "bgezal") return parse_instruction_i_branch_no_dst(OpcodeI::BGEZAL, instr);
+        if (op == "bltzal") return parse_instruction_i_branch_no_dst(OpcodeI::BLTZAL, instr);
 
-        if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr, parts);
-        if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr, parts);
+        if (op == "lw")     return parse_instruction_i_memory(OpcodeI::LW, instr);
+        if (op == "lb")     return parse_instruction_i_memory(OpcodeI::LB, instr);
+        if (op == "lbu")    return parse_instruction_i_memory(OpcodeI::LBU, instr);
+        if (op == "lh")     return parse_instruction_i_memory(OpcodeI::LH, instr);
+        if (op == "lhu")    return parse_instruction_i_memory(OpcodeI::LHU, instr);
+        if (op == "sw")     return parse_instruction_i_memory(OpcodeI::SW, instr);
+        if (op == "sb")     return parse_instruction_i_memory(OpcodeI::SB, instr);
+        if (op == "sh")     return parse_instruction_i_memory(OpcodeI::SH, instr);
+        if (op == "lwl")    return parse_instruction_i_memory(OpcodeI::LWL, instr);
+        if (op == "lwr")    return parse_instruction_i_memory(OpcodeI::LWR, instr);
+
+        if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr);
+        if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr);
 
         throw std::invalid_argument("Could not parse opcode " + op);
     }
@@ -86,10 +92,10 @@ namespace mips
         return instrs;
     }
 
-    InstructionR Parser::parse_nop(const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionR Parser::parse_nop(const std::string& instr) const
     {
-        if (parts.size() != 1)
-            throw std::invalid_argument("nop does not take any arguments - cannot parse " + instr);
+        static const auto parser = generate_parser<std::string>(R"((\w+))");
+        auto _ = parser.evaluate(instr);
 
         return InstructionR
         {
@@ -103,7 +109,7 @@ namespace mips
 
     InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ?? ?? ??)");
+        static const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ??, ??, ??)");
         const auto [dst, src1, src2] = parser.evaluate(instr);
 
         return InstructionR
@@ -116,32 +122,25 @@ namespace mips
         };
     }
 
-    InstructionR Parser::parse_instruction_r_sa(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionR Parser::parse_instruction_r_sa(OpcodeR opcode, const std::string& instr) const
     {
-        if (parts.size() != 4)
-            throw std::invalid_argument("This R type instruction should have 4 parts - cannot parse " + instr);
-
-        Register dst = parse_register(parts[1]);
-        Register src1 = parse_register(parts[2]);
-        uint8_t sa = parse_constant_8(parts[3]);
+        static const auto parser = generate_parser<Register, Register, uint8_t>(R"(\w+ ??, ??, ??)");
+        const auto [dst, src, sa] = parser.evaluate(instr);
 
         return InstructionR
         {
             .op = opcode,
             .rd = dst,
-            .rs = src1,
+            .rs = src,
             .rt = Register::zero,
             .sa = sa
         };
     }
 
-    InstructionR Parser::parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionR Parser::parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr) const
     {
-        if (parts.size() != 3)
-            throw std::invalid_argument("This R type instruction should have 3 parts - cannot parse " + instr);
-
-        Register src1 = parse_register(parts[1]);
-        Register src2 = parse_register(parts[2]);
+        static const auto parser = generate_parser<Register, Register>(R"(\w+ ??, ??)");
+        const auto [src1, src2] = parser.evaluate(instr);
 
         return InstructionR
         {
@@ -153,12 +152,10 @@ namespace mips
         };
     }
 
-    InstructionR Parser::parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionR Parser::parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr) const
     {
-        if (parts.size() != 2)
-            throw std::invalid_argument("This R type instruction should have 2 parts - cannot parse " + instr);
-
-        Register src = parse_register(parts[1]);
+        static const auto parser = generate_parser<Register>(R"(\w+ ??)");
+        const auto [src] = parser.evaluate(instr);
 
         return InstructionR
         {
@@ -170,14 +167,10 @@ namespace mips
         };
     }
 
-    InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::string& instr) const
     {
-        if (parts.size() != 4)
-            throw std::invalid_argument("This I type instruction should have 4 parts - cannot parse " + instr);
-
-        Register dst = parse_register(parts[1]);
-        Register src = parse_register(parts[2]);
-        int16_t constant = parse_constant_16(parts[3]);
+        static const auto parser = generate_parser<Register, Register, int16_t>(R"(\w+ ??, ??, ??)");
+        const auto [dst, src, constant] = parser.evaluate(instr);
 
         return InstructionI
         {
@@ -188,47 +181,52 @@ namespace mips
         };
     }
 
-    InstructionI Parser::parse_instruction_i_branch(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionI Parser::parse_instruction_i_branch(OpcodeI opcode, const std::string& instr) const
     {
-        if (parts.size() != 4)
-            throw std::invalid_argument("This I type instruction should have 4 parts - cannot parse " + instr);
-
-        Register dst = parse_register(parts[1]);
-        Register src = parse_register(parts[2]);
-        int16_t constant = static_cast<uint16_t>(parse_constant_32(parts[3]) >> 2);
+        static const auto parser = generate_parser<Register, Register, int32_t>(R"(\w+ ??, ??, ??)");
+        const auto [dst, src, constant] = parser.evaluate(instr);
 
         return InstructionI
         {
             .op = opcode,
             .rt = dst,
             .rs = src,
-            .constant = constant
+            .constant = static_cast<int16_t>(constant >> 2)
         };
     }
 
-    InstructionI Parser::parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionI Parser::parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr) const
     {
-        if (parts.size() != 3)
-            throw std::invalid_argument("This I type instruction should have 3 parts - cannot parse " + instr);
-
-        Register src = parse_register(parts[1]);
-        int16_t constant = static_cast<uint16_t>(parse_constant_32(parts[2]) >> 2);
+        static const auto parser = generate_parser<Register, int32_t>(R"(\w+ ??, ??)");
+        const auto [src, constant] = parser.evaluate(instr);
 
         return InstructionI
         {
             .op = opcode,
             .rt = Register::zero,
             .rs = src,
-            .constant = constant
+            .constant = static_cast<int16_t>(constant >> 2)
         };
     }
 
-    InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr, const std::vector<std::string>& parts) const
+    InstructionI Parser::parse_instruction_i_memory(OpcodeI opcode, const std::string& instr) const
     {
-        if (parts.size() != 2)
-            throw std::invalid_argument("This J type instruction should have 2 parts - cannot parse " + instr);
+        static const auto parser = generate_parser<Register, int16_t, Register>(R"(\w+ ??, ??\(??\))");
+        const auto [rt, offset, base] = parser.evaluate(instr);
 
-        uint32_t target = parse_constant_32(parts[1]);
+        return InstructionI
+        {
+            .op = opcode,
+            .rt = rt,
+            .rs = base,
+            .constant = offset
+        };
+    }
+
+    InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr) const
+    {
+        static const auto parser = generate_parser<uint32_t>(R"(\w+ ??)");
+        const auto [target] = parser.evaluate(instr);
 
         return InstructionJ
         {
@@ -354,5 +352,8 @@ namespace mips
     template<> uint32_t Parser::Inner::parse(const std::string& raw) { return parse_constant_32(raw); }
     template<> uint16_t Parser::Inner::parse(const std::string& raw) { return parse_constant_16(raw); }
     template<> uint8_t Parser::Inner::parse(const std::string& raw) { return parse_constant_8(raw); }
+    template<> int32_t Parser::Inner::parse(const std::string& raw) { return parse_constant_32(raw); }
+    template<> int16_t Parser::Inner::parse(const std::string& raw) { return parse_constant_16(raw); }
+    template<> int8_t Parser::Inner::parse(const std::string& raw) { return parse_constant_8(raw); }
     template<> std::string Parser::Inner::parse(const std::string& raw) { return raw; }
 }

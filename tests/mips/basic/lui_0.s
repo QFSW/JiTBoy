@@ -2,4 +2,4 @@
 #
 # assert: $1 == 0xFFFF0000
 
-lui $1 0xFFFF
+lui $1, 0xFFFF
