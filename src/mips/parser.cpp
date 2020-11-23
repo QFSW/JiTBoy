@@ -135,7 +135,7 @@ namespace mips
         return InstructionR
         {
             .op = OpcodeR::JALR,
-            .rd = Register::ra,
+            .rd = link,
             .rs = dst,
             .rt = Register::zero,
             .sa = 0

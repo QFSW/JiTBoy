@@ -11,6 +11,21 @@ namespace mips
     {
         switch (instr.op)
         {
+            case OpcodeR::JALR:
+            {
+                if (instr.rd == Register::ra)
+                {
+                    os << opcode_to_string(instr.op)
+                    << " " << reg_to_string(instr.rs);
+                }
+                else
+                {
+                    os << opcode_to_string(instr.op)
+                    << " " << reg_to_string(instr.rd)
+                    << ", " << reg_to_string(instr.rs);
+                }
+                break;
+            }
             case OpcodeR::JR:
             case OpcodeR::MFHI:
             case OpcodeR::MFLO:
@@ -58,6 +73,13 @@ namespace mips
     {
         switch (instr.op)
         {
+            case OpcodeI::LUI:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.rs)
+                << ", " << instr.constant;
+                break;
+            }
             case OpcodeI::BEQ:
             case OpcodeI::BNE:
             {
