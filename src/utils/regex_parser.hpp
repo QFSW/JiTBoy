@@ -62,7 +62,7 @@ namespace mips
                 return parse<Ts...>(_matches, 1);
             }
 
-            throw std::logic_error(strtools::catf(_err_string.c_str(), raw.c_str()));
+            throw std::invalid_argument(strtools::catf(_err_string.c_str(), raw.c_str()));
         };
     }
 

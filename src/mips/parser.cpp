@@ -116,8 +116,21 @@ namespace mips
 
     InstructionR Parser::parse_jalr(const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register>(R"(\w+ ??)");
-        const auto [dst] = parser.evaluate(instr);
+        static const auto parser1 = generate_parser<Register, Register>(R"(\w+ ??, ??)");
+        static const auto parser2 = generate_parser<Register>(R"(\w+ ??)");
+
+        Register dst;
+        Register link;
+
+        try
+        {
+            std::tie(link, dst) = parser1.evaluate(instr);
+        }
+        catch (const std::invalid_argument&)
+        {
+            std::tie(dst) = parser2.evaluate(instr);
+            link = Register::ra;
+        }
 
         return InstructionR
         {
