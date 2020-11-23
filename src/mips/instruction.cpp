@@ -65,6 +65,23 @@ namespace mips
                 << ", " << (instr.constant << 2);
                 break;
             }
+            case OpcodeI::LW:
+            case OpcodeI::LB:
+            case OpcodeI::LBU:
+            case OpcodeI::LH:
+            case OpcodeI::LHU:
+            case OpcodeI::SW:
+            case OpcodeI::SB:
+            case OpcodeI::SH:
+            case OpcodeI::LWL:
+            case OpcodeI::LWR:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.rt)
+                << ", " << instr.constant
+                << "(" << reg_to_string(instr.rs) << ")";
+                break;
+            }
             default:
             {
                 os << opcode_to_string(instr.op)
