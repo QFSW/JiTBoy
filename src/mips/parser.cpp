@@ -38,6 +38,10 @@ namespace mips
         if (op == "divu")   return parse_instruction_r_no_dst(OpcodeR::DIVU, instr);
 
         if (op == "jr")     return parse_instruction_r_1_src(OpcodeR::JR, instr);
+        if (op == "mfhi")   return parse_instruction_r_1_src(OpcodeR::MFHI, instr);
+        if (op == "mflo")   return parse_instruction_r_1_src(OpcodeR::MFLO, instr);
+        if (op == "mthi")   return parse_instruction_r_1_src(OpcodeR::MTHI, instr);
+        if (op == "mtlo")   return parse_instruction_r_1_src(OpcodeR::MTLO, instr);
 
         if (op == "addi")   return parse_instruction_i(OpcodeI::ADDI, instr);
         if (op == "addiu")  return parse_instruction_i(OpcodeI::ADDIU, instr);
