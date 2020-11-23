@@ -12,6 +12,10 @@ namespace mips
         switch (instr.op)
         {
             case OpcodeR::JR:
+            case OpcodeR::MFHI:
+            case OpcodeR::MFLO:
+            case OpcodeR::MTHI:
+            case OpcodeR::MTLO:
             {
                 os << opcode_to_string(instr.op)
                 << " " << reg_to_string(instr.rs);
