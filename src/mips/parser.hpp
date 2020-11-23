@@ -24,6 +24,7 @@ namespace mips
 
     private:
         [[nodiscard]] InstructionR parse_nop(const std::string& instr) const;
+        [[nodiscard]] InstructionR parse_jalr(const std::string& instr) const;
         [[nodiscard]] InstructionR parse_instruction_r(OpcodeR opcode, const std::string& instr) const;
         [[nodiscard]] InstructionR parse_instruction_r_sa(OpcodeR opcode, const std::string& instr) const;
         [[nodiscard]] InstructionR parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr) const;

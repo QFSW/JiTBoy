@@ -13,6 +13,7 @@ namespace mips
         const auto [op] = parser.evaluate(instr);
 
         if (op == "nop")    return parse_nop(instr);
+        if (op == "jalr")   return parse_jalr(instr);
 
         if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr);
         if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr);
@@ -108,6 +109,21 @@ namespace mips
             .op = OpcodeR::SLL,
             .rd = Register::zero,
             .rs = Register::zero,
+            .rt = Register::zero,
+            .sa = 0
+        };
+    }
+
+    InstructionR Parser::parse_jalr(const std::string& instr) const
+    {
+        static const auto parser = generate_parser<Register>(R"(\w+ ??)");
+        const auto [dst] = parser.evaluate(instr);
+
+        return InstructionR
+        {
+            .op = OpcodeR::JALR,
+            .rd = Register::ra,
+            .rs = dst,
             .rt = Register::zero,
             .sa = 0
         };
