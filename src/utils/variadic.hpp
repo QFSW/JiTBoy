@@ -17,37 +17,19 @@ namespace variadic
         return fold(std::forward(f), t, std::forward(ts...));
     }
 
-    template <typename F, typename T>
-    constexpr void loop(F&& f, T t)
+    template <typename F, typename...Ts>
+    constexpr void loop(F&& f, Ts...ts)
     {
-        f(t);
+        (f(std::forward(ts)),...);
     }
 
-    template <typename F, typename T, typename...Ts>
-    constexpr void loop(F&& f, T t, Ts...ts)
-    {
-        f(t);
-        loop(std::forward(f), std::forward(ts...));
-    }
-
-    template <typename T, typename... Ts>
+    template <typename... Ts>
     struct loop_types
     {
         template <typename F>
         static constexpr void execute(F&& f)
         {
-            f(typeid(T));
-            loop_types<Ts...>::execute(f);
-        }
-    };
-
-    template <typename T>
-    struct loop_types<T>
-    {
-        template <typename F>
-        static constexpr void execute(F&& f)
-        {
-            f(typeid(T));
+            (f(typeid(Ts)),...);
         }
     };
 }

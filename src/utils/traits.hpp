@@ -4,28 +4,16 @@
 
 namespace traits
 {
-    template <template<class> typename Trait>
+    template <template<class> typename Trait, typename...Ts>
     constexpr bool for_all()
     {
-        return true;
+        return (Trait<Ts>::value && ...);
     }
 
-    template <template<class> typename Trait, typename T, typename...Ts>
-    constexpr bool for_all()
-    {
-        return Trait<T>::value && for_all<Trait, Ts...>();
-    }
-
-    template <template<class> typename Trait>
+    template <template<class> typename Trait, typename...Ts>
     constexpr bool for_any()
     {
-        return false;
-    }
-
-    template <template<class> typename Trait, typename T, typename...Ts>
-    constexpr bool for_any()
-    {
-        return Trait<T>::value || for_any<Trait, Ts...>();
+        return (Trait<Ts>::value || ...);
     }
 
     template <template<class> typename Trait, typename...Ts>
