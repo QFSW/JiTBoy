@@ -47,6 +47,8 @@ namespace mips
         if (op == "slti")   return parse_instruction_i(OpcodeI::SLTI, instr);
         if (op == "sltiu")  return parse_instruction_i(OpcodeI::SLTIU, instr);
 
+        if (op == "lui")    return parse_instruction_i_1_src(OpcodeI::LUI, instr);
+
         if (op == "beq")    return parse_instruction_i_branch(OpcodeI::BEQ, instr);
         if (op == "bne")    return parse_instruction_i_branch(OpcodeI::BNE, instr);
 
@@ -177,6 +179,20 @@ namespace mips
             .op = opcode,
             .rt = dst,
             .rs = src,
+            .constant = constant
+        };
+    }
+
+    InstructionI Parser::parse_instruction_i_1_src(OpcodeI opcode, const std::string& instr) const
+    {
+        static const auto parser = generate_parser<Register, int16_t>(R"(\w+ ??, ??)");
+        const auto [dst, constant] = parser.evaluate(instr);
+
+        return InstructionI
+        {
+            .op = opcode,
+            .rt = dst,
+            .rs = Register::zero,
             .constant = constant
         };
     }

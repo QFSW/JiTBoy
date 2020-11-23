@@ -29,6 +29,7 @@ namespace mips
         [[nodiscard]] InstructionR parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr) const;
         [[nodiscard]] InstructionR parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr) const;
         [[nodiscard]] InstructionI parse_instruction_i(OpcodeI opcode, const std::string& instr) const;
+        [[nodiscard]] InstructionI parse_instruction_i_1_src(OpcodeI opcode, const std::string& instr) const;
         [[nodiscard]] InstructionI parse_instruction_i_branch(OpcodeI opcode, const std::string& instr) const;
         [[nodiscard]] InstructionI parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr) const;
         [[nodiscard]] InstructionI parse_instruction_i_memory(OpcodeI opcode, const std::string& instr) const;
