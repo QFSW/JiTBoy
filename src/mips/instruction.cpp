@@ -50,10 +50,23 @@ namespace mips
             case OpcodeR::SRA:
             case OpcodeR::SRL:
             {
-                os << opcode_to_string(instr.op)
-                << " " << reg_to_string(instr.rd)
-                << ", " << reg_to_string(instr.rs)
-                << ", " << instr.sa;
+                if (
+                    instr.op == OpcodeR::SLL
+                    && instr.rd == Register::zero
+                    && instr.rt == Register::zero
+                    && instr.rs == Register::zero
+                    && instr.sa == 0
+                )
+                {
+                    os << "nop";
+                }
+                else
+                {
+                    os << opcode_to_string(instr.op)
+                    << " " << reg_to_string(instr.rd)
+                    << ", " << reg_to_string(instr.rs)
+                    << ", " << instr.sa;
+                }
                 break;
             }
             default:
