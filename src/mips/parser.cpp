@@ -76,7 +76,7 @@ namespace mips
     {
         const static auto parser = generate_parser<uint32_t>("??");
 
-        uint32_t target;
+        uint32_t target = 0;
         if (!parser.try_evaluate(raw, target))
         {
             if (!try_resolve_label(raw, target))
@@ -98,7 +98,7 @@ namespace mips
     {
         const static auto parser = generate_parser<int32_t>("??");
 
-        int32_t offset;
+        int32_t offset = 0;
         if (!parser.try_evaluate(raw, offset))
         {
             uint32_t target;
