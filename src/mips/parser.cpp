@@ -49,7 +49,7 @@ namespace mips
 
     void Parser::extract_labels(std::string& raw)
     {
-        const static auto parser = generate_parser<std::string, std::string>(R"((\w+):(.*))");
+        const static auto parser = generate_parser<std::string, std::string>(R"(([\w_-]+):(.*))");
 
         std::string label;
         while (parser.try_evaluate(raw, label, raw))

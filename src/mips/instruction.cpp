@@ -89,7 +89,7 @@ namespace mips
             case OpcodeI::LUI:
             {
                 os << opcode_to_string(instr.op)
-                << " " << reg_to_string(instr.rs)
+                << " " << reg_to_string(instr.rt)
                 << ", " << instr.constant;
                 break;
             }
