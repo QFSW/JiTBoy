@@ -16,6 +16,8 @@ namespace mips
         explicit RegexParser(Inner&& inner, std::regex&&);
         explicit RegexParser(Inner&& inner, std::regex&&, std::string&& err_string);
 
+        bool try_evaluate(const std::string&, std::tuple<Ts...>& result) const;
+        bool try_evaluate(const std::string&, std::tuple<Ts&...> result) const;
         std::tuple<Ts...> evaluate(const std::string& raw) const;
 
     private:
@@ -23,7 +25,7 @@ namespace mips
         std::regex _regex;
         std::smatch _matches;
         std::string _err_string;
-        std::function<std::tuple<Ts...>(const std::string&)> _evaluator;
+        std::function<bool(const std::string&, std::tuple<Ts...>&)> _evaluator;
 
         static constexpr auto default_err = "Could not parse %s";
 
@@ -55,21 +57,41 @@ namespace mips
         , _regex(pattern)
         , _err_string(err_string)
     {
-        _evaluator = [&](const std::string& raw)
+        _evaluator = [&](const std::string& raw, std::tuple<Ts...>& result)
         {
             if (std::regex_search(raw, _matches, _regex) && _matches.size() == sizeof...(Ts) + 1)
             {
-                return parse<Ts...>(_matches, 1);
+                result = parse<Ts...>(_matches, 1);
+                return true;
             }
 
-            throw std::invalid_argument(strtools::catf(_err_string.c_str(), raw.c_str()));
+            return false;
         };
+    }
+
+    template <typename Inner, typename...Ts>
+    bool RegexParser<Inner, Ts...>::try_evaluate(const std::string& raw, std::tuple<Ts...>& result) const
+    {
+        return _evaluator(raw, result);
+    }
+
+    template <typename Inner, typename...Ts>
+    bool RegexParser<Inner, Ts...>::try_evaluate(const std::string& raw, std::tuple<Ts&...> result) const
+    {
+        std::tuple<Ts...> r;
+        const bool success = _evaluator(raw, r);
+        result = std::move(r);
+        return success;
     }
 
     template <typename Inner, typename...Ts>
     std::tuple<Ts...> RegexParser<Inner, Ts...>::evaluate(const std::string& raw) const
     {
-        return _evaluator(raw);
+        std::tuple<Ts...> result;
+        if (try_evaluate(raw, result))
+            return result;
+
+        throw std::invalid_argument(strtools::catf(_err_string.c_str(), raw.c_str()));
     }
 
     template <typename Inner, typename...Ts>

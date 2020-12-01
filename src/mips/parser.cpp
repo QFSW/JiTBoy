@@ -122,11 +122,7 @@ namespace mips
         Register dst;
         Register link;
 
-        try
-        {
-            std::tie(link, dst) = parser1.evaluate(instr);
-        }
-        catch (const std::invalid_argument&)
+        if (!parser1.try_evaluate(instr, std::tie(link, dst)))
         {
             std::tie(dst) = parser2.evaluate(instr);
             link = Register::ra;
