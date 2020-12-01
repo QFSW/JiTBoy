@@ -9,6 +9,14 @@ namespace strtools
 		return elems;
 	}
 
+	std::string remove_after(const std::string& str, const char delim)
+	{
+		std::istringstream iss(str);
+		std::string item;
+		std::getline(iss, item, delim);
+		return item;
+	}
+
 	std::string colorize(const std::string& str, const AnsiColor col)
 	{
 		return catf("\033[1;%dm%s\033[0m", col, str.c_str());

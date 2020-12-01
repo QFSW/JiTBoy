@@ -89,7 +89,7 @@ namespace mips
             gen = std::regex_replace(gen, r, sub);
         }
 
-        gen = strtools::catf(R"(^\s*%s\s*(?:#.*)?$)", gen.c_str());
+        gen = strtools::catf(R"(^\s*%s\s*$)", gen.c_str());
         std::regex reg(gen, std::regex_constants::optimize);
         return RegexParser<Inner, Ts...>(std::move(reg), std::move(err_string));
     }

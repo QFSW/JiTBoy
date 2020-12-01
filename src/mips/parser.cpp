@@ -90,10 +90,10 @@ namespace mips
 
         for (const auto& line : lines)
         {
-            if (line.empty()) continue;
-            if (std::regex_match(line, comment_regex)) continue;
+            auto preprocessed = strtools::remove_after(line, '#');
+            if (preprocessed.empty()) continue;
 
-            instrs.push_back(parse_instruction(line));
+            instrs.push_back(parse_instruction(preprocessed));
         }
 
         return instrs;
