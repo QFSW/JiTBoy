@@ -150,6 +150,7 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
         case mips::OpcodeI::BLTZ:   compile_branch<CondCode::L>(instr, addr); break;
         case mips::OpcodeI::BGEZAL: compile_branch_and_link<CondCode::GE>(instr, addr); break;
         case mips::OpcodeI::BLTZAL: compile_branch_and_link<CondCode::L>(instr, addr); break;
+        case mips::OpcodeI::LUI:    compile_reg_write(instr.rt, instr.constant << 16); break;
         default: throw_invalid_instr(instr);
     }
 }
