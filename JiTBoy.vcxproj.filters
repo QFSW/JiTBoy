@@ -194,6 +194,9 @@
     <ClInclude Include="src\x86\linker.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\error\parse_error.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\test_main.s" />

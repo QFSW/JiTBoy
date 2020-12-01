@@ -2,11 +2,11 @@
 
 #include <map>
 #include <stdexcept>
+#include <utils/functional.hpp>
+#include <iostream>
 
 namespace mips
 {
-    const std::regex Parser::comment_regex(R"(\s*#.*)");
-
     std::vector<Instruction> Parser::parse_instructions(const std::string& assembly)
     {
         reset();
@@ -27,6 +27,16 @@ namespace mips
             }
         }
 
+        for (const auto& [pc, label] : _unresolved_locals)
+        {
+            auto& instr = instrs[pc / 4];
+            std::visit(functional::overload{
+                [&](InstructionI& x) { x.constant = parse_target_rel(label, pc, false); },
+                [&](InstructionJ& x) { x.target = parse_target_abs(label, pc, false); },
+                [&](InstructionR&)   { throw std::logic_error("Cannot resolve target for R type instruction"); }
+            }, instr);
+        }
+
         return instrs;
     }
 
@@ -34,6 +44,7 @@ namespace mips
     {
         _pc = 0;
         _labels.clear();
+        _unresolved_locals.clear();
     }
 
     void Parser::extract_labels(std::string& raw)
@@ -48,6 +59,58 @@ namespace mips
 
             _labels[label] = _pc;
         }
+    }
+
+    bool Parser::try_resolve_label(const std::string& label, uint32_t& addr) const
+    {
+        if (_labels.find(label) != _labels.end())
+        {
+            addr = _labels.at(label);
+            return true;
+        }
+
+        return false;
+    }
+
+    uint32_t Parser::parse_target_abs(const std::string& raw, const uint32_t pc, const bool can_defer)
+    {
+        const static auto parser = generate_parser<uint32_t>("??");
+
+        uint32_t target;
+        if (!parser.try_evaluate(raw, target))
+        {
+            if (!try_resolve_label(raw, target))
+            {
+                if (can_defer)
+                    _unresolved_locals[pc] = raw;
+                else
+                    throw std::runtime_error("Could not parse or resolve target " + raw);
+            }
+        }
+
+        return target >> 2;
+    }
+
+    int16_t Parser::parse_target_rel(const std::string& raw, const uint32_t pc, const bool can_defer)
+    {
+        const static auto parser = generate_parser<int32_t>("??");
+
+        int32_t offset;
+        if (!parser.try_evaluate(raw, offset))
+        {
+            uint32_t target;
+            if (!try_resolve_label(raw, target))
+            {
+                if (can_defer)
+                    _unresolved_locals[pc] = raw;
+                else
+                    throw std::runtime_error("Could not parse or resolve target " + raw);
+            }
+
+            offset = target - pc;
+        }
+
+        return static_cast<int16_t>(offset >> 2);
     }
 
     Instruction Parser::parse_instruction(const std::string& instr)
@@ -121,7 +184,7 @@ namespace mips
         if (op == "j")      return parse_instruction_j(OpcodeJ::J, instr);
         if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr);
 
-        throw std::invalid_argument("Could not parse opcode " + op);
+        throw parse_error("Could not parse opcode " + op);
     }
 
     InstructionR Parser::parse_nop(const std::string& instr) const
@@ -251,31 +314,31 @@ namespace mips
         };
     }
 
-    InstructionI Parser::parse_instruction_i_branch(OpcodeI opcode, const std::string& instr) const
+    InstructionI Parser::parse_instruction_i_branch(OpcodeI opcode, const std::string& instr)
     {
-        static const auto parser = generate_parser<Register, Register, int32_t>(R"(\w+ ??, ??, ??)");
-        const auto [dst, src, constant] = parser.evaluate(instr);
+        static const auto parser = generate_parser<Register, Register, std::string>(R"(\w+ ??, ??, ??)");
+        const auto [dst, src, target] = parser.evaluate(instr);
 
         return InstructionI
         {
             .op = opcode,
             .rt = dst,
             .rs = src,
-            .constant = static_cast<int16_t>(constant >> 2)
+            .constant = parse_target_rel(target, _pc)
         };
     }
 
-    InstructionI Parser::parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr) const
+    InstructionI Parser::parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr)
     {
-        static const auto parser = generate_parser<Register, int32_t>(R"(\w+ ??, ??)");
-        const auto [src, constant] = parser.evaluate(instr);
+        static const auto parser = generate_parser<Register, std::string>(R"(\w+ ??, ??)");
+        const auto [src, target] = parser.evaluate(instr);
 
         return InstructionI
         {
             .op = opcode,
             .rt = Register::$zero,
             .rs = src,
-            .constant = static_cast<int16_t>(constant >> 2)
+            .constant = parse_target_rel(target, _pc)
         };
     }
 
@@ -293,15 +356,15 @@ namespace mips
         };
     }
 
-    InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr) const
+    InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr)
     {
-        static const auto parser = generate_parser<uint32_t>(R"(\w+ ??)");
+        static const auto parser = generate_parser<std::string>(R"(\w+ ??)");
         const auto [target] = parser.evaluate(instr);
 
         return InstructionJ
         {
             .op = opcode,
-            .target = target >> 2
+            .target = parse_target_abs(target, _pc)
         };
     }
 
@@ -384,7 +447,7 @@ namespace mips
 
         if (reg_mapping.find(reg) == reg_mapping.end())
         {
-            throw std::logic_error("Could not parse register " + reg);
+            throw parse_error("Could not parse register " + reg);
         }
 
         return reg_mapping.at(reg);
@@ -404,7 +467,7 @@ namespace mips
         }
         catch (const std::invalid_argument&)
         {
-            throw std::invalid_argument("Could not parse constant " + value);
+            throw parse_error("Could not parse constant " + value);
         }
     }
 

@@ -25,11 +25,16 @@ namespace mips
     private:
         uint32_t _pc = 0;
         std::map<std::string, uint32_t> _labels;
+        std::map<uint32_t, std::string> _unresolved_locals;
 
         void reset();
         void extract_labels(std::string& raw);
-        [[nodiscard]] Instruction parse_instruction(const std::string& instr);
+        bool try_resolve_label(const std::string& label, uint32_t& addr) const;
 
+        [[nodiscard]] uint32_t parse_target_abs(const std::string& raw, uint32_t pc, bool can_defer = true);
+        [[nodiscard]] int16_t parse_target_rel(const std::string& raw, uint32_t pc, bool can_defer = true);
+
+        [[nodiscard]] Instruction parse_instruction(const std::string& instr);
         [[nodiscard]] InstructionR parse_nop(const std::string& instr) const;
         [[nodiscard]] InstructionR parse_jalr(const std::string& instr) const;
         [[nodiscard]] InstructionR parse_instruction_r(OpcodeR opcode, const std::string& instr) const;
@@ -38,12 +43,11 @@ namespace mips
         [[nodiscard]] InstructionR parse_instruction_r_1_src(OpcodeR opcode, const std::string& instr) const;
         [[nodiscard]] InstructionI parse_instruction_i(OpcodeI opcode, const std::string& instr) const;
         [[nodiscard]] InstructionI parse_instruction_i_1_src(OpcodeI opcode, const std::string& instr) const;
-        [[nodiscard]] InstructionI parse_instruction_i_branch(OpcodeI opcode, const std::string& instr) const;
-        [[nodiscard]] InstructionI parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr) const;
+        [[nodiscard]] InstructionI parse_instruction_i_branch(OpcodeI opcode, const std::string& instr);
+        [[nodiscard]] InstructionI parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr);
         [[nodiscard]] InstructionI parse_instruction_i_memory(OpcodeI opcode, const std::string& instr) const;
-        [[nodiscard]] InstructionJ parse_instruction_j(OpcodeJ opcode, const std::string& instr) const;
+        [[nodiscard]] InstructionJ parse_instruction_j(OpcodeJ opcode, const std::string& instr);
 
-        static const std::regex comment_regex;
         static constexpr const char* reg_pattern = R"(\$[A-Za-z0-9]+)";
         static constexpr const char* literal_pattern = R"([-+]?[A-Za-z0-9]+)";
         static constexpr const char* default_parser_err = "Invalid instruction %s";
@@ -58,11 +62,11 @@ namespace mips
         };
 
         template <typename...Ts>
-        static [[nodiscard]] RegexParser<Inner, Ts...> generate_parser(const std::string& pattern, std::string&& err_string = default_parser_err);
+        static [[nodiscard]] regex_parser<Inner, Ts...> generate_parser(const std::string& pattern, std::string&& err_string = default_parser_err);
     };
 
     template <typename...Ts>
-    RegexParser<Parser::Inner, Ts...> Parser::generate_parser(const std::string& pattern, std::string&& err_string)
+    regex_parser<Parser::Inner, Ts...> Parser::generate_parser(const std::string& pattern, std::string&& err_string)
     {
         static const std::vector<std::string> substitutions =
         {
@@ -85,6 +89,7 @@ namespace mips
             else if (type == typeid(int32_t)) p = literal_pattern;
             else if (type == typeid(int16_t)) p = literal_pattern;
             else if (type == typeid(int8_t)) p = literal_pattern;
+            else if (type == typeid(std::string)) p = "\\S+";
             else throw std::logic_error(strtools::catf("Cannot generate regex pattern for type %s", type.name()));
 
             strtools::replace_substr(gen, "??", strtools::catf("(%s)", p));
@@ -98,6 +103,6 @@ namespace mips
 
         gen = strtools::catf(R"(^\s*%s\s*$)", gen.c_str());
         std::regex reg(gen, std::regex_constants::optimize);
-        return RegexParser<Inner, Ts...>(std::move(reg), std::move(err_string));
+        return regex_parser<Inner, Ts...>(std::move(reg), std::move(err_string));
     }
 }

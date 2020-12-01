@@ -6,8 +6,9 @@
 # assert: $3 == 1
 # assert: $4 == 1
 
-bgez $1, 12
+bgez $1, skip
 nop
 addi $3, $0, 1
 
+skip:
 addi $4, $0, 1

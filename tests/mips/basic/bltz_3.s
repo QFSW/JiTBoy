@@ -6,10 +6,11 @@
 # assert: $3 == 2
 # assert: $4 == 1
 
+reset:
 addi $3, $3, 1
 addi $3, $3, 1
 addi $3, $3, 1
-bltz $3, -12
+bltz $3, reset
 nop
 
 addi $4, $0, 1

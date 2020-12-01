@@ -195,6 +195,7 @@
     <ClCompile Include="src\utils\strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\error\parse_error.hpp" />
     <ClInclude Include="src\utils\regex_parser.hpp" />
     <ClInclude Include="src\mips\loader.hpp" />
     <ClInclude Include="src\mips\parser.hpp" />

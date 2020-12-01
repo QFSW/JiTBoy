@@ -4,16 +4,16 @@
 # init: $2 = 30
 # assert: $3 == 600
 
-# setup
-addi $3, $0, 0
-beq $0, $1, 28
-beq $0, $2, 24
-nop
+setup:
+    addi $3, $0, 0
+    beq $0, $1, skip
+    beq $0, $2, skip
+    nop
 
-# loop start
-add $3, $3, $2
-addi $1, $1, -1
-bne $0, $1, -8
-nop
+start:
+    add $3, $3, $2
+    addi $1, $1, -1
+    bne $0, $1, start
+    nop
 
-# loop skip
+skip:
