@@ -23,6 +23,8 @@ namespace mips
         static [[nodiscard]] uint8_t parse_constant_8(const std::string& value);
 
     private:
+        void extract_labels(std::string& raw) const;
+
         [[nodiscard]] InstructionR parse_nop(const std::string& instr) const;
         [[nodiscard]] InstructionR parse_jalr(const std::string& instr) const;
         [[nodiscard]] InstructionR parse_instruction_r(OpcodeR opcode, const std::string& instr) const;

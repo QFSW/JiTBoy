@@ -91,12 +91,24 @@ namespace mips
         for (const auto& line : lines)
         {
             auto preprocessed = strtools::remove_after(line, '#');
-            if (preprocessed.empty()) continue;
+            extract_labels(preprocessed);
 
-            instrs.push_back(parse_instruction(preprocessed));
+            if (!preprocessed.empty())
+                instrs.push_back(parse_instruction(preprocessed));
         }
 
         return instrs;
+    }
+
+    void Parser::extract_labels(std::string& raw) const
+    {
+        const static auto parser = generate_parser<std::string, std::string>(R"((\w+):(.*))");
+
+        std::string label;
+        while (parser.try_evaluate(raw, label, raw))
+        {
+            // Process label here
+        }
     }
 
     InstructionR Parser::parse_nop(const std::string& instr) const
@@ -122,7 +134,7 @@ namespace mips
         Register dst;
         Register link;
 
-        if (!parser1.try_evaluate(instr, std::tie(link, dst)))
+        if (!parser1.try_evaluate(instr, link, dst))
         {
             std::tie(dst) = parser2.evaluate(instr);
             link = Register::$ra;

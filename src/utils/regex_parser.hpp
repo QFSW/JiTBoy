@@ -18,6 +18,7 @@ namespace mips
 
         bool try_evaluate(const std::string&, std::tuple<Ts...>& result) const;
         bool try_evaluate(const std::string&, std::tuple<Ts&...> result) const;
+        bool try_evaluate(const std::string&, Ts&... results) const;
         std::tuple<Ts...> evaluate(const std::string& raw) const;
 
     private:
@@ -85,6 +86,12 @@ namespace mips
         }
 
         return false;
+    }
+
+    template <typename Inner, typename...Ts>
+    bool RegexParser<Inner, Ts...>::try_evaluate(const std::string& raw, Ts&... results) const
+    {
+        return try_evaluate(raw, std::tie(results...));
     }
 
     template <typename Inner, typename...Ts>
