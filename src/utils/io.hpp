@@ -40,7 +40,7 @@ namespace io
         {
             for (auto& word : words)
             {
-                if constexpr (sizeof(T) == 32) word = _byteswap_ulong(word);
+                if constexpr (sizeof(T) == 4) word = _byteswap_ulong(word);
                 else throw std::logic_error("Big endian of this size not yet supported");
             }
         }

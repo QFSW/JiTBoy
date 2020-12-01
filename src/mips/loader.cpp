@@ -23,4 +23,15 @@ namespace mips
 
         return result;
     }
+
+    std::vector<Instruction> Loader::load_auto(const std::string& filepath) const
+    {
+        const std::filesystem::path path = filepath;
+        const auto ext = path.extension();
+
+        if (ext == ".s")   return load_assembly(filepath);
+        if (ext == ".bin") return load_binary(filepath);
+        if (ext == "")     return load_binary(filepath);
+        throw std::runtime_error(strtools::catf("%s files are not supported", ext.generic_string().c_str()));
+    }
 }
