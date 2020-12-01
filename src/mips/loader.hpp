@@ -12,6 +12,7 @@ namespace mips
     public:
         [[nodiscard]] std::vector<Instruction> load_assembly(const std::string& filepath) const;
         [[nodiscard]] std::vector<Instruction> load_binary(const std::string& filepath) const;
+        [[nodiscard]] std::vector<Instruction> load_auto(const std::string& filepath) const;
 
     private:
         Parser _parser;

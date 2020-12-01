@@ -12,11 +12,12 @@ uint32_t return_8()
     return 8;
 }
 
-int main_test()
+void execute_single(const std::string& path)
 {
+    std::cout << "Loading " << path << "\n";
+
     mips::Loader loader;
-    constexpr auto asm_path = "resources/test_main.s";
-    auto code = loader.load_assembly(asm_path);
+    auto code = loader.load_auto(path);
 
     std::cout << "Loaded assembly\n";
     for (const auto& instr : code)
@@ -34,11 +35,9 @@ int main_test()
     });
 
     std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;
-
-    return 0;
 }
 
-int test_bench()
+void test_bench()
 {
     using namespace mips::testing;
     Loader loader;
@@ -49,14 +48,18 @@ int test_bench()
     runner.run(tests);
 
     std::cout << "\n";
-    return 0;
 }
 
-int main()
+int main(const int argc, char** argv)
 {
     try
     {
-        return test_bench();
+        if (argc > 1)
+            execute_single(argv[1]);
+        else
+            test_bench();
+
+        return 0;
     }
     catch (std::exception &e)
     {
