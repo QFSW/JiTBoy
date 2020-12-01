@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <regex>
 
 #include <mips/instruction.hpp>
@@ -14,8 +15,7 @@ namespace mips
     class Parser
     {
     public:
-        [[nodiscard]] Instruction parse_instruction(const std::string& instr) const;
-        [[nodiscard]] std::vector<Instruction> parse_instructions(const std::string& assembly) const;
+        [[nodiscard]] std::vector<Instruction> parse_instructions(const std::string& assembly);
 
         static [[nodiscard]] Register parse_register(const std::string& reg);
         static [[nodiscard]] uint32_t parse_constant_32(const std::string& value);
@@ -23,7 +23,12 @@ namespace mips
         static [[nodiscard]] uint8_t parse_constant_8(const std::string& value);
 
     private:
-        void extract_labels(std::string& raw) const;
+        uint32_t _pc = 0;
+        std::map<std::string, uint32_t> _labels;
+
+        void reset();
+        void extract_labels(std::string& raw);
+        [[nodiscard]] Instruction parse_instruction(const std::string& instr);
 
         [[nodiscard]] InstructionR parse_nop(const std::string& instr) const;
         [[nodiscard]] InstructionR parse_jalr(const std::string& instr) const;

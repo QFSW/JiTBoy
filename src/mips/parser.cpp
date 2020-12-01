@@ -7,7 +7,50 @@ namespace mips
 {
     const std::regex Parser::comment_regex(R"(\s*#.*)");
 
-    Instruction Parser::parse_instruction(const std::string& instr) const
+    std::vector<Instruction> Parser::parse_instructions(const std::string& assembly)
+    {
+        reset();
+        const auto lines = strtools::split(assembly, '\n');
+
+        std::vector<Instruction> instrs;
+        instrs.reserve(lines.size());
+
+        for (const auto& line : lines)
+        {
+            auto preprocessed = strtools::remove_after(line, '#');
+            extract_labels(preprocessed);
+
+            if (!preprocessed.empty())
+            {
+                instrs.push_back(parse_instruction(preprocessed));
+                _pc += 4;
+            }
+        }
+
+        return instrs;
+    }
+
+    void Parser::reset()
+    {
+        _pc = 0;
+        _labels.clear();
+    }
+
+    void Parser::extract_labels(std::string& raw)
+    {
+        const static auto parser = generate_parser<std::string, std::string>(R"((\w+):(.*))");
+
+        std::string label;
+        while (parser.try_evaluate(raw, label, raw))
+        {
+            if (_labels.find(label) != _labels.end())
+                throw std::runtime_error(strtools::catf("Label %s was registered twice (0x%x and 0x%x)", label.c_str(), _labels[label], _pc));
+
+            _labels[label] = _pc;
+        }
+    }
+
+    Instruction Parser::parse_instruction(const std::string& instr)
     {
         static const auto parser = generate_parser<std::string>(R"((\w+).*)", "Could not determine opcode from %s");
         const auto [op] = parser.evaluate(instr);
@@ -79,36 +122,6 @@ namespace mips
         if (op == "jal")    return parse_instruction_j(OpcodeJ::JAL, instr);
 
         throw std::invalid_argument("Could not parse opcode " + op);
-    }
-
-    std::vector<Instruction> Parser::parse_instructions(const std::string& assembly) const
-    {
-        const auto lines = strtools::split(assembly, '\n');
-
-        std::vector<Instruction> instrs;
-        instrs.reserve(lines.size());
-
-        for (const auto& line : lines)
-        {
-            auto preprocessed = strtools::remove_after(line, '#');
-            extract_labels(preprocessed);
-
-            if (!preprocessed.empty())
-                instrs.push_back(parse_instruction(preprocessed));
-        }
-
-        return instrs;
-    }
-
-    void Parser::extract_labels(std::string& raw) const
-    {
-        const static auto parser = generate_parser<std::string, std::string>(R"((\w+):(.*))");
-
-        std::string label;
-        while (parser.try_evaluate(raw, label, raw))
-        {
-            // Process label here
-        }
     }
 
     InstructionR Parser::parse_nop(const std::string& instr) const

@@ -185,7 +185,7 @@
     <ClCompile Include="src\compiler.cpp" />
     <ClCompile Include="src/executable_allocator.cpp" />
     <ClCompile Include="src/label_generator.cpp" />
-    <ClCompile Include="src/linker.cpp" />
+    <ClCompile Include="src\x86\linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />
     <ClCompile Include="src\source_block.cpp" />
@@ -215,7 +215,7 @@
     <ClInclude Include="src\compiler.hpp" />
     <ClInclude Include="src/executable_allocator.hpp" />
     <ClInclude Include="src/label_generator.hpp" />
-    <ClInclude Include="src/linker.hpp" />
+    <ClInclude Include="src\x86\linker.hpp" />
     <ClInclude Include="src/vector_buffer.hpp" />
     <ClInclude Include="src\mips\instruction.hpp" />
     <ClInclude Include="src\mips\mips.hpp" />

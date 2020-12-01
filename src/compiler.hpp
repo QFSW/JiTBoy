@@ -3,9 +3,9 @@
 #include <config.hpp>
 #include <executable_allocator.hpp>
 #include <x86/assembler.hpp>
+#include <x86/linker.hpp>
 #include <mips/instruction.hpp>
 #include <mips/register_file.hpp>
-#include <linker.hpp>
 #include <label_generator.hpp>
 #include <compiled_block.hpp>
 #include <source_block.hpp>
@@ -22,7 +22,7 @@ public:
     
 private:
     LabelGenerator _label_generator;
-    Linker _linker;
+    x86::Linker _linker;
     x86::Assembler _assembler;
     mips::RegisterFile& _regs;
     Allocator& _allocator;

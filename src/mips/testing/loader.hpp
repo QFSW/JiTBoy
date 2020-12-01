@@ -11,8 +11,8 @@ namespace mips::testing
     public:
         // Add constructor
 
-        [[nodiscard]] Test load_test(const std::filesystem::path& filepath) const;
-        [[nodiscard]] std::vector<Test> load_tests(const std::string& dir_path) const;
+        [[nodiscard]] Test load_test(const std::filesystem::path& filepath);
+        [[nodiscard]] std::vector<Test> load_tests(const std::string& dir_path);
 
     private:
         Parser _parser;

@@ -16,7 +16,7 @@ namespace mips::testing
     const std::regex Parser::name_regex = gen_regex("name");
     const std::regex Parser::desc_regex = gen_regex("desc");
 
-    Test Parser::parse_test(const std::string& raw) const
+    Test Parser::parse_test(const std::string& raw)
     {
         Test test;
 
