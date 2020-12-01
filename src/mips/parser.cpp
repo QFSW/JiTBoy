@@ -88,6 +88,9 @@ namespace mips
             }
         }
 
+        if (target % 4 > 0)
+            throw std::runtime_error(strtools::catf("Target address 0x%x is not word aligned", target));
+
         return target >> 2;
     }
 
@@ -109,6 +112,9 @@ namespace mips
 
             offset = target - pc;
         }
+
+        if (offset % 4 > 0)
+            throw std::runtime_error(strtools::catf("Target address 0x%x is not word aligned", pc + offset));
 
         return static_cast<int16_t>(offset >> 2);
     }
