@@ -32,7 +32,7 @@ private:
 
     uint32_t _current_pc;
 
-    static constexpr uint32_t instruction_mem_addr = 0x100;
+    static constexpr uint32_t instruction_mem_addr = 0x0;
     static constexpr bool debug = config::debug;
     std::stringstream _debug_stream;
 };

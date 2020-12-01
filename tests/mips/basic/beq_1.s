@@ -3,7 +3,7 @@
 # init: $1 = 1
 # init: $2 = 0
 # init: $3 = 0
-# init: $4 = 1
+# init: $4 = 0
 # assert: $3 == 1
 # assert: $4 == 1
 

@@ -1,7 +1,7 @@
 # desc: bgtz backwards taken
 #
 # init: $3 = 4
-# init: $4 = 1
+# init: $4 = 0
 #
 # assert: $3 == -2
 # assert: $4 == 1

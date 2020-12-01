@@ -2,7 +2,7 @@
 #
 # init: $2 = 6
 # init: $3 = 0
-# init: $4 = 1
+# init: $4 = 0
 #
 # assert: $3 == 6
 # assert: $4 == 1
