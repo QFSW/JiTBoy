@@ -78,10 +78,13 @@ namespace mips
     template <typename Inner, typename...Ts>
     bool RegexParser<Inner, Ts...>::try_evaluate(const std::string& raw, std::tuple<Ts&...> result) const
     {
-        std::tuple<Ts...> r;
-        const bool success = _evaluator(raw, r);
-        result = std::move(r);
-        return success;
+        if (std::tuple<Ts...> r; try_evaluate(raw, r))
+        {
+            result = std::move(r);
+            return true;
+        }
+
+        return false;
     }
 
     template <typename Inner, typename...Ts>
