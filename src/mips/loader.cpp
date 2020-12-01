@@ -13,15 +13,14 @@ namespace mips
 
     std::vector<Instruction> Loader::load_binary(const std::string& filepath) const
     {
-        const std::vector<uint8_t> raw = io::read_binary_file(filepath);
-        if (raw.size() % 4 > 0)
-            throw std::runtime_error("MIPS instruction binary must be word aligned");
+        const std::vector<uint32_t> raw = io::read_binary_file<uint32_t, io::Endianness::Big>(filepath);
 
         std::vector<Instruction> result;
-        result.reserve(raw.size() / 4);
+        result.reserve(raw.size());
 
-        // Interpret byte vector
+        for (const auto word : raw)
+            result.push_back(decode_instruction(word));
 
-        throw std::logic_error("Binary loader not implemented");
+        return result;
     }
 }
