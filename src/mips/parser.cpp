@@ -107,9 +107,9 @@ namespace mips
         return InstructionR
         {
             .op = OpcodeR::SLL,
-            .rd = Register::zero,
-            .rs = Register::zero,
-            .rt = Register::zero,
+            .rd = Register::$zero,
+            .rs = Register::$zero,
+            .rt = Register::$zero,
             .sa = 0
         };
     }
@@ -125,7 +125,7 @@ namespace mips
         if (!parser1.try_evaluate(instr, std::tie(link, dst)))
         {
             std::tie(dst) = parser2.evaluate(instr);
-            link = Register::ra;
+            link = Register::$ra;
         }
 
         return InstructionR
@@ -133,7 +133,7 @@ namespace mips
             .op = OpcodeR::JALR,
             .rd = link,
             .rs = dst,
-            .rt = Register::zero,
+            .rt = Register::$zero,
             .sa = 0
         };
     }
@@ -163,7 +163,7 @@ namespace mips
             .op = opcode,
             .rd = dst,
             .rs = src,
-            .rt = Register::zero,
+            .rt = Register::$zero,
             .sa = sa
         };
     }
@@ -176,7 +176,7 @@ namespace mips
         return InstructionR
         {
             .op = opcode,
-            .rd = Register::zero,
+            .rd = Register::$zero,
             .rs = src1,
             .rt = src2,
             .sa = 0
@@ -191,9 +191,9 @@ namespace mips
         return InstructionR
         {
             .op = opcode,
-            .rd = Register::zero,
+            .rd = Register::$zero,
             .rs = src,
-            .rt = Register::zero,
+            .rt = Register::$zero,
             .sa = 0
         };
     }
@@ -221,7 +221,7 @@ namespace mips
         {
             .op = opcode,
             .rt = dst,
-            .rs = Register::zero,
+            .rs = Register::$zero,
             .constant = constant
         };
     }
@@ -248,7 +248,7 @@ namespace mips
         return InstructionI
         {
             .op = opcode,
-            .rt = Register::zero,
+            .rt = Register::$zero,
             .rs = src,
             .constant = static_cast<int16_t>(constant >> 2)
         };
@@ -317,44 +317,44 @@ namespace mips
             { "$30", Register::$30 },
             { "$31", Register::$31 },
 
-            { "$zero", Register::zero },
-            { "$at", Register::at },
+            { "$zero", Register::$zero },
+            { "$at", Register::$at },
 
-            { "$v0", Register::v0 },
-            { "$v1", Register::v1 },
+            { "$v0", Register::$v0 },
+            { "$v1", Register::$v1 },
 
-            { "$a0", Register::a0 },
-            { "$a1", Register::a1 },
-            { "$a2", Register::a2 },
-            { "$a3", Register::a3 },
+            { "$a0", Register::$a0 },
+            { "$a1", Register::$a1 },
+            { "$a2", Register::$a2 },
+            { "$a3", Register::$a3 },
 
-            { "$t0", Register::t0 },
-            { "$t1", Register::t1 },
-            { "$t2", Register::t2 },
-            { "$t3", Register::t3 },
-            { "$t4", Register::t4 },
-            { "$t5", Register::t5 },
-            { "$t6", Register::t6 },
-            { "$t7", Register::t7 },
-            { "$t8", Register::t8 },
-            { "$t9", Register::t9 },
+            { "$t0", Register::$t0 },
+            { "$t1", Register::$t1 },
+            { "$t2", Register::$t2 },
+            { "$t3", Register::$t3 },
+            { "$t4", Register::$t4 },
+            { "$t5", Register::$t5 },
+            { "$t6", Register::$t6 },
+            { "$t7", Register::$t7 },
+            { "$t8", Register::$t8 },
+            { "$t9", Register::$t9 },
 
-            { "$s0", Register::s0 },
-            { "$s1", Register::s1 },
-            { "$s2", Register::s2 },
-            { "$s3", Register::s3 },
-            { "$s4", Register::s4 },
-            { "$s5", Register::s5 },
-            { "$s6", Register::s6 },
-            { "$s7", Register::s7 },
+            { "$s0", Register::$s0 },
+            { "$s1", Register::$s1 },
+            { "$s2", Register::$s2 },
+            { "$s3", Register::$s3 },
+            { "$s4", Register::$s4 },
+            { "$s5", Register::$s5 },
+            { "$s6", Register::$s6 },
+            { "$s7", Register::$s7 },
 
-            { "$k0", Register::k0 },
-            { "$k1", Register::k1 },
+            { "$k0", Register::$k0 },
+            { "$k1", Register::$k1 },
 
-            { "$gp", Register::gp },
-            { "$sp", Register::sp },
-            { "$fp", Register::fp },
-            { "$ra", Register::ra },
+            { "$gp", Register::$gp },
+            { "$sp", Register::$sp },
+            { "$fp", Register::$fp },
+            { "$ra", Register::$ra },
         };
 
         if (reg_mapping.find(reg) == reg_mapping.end())

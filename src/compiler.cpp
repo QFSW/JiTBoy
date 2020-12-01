@@ -115,7 +115,7 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
 template <x86::Opcode Op>
 void Compiler::compile(const mips::InstructionR instr)
 {
-    if (instr.rd == mips::Register::zero) return;
+    if (instr.rd == mips::Register::$zero) return;
 
     if (instr.rs == instr.rd)
     {
@@ -167,7 +167,7 @@ void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
         case mips::OpcodeJ::JAL:
         {
             const uint32_t link = addr + 4;
-            compile_reg_write(mips::Register::ra, link);
+            compile_reg_write(mips::Register::$ra, link);
             [[fallthrough]];
         }
         case mips::OpcodeJ::J:
@@ -189,7 +189,7 @@ void Compiler::compile_shift_imm(const mips::InstructionR instr)
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_imm(const mips::Register dst, const mips::Register src, const uint32_t imm)
 {
-    if (dst == mips::Register::zero) return;
+    if (dst == mips::Register::$zero) return;
 
     if (dst == src)
     {
@@ -206,7 +206,7 @@ void Compiler::compile_imm(const mips::Register dst, const mips::Register src, c
 template <x86::CondCode Cond>
 void Compiler::compile_compare(const mips::InstructionR instr)
 {
-    if (instr.rd == mips::Register::zero) return;
+    if (instr.rd == mips::Register::$zero) return;
 
     compile_reg_load(acc1_reg, instr.rs);
     compile_reg_load<x86::Opcode::CMP>(acc1_reg, instr.rt);
@@ -217,7 +217,7 @@ void Compiler::compile_compare(const mips::InstructionR instr)
 template <x86::CondCode Cond>
 void Compiler::compile_compare(const mips::InstructionI instr)
 {
-    if (instr.rt == mips::Register::zero) return;
+    if (instr.rt == mips::Register::$zero) return;
 
     compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rs, instr.constant);
     compile_reg_write(instr.rt, 0);
@@ -230,11 +230,11 @@ void Compiler::compile_branch(const mips::InstructionI instr, const uint32_t add
     const uint32_t target_true = addr + (instr.constant << 2);
     const uint32_t target_false = addr + 4;
 
-    if (instr.rs == mips::Register::zero)
+    if (instr.rs == mips::Register::$zero)
     {
         compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rt, 0);
     }
-    else if (instr.rt == mips::Register::zero)
+    else if (instr.rt == mips::Register::$zero)
     {
         compile_reg_read<x86::Opcode::CMP_I, x86::OpcodeExt::CMP_I>(instr.rs, 0);
     }
@@ -254,7 +254,7 @@ template <x86::CondCode Cond>
 void Compiler::compile_branch_and_link(const mips::InstructionI instr, const uint32_t addr)
 {
     const uint32_t link = addr + 4;
-    compile_reg_write(mips::Register::ra, link);
+    compile_reg_write(mips::Register::$ra, link);
     compile_branch<Cond>(instr, addr);
 }
 
@@ -285,7 +285,7 @@ void Compiler::compile_reg_read(const mips::Register src, const uint32_t imm)
 template <x86::Opcode Op>
 void Compiler::compile_reg_write(const mips::Register dst, const x86::Register src)
 {
-    if (dst == mips::Register::zero)
+    if (dst == mips::Register::$zero)
         throw std::logic_error("Cannot write to $zero");
 
     _assembler.instr<Op, x86::InstrMode::RM>(addr_reg, src, calc_reg_offset(dst));
@@ -294,7 +294,7 @@ void Compiler::compile_reg_write(const mips::Register dst, const x86::Register s
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_reg_write(const mips::Register dst, const uint32_t imm)
 {
-    if (dst == mips::Register::zero)
+    if (dst == mips::Register::$zero)
         throw std::logic_error("Cannot write to $zero");
 
     _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, imm, calc_reg_offset(dst));

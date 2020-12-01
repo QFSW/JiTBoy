@@ -13,7 +13,7 @@ namespace mips
         {
             case OpcodeR::JALR:
             {
-                if (instr.rd == Register::ra)
+                if (instr.rd == Register::$ra)
                 {
                     os << opcode_to_string(instr.op)
                     << " " << reg_to_string(instr.rs);
@@ -52,9 +52,9 @@ namespace mips
             {
                 if (
                     instr.op == OpcodeR::SLL
-                    && instr.rd == Register::zero
-                    && instr.rt == Register::zero
-                    && instr.rs == Register::zero
+                    && instr.rd == Register::$zero
+                    && instr.rt == Register::$zero
+                    && instr.rs == Register::$zero
                     && instr.sa == 0
                 )
                 {
