@@ -336,16 +336,7 @@ void Compiler::compile_mem_write(const mips::InstructionI instr)
     _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
     _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
 
-    if (instr.constant)
-    {
-        compile_reg_load(Register::EAX, instr.rs);
-        _assembler.instr_imm<Opcode::ADD_I, OpcodeExt::ADD_I>(Register::EAX, instr.constant);
-        _assembler.instr<Opcode::MOV>(Register::EDX, Register::EAX);
-    }
-    else
-    {
-        compile_reg_load(Register::EDX, instr.rs);
-    }
+    compile_compute_mem_addr(Register::EDX, instr);
 
     _linker.label_global(label, func);
     _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
@@ -365,16 +356,7 @@ void Compiler::compile_mem_read(const mips::InstructionI instr)
     _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
     _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
 
-    if (instr.constant)
-    {
-        compile_reg_load(Register::EAX, instr.rs);
-        _assembler.instr_imm<Opcode::ADD_I, OpcodeExt::ADD_I>(Register::EAX, instr.constant);
-        _assembler.instr<Opcode::MOV>(Register::EDX, Register::EAX);
-    }
-    else
-    {
-        compile_reg_load(Register::EDX, instr.rs);
-    }
+    compile_compute_mem_addr(Register::EDX, instr);
 
     _linker.label_global(label, func);
     _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
@@ -384,4 +366,28 @@ void Compiler::compile_mem_read(const mips::InstructionI instr)
 
     _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
     compile_reg_write(instr.rt, Register::EAX);
+}
+
+void Compiler::compile_compute_mem_addr(const x86::Register dst, const mips::InstructionI instr)
+{
+    using namespace x86;
+
+    if (instr.constant)
+    {
+        if (dst == addr_reg)
+        {
+            compile_reg_load(acc1_reg, instr.rs);
+            _assembler.instr_imm<Opcode::ADD_I, OpcodeExt::ADD_I>(acc1_reg, instr.constant);
+            _assembler.instr<Opcode::MOV>(dst, acc1_reg);
+        }
+        else
+        {
+            compile_reg_load(dst, instr.rs);
+            _assembler.instr_imm<Opcode::ADD_I, OpcodeExt::ADD_I>(dst, instr.constant);
+        }
+    }
+    else
+    {
+        compile_reg_load(Register::EDX, instr.rs);
+    }
 }
