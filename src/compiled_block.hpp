@@ -2,10 +2,11 @@
 
 #include <cstdint>
 #include <compiler_config.hpp>
+#include <config.hpp>
 
 struct CompiledBlock
 {
-    typedef uint32_t(__fastcall *func)();
+    typedef uint32_t(CALLING_CONV *func)();
     CompiledBlock();
     CompiledBlock(func code, size_t size, CompilerConfig config);
     

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <config.hpp>
 #include <utils/detail/final_act.hpp>
 
 namespace utils
@@ -27,7 +28,7 @@ namespace utils
     struct instance_proxy
     {
         template <typename T, typename R, R(T::* F)(Args...)>
-        static R __fastcall call(T* obj, Args...args)
+        static R CALLING_CONV call(T* obj, Args...args)
         {
             return (obj->*F)(args...);
         }
