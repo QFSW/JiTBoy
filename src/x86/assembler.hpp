@@ -209,6 +209,10 @@ namespace x86
     template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
     void Assembler::instr(const Register reg, const int32_t addr_offset)
     {
+        if constexpr (Mode == InstrMode::RR) { }
+        else if constexpr (Mode == InstrMode::RM) { }
+        else throw std::logic_error("Invalid instruction mode encountered");
+
         instr<Op, Mode, Size>(reg, static_cast<Register>(Ext), addr_offset);
 
         if constexpr (debug)
