@@ -6,16 +6,16 @@
 # assert: $3 == 21
 # assert: $4 == 22
 
-sb $1, -1($sp)
-lb $2, -1($sp)
+sh $1, -2($sp)
+lh $2, -2($sp)
 nop
 
 addi $1, $2, 1
-sb $1, -2($sp)
-lb $3, -2($sp)
+sh $1, -4($sp)
+lh $3, -4($sp)
 nop
 
 addi $1, $3, 1
-sb $1, -3($sp)
-lb $4, -3($sp)
+sh $1, -6($sp)
+lh $4, -6($sp)
 nop

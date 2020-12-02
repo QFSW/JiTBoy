@@ -28,7 +28,12 @@ namespace mips
         if constexpr (std::is_same_v<T, uint32_t>) return read_word(addr);
         if constexpr (std::is_same_v<T, int32_t>)  return read_word(addr);
 
-        throw std::logic_error("MemoryMap::read<T> is not implemented");
+        const uint32_t offset = addr % sizeof(uint32_t);
+        const uint32_t word = _map[addr - offset];
+        const int shamt = 8 * (sizeof(uint32_t) - offset - sizeof(T));
+
+        T data = word >> shamt;
+        return static_cast<uint32_t>(data);
     }
 
     template <typename T>
