@@ -35,6 +35,7 @@ factorial:
 
         addiu $sp, $sp, -4
         lw $6, 0($sp)
+        nop
 
         multu $5, $6
         mflo $5
@@ -42,6 +43,7 @@ factorial:
     fac-return:
         addiu $sp, $sp, -4
         lw $ra, 0($sp)
+        nop
 
         jr $ra
         nop
