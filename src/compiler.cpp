@@ -151,8 +151,14 @@ void Compiler::compile(const mips::InstructionI instr, const uint32_t addr)
         case mips::OpcodeI::BLTZ:   compile_branch<CondCode::L>(instr, addr); break;
         case mips::OpcodeI::BGEZAL: compile_branch_and_link<CondCode::GE>(instr, addr); break;
         case mips::OpcodeI::BLTZAL: compile_branch_and_link<CondCode::L>(instr, addr); break;
-        case mips::OpcodeI::LW:     compile_mem_read(instr); break;
-        case mips::OpcodeI::SW:     compile_mem_write(instr); break;
+        case mips::OpcodeI::LW:     compile_mem_read<uint32_t>(instr); break;
+        case mips::OpcodeI::LB:     compile_mem_read<int8_t>(instr); break;
+        case mips::OpcodeI::LBU:    compile_mem_read<uint8_t>(instr); break;
+        case mips::OpcodeI::LH:     compile_mem_read<int16_t>(instr); break;
+        case mips::OpcodeI::LHU:    compile_mem_read<uint16_t>(instr); break;
+        case mips::OpcodeI::SW:     compile_mem_write<uint32_t>(instr); break;
+        case mips::OpcodeI::SB:     compile_mem_write<uint8_t>(instr); break;
+        case mips::OpcodeI::SH:     compile_mem_write<uint16_t>(instr); break;
         case mips::OpcodeI::LUI:    compile_reg_write(instr.rt, instr.constant << 16); break;
         default: throw_invalid_instr(instr);
     }
@@ -326,48 +332,6 @@ void Compiler::compile_jump(const mips::Register target)
     _assembler.instr<x86::Opcode::RET>();
 }
 
-void Compiler::compile_mem_write(const mips::InstructionI instr)
-{
-    using namespace x86;
-    const static auto label = _label_generator.generate("mem_sw");
-    const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write_word>;
-
-    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
-    _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
-    _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
-
-    compile_compute_mem_addr(Register::EDX, instr);
-
-    _linker.label_global(label, func);
-    _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
-    {
-        _assembler.call(offset);
-    });
-
-    _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
-}
-
-void Compiler::compile_mem_read(const mips::InstructionI instr)
-{
-    using namespace x86;
-    const static auto label = _label_generator.generate("mem_lw");
-    const static auto func = utils::instance_proxy<uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::read_word>;
-
-    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
-    _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
-
-    compile_compute_mem_addr(Register::EDX, instr);
-
-    _linker.label_global(label, func);
-    _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
-    {
-        _assembler.call(offset);
-    });
-
-    _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
-    compile_reg_write(instr.rt, Register::EAX);
-}
-
 void Compiler::compile_compute_mem_addr(const x86::Register dst, const mips::InstructionI instr)
 {
     using namespace x86;
@@ -390,4 +354,50 @@ void Compiler::compile_compute_mem_addr(const x86::Register dst, const mips::Ins
     {
         compile_reg_load(Register::EDX, instr.rs);
     }
+}
+
+template <typename T>
+void Compiler::compile_mem_write(const mips::InstructionI instr)
+{
+    using namespace x86;
+    const static auto name = strtools::catf("mem_write<%s>", typeid(T).name());
+    const static auto label = _label_generator.generate(name);
+    const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write<T>>;
+
+    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
+    _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
+    _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
+
+    compile_compute_mem_addr(Register::EDX, instr);
+
+    _linker.label_global(label, func);
+    _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
+    {
+        _assembler.call(offset);
+    });
+
+    _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
+}
+
+template <typename T>
+void Compiler::compile_mem_read(const mips::InstructionI instr)
+{
+    using namespace x86;
+    const static auto name = strtools::catf("mem_read<%s>", typeid(T).name());
+    const static auto label = _label_generator.generate(name);
+    const static auto func = utils::instance_proxy<uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::read<T>>;
+
+    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
+    _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
+
+    compile_compute_mem_addr(Register::EDX, instr);
+
+    _linker.label_global(label, func);
+    _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
+    {
+        _assembler.call(offset);
+    });
+
+    _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
+    compile_reg_write(instr.rt, Register::EAX);
 }
