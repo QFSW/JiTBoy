@@ -2,7 +2,7 @@
 
 #define FASTCALL
 
-#ifdef CDECL
+#if defined CDECL
 #define CALLING_CONV __cdecl
 #elif defined CLRCALL
 #define CALLING_CONV __clrcall
