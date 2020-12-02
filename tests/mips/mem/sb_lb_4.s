@@ -14,7 +14,7 @@ write_loop:
     nop
 
     sub $4, $sp, $2
-    addi $2, $2, 4
+    addi $2, $2, 1
     sb $3, 0($4)
 
     j write_loop
@@ -29,7 +29,7 @@ read_loop:
     nop
 
     sub $4, $sp, $2
-    addi $2, $2, 4
+    addi $2, $2, 1
     lb $3, 0($4)
     nop
 

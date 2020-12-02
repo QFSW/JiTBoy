@@ -4,6 +4,6 @@
 # init: $1 = 0xFFFFFFFF
 # assert: $2 == 0x000000FF
 
-sw $1, 0($sp)
-lbu $2, 0($sp)
+sw $1, -4($sp)
+lbu $2, -1($sp)
 nop

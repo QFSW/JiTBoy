@@ -7,15 +7,15 @@
 # assert: $4 == 23
 
 addi $1, $1, 1
-sb $1, 0($sp)
+sb $1, -1($sp)
 
 addi $1, $1, 1
-sb $1, 1($sp)
+sb $1, -2($sp)
 
 addi $1, $1, 1
-sb $1, 2($sp)
+sb $1, -3($sp)
 
-lb $2, 0($sp)
-lb $3, 1($sp)
-lb $4, 2($sp)
+lb $2, -1($sp)
+lb $3, -2($sp)
+lb $4, -3($sp)
 nop

@@ -4,16 +4,16 @@
 # init: $1 = 20
 # assert: $2 == 22
 
-sb $1, 0($sp)
-lb $2, 0($sp)
+sb $1, -1($sp)
+lb $2, -1($sp)
 nop
 
 addi $1, $2, 1
-sb $1, 0($sp)
-lb $2, 0($sp)
+sb $1, -1($sp)
+lb $2, -1($sp)
 nop
 
 addi $1, $2, 1
-sb $1, 0($sp)
-lb $2, 0($sp)
+sb $1, -1($sp)
+lb $2, -1($sp)
 nop
