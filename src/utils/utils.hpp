@@ -29,7 +29,7 @@ namespace utils
         template <typename T, typename R, R(T::* F)(Args...)>
         static R __fastcall call(T* obj, Args...args)
         {
-            return (obj->*F)(std::forward(args...));
+            return (obj->*F)(args...);
         }
     };
 }

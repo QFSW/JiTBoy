@@ -25,6 +25,7 @@ private:
     [[nodiscard]] CompiledBlock get_or_compile_block(uint32_t addr);
 
     mips::RegisterFile _regs;
+    mips::MemoryMap _mem;
     Compiler::Allocator _allocator;
     Compiler _compiler;
     std::vector<mips::Instruction> _source;

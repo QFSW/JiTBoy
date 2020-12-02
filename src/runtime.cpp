@@ -1,11 +1,10 @@
 #include "runtime.hpp"
 
-#include <iostream>
 #include <stdexcept>
 #include <mips/utils.hpp>
 
 Runtime::Runtime()
-    : _compiler(_regs, _allocator)
+    : _compiler(_regs, _mem, _allocator)
     , _current_pc(instruction_mem_addr)
 { }
 

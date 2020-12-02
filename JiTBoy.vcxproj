@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\mips\memory_map.cpp" />
     <ClCompile Include="src\mips\loader.cpp" />
     <ClCompile Include="src\mips\parser.cpp" />
     <ClCompile Include="src\compiled_block.cpp" />
@@ -195,6 +196,7 @@
     <ClCompile Include="src\utils\strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\mips\memory_map.hpp" />
     <ClInclude Include="src\error\parse_error.hpp" />
     <ClInclude Include="src\utils\regex_parser.hpp" />
     <ClInclude Include="src\mips\loader.hpp" />
