@@ -11,6 +11,8 @@ namespace mips
         [[nodiscard]] uint32_t* data() noexcept { return _regs; }
         [[nodiscard]] const uint32_t* data() const noexcept { return _regs; }
 
+        std::string generate_dump(bool omit_zeroes = true) const;
+
         uint32_t& operator[](size_t index);
         uint32_t& operator[](Register reg);
         const uint32_t& operator[](Register reg) const;

@@ -30,7 +30,7 @@ void execute_single(const std::string& path)
     {
         Runtime runtime;
 
-        auto _ = utils::finally([&] { std::cout << runtime.get_debug(); });
+        auto _ = utils::finally([&] { std::cout << runtime.get_debug_with_dumps(); });
         runtime.execute(utils::copy(code));
     });
 

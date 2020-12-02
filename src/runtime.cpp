@@ -74,23 +74,19 @@ void Runtime::execute(const uint32_t addr)
     {
         const CompiledBlock block = get_or_compile_block(_current_pc);
 
-        if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n\n", _current_pc);
+        if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _current_pc);
         _current_pc = block();
-
-        if constexpr (debug)
-        {
-            _debug_stream << "Register file (zeroed registers omitted)\n";
-            for (int i = 0; i < _regs.size(); i++)
-            {
-                const auto reg = _regs[i];
-                if (reg > 0) _debug_stream << strtools::catf("$%d: %d\n", i, reg);
-            }
-            _debug_stream << "\n";
-        }
     }
 }
 
 std::string Runtime::get_debug() const
 {
     return _debug_stream.str();
+}
+
+std::string Runtime::get_debug_with_dumps() const
+{
+    std::stringstream ss;
+    ss << get_debug() << "\n" << _regs.generate_dump() << "\n";
+    return ss.str();
 }

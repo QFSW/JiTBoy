@@ -17,6 +17,7 @@ public:
     [[nodiscard]] mips::RegisterFile& get_regs() noexcept { return _regs; }
     [[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _regs; }
     [[nodiscard]] std::string get_debug() const;
+    [[nodiscard]] std::string get_debug_with_dumps() const;
     
 private:
     [[nodiscard]] bool valid_pc(uint32_t addr) const noexcept;

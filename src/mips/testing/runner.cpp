@@ -43,7 +43,7 @@ namespace mips::testing
 
                 if (failed)
                 {
-                    ss << runtime.get_debug();
+                    ss << runtime.get_debug_with_dumps();
                     failures.push_back(std::tuple(test, ss.str()));
                 }
                 else
@@ -58,7 +58,6 @@ namespace mips::testing
 
                 std::stringstream ss;
                 ss << e.what() << "\n";
-                ss << runtime.get_debug();
                 failures.push_back(std::tuple(test, ss.str()));
             }
         }
