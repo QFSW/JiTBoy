@@ -55,5 +55,6 @@ namespace strtools
 	bool replace_substr(std::string& str, const std::string& to_find, const std::string& to_replace);
 	void replace_substr_all(std::string& str, const std::string& to_find, const std::string& to_replace);
 	bool str_contains(const std::string& str, const std::string& substr);
+	bool isspace(const std::string& str);
 }
 

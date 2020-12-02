@@ -1,5 +1,7 @@
 #include "strtools.hpp"
 
+#include <cctype>
+
 namespace strtools
 {
 	std::vector<std::string> split(const std::string& str, const char delim)
@@ -42,5 +44,16 @@ namespace strtools
 	bool str_contains(const std::string& str, const std::string& substr)
 	{
 		return str.find(substr) != std::string::npos;
+	}
+
+	bool isspace(const std::string& str)
+	{
+	    for (const auto c : str)
+	    {
+			if (!::isspace(c))
+				return false;
+	    }
+
+		return true;
 	}
 }

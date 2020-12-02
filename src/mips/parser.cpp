@@ -20,7 +20,7 @@ namespace mips
             auto preprocessed = strtools::remove_after(line, '#');
             extract_labels(preprocessed);
 
-            if (!preprocessed.empty())
+            if (!strtools::isspace(preprocessed))
             {
                 instrs.push_back(parse_instruction(preprocessed));
                 _pc += 4;
