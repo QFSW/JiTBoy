@@ -43,7 +43,14 @@ namespace mips
         else if constexpr (std::is_same_v<T, int32_t>) write_word(addr, value);
         else
         {
-            throw std::logic_error("MemoryMap::write<T> is not implemented");
+            const uint32_t offset = addr % sizeof(uint32_t);
+            uint32_t& word = _map[addr - offset];
+
+            const int shamt = 8 * (sizeof(uint32_t) - offset - sizeof(T));
+            const uint32_t mask = ~0 ^ (static_cast<uint32_t>(T(~0)) << shamt);
+
+            word &= mask;
+            word |= value << shamt;
         }
     }
 }

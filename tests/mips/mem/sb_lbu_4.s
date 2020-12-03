@@ -3,7 +3,7 @@
 # init: $sp = 0x20000000
 # init: $1 = 1024
 # init: $2 = 0
-# init: $3 = 4
+# init: $3 = 1
 # assert: $6 == 0
 
 write_setup:

@@ -74,7 +74,7 @@ void Runtime::execute(const uint32_t addr)
     {
         const CompiledBlock block = get_or_compile_block(_current_pc);
 
-        if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _current_pc);
+        // if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _current_pc);
         _current_pc = block();
     }
 }
