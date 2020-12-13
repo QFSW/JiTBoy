@@ -56,7 +56,11 @@ template <size_t BufferSize>
 ExecutableAllocator<BufferSize>::~ExecutableAllocator()
 {
     DWORD dummy;
-    VirtualProtect(_buffer, BufferSize, PAGE_READWRITE, &dummy);
+    if (!VirtualProtect(_buffer, BufferSize, PAGE_READWRITE, &dummy))
+    {
+        const auto error = GetLastError();
+        throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
+    }
 }
 
 template <size_t BufferSize>
@@ -71,7 +75,11 @@ uint8_t* ExecutableAllocator<BufferSize>::alloc(const size_t size)
     }
 
     DWORD dummy;
-    VirtualProtect(buffer, size, PAGE_READWRITE, &dummy);
+    if (!VirtualProtect(buffer, size, PAGE_READWRITE, &dummy))
+    {
+        const auto error = GetLastError();
+        throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
+    }
 
     return buffer;
 }
@@ -80,7 +88,11 @@ template <size_t BufferSize>
 void ExecutableAllocator<BufferSize>::commit(void* buffer, const size_t size)
 {
     DWORD dummy;
-    VirtualProtect(buffer, size, PAGE_EXECUTE_READ, &dummy);
+    if (!VirtualProtect(buffer, size, PAGE_EXECUTE_READ, &dummy))
+    {
+        const auto error = GetLastError();
+        throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
+    }
 }
 
 template <size_t BufferSize>
