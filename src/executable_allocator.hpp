@@ -56,11 +56,7 @@ template <size_t BufferSize>
 ExecutableAllocator<BufferSize>::~ExecutableAllocator()
 {
     DWORD dummy;
-    if (!VirtualProtect(_buffer, BufferSize, PAGE_READWRITE, &dummy))
-    {
-        const auto error = GetLastError();
-        throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
-    }
+    VirtualProtect(_buffer, BufferSize, PAGE_READWRITE, &dummy);
 }
 
 template <size_t BufferSize>

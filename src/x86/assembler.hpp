@@ -109,7 +109,7 @@ namespace x86
         VectorBuffer _buffer;
 
         template <Opcode Op, InstrMode Mode, RegisterSize Size>
-        static constexpr uint8_t encode_opcode();
+        static consteval uint8_t encode_opcode();
 
         template <Opcode Op, RegisterSize Size>
         static constexpr uint8_t encode_imm_opcode(uint32_t imm);
@@ -130,7 +130,7 @@ namespace x86
         static constexpr int32_t adjust_offset(int32_t offset, uint8_t instr_size);
 
         template <Opcode Op>
-        static constexpr bool is_fast_imm_instr();
+        static consteval bool is_fast_imm_instr();
 
         template <JumpAdjust Adjust, uint8_t NearSize = 2>
         static constexpr bool is_near_jump(int32_t offset);
@@ -458,7 +458,7 @@ namespace x86
     #pragma endregion
 
     template <Opcode Op, InstrMode Mode, RegisterSize Size>
-    constexpr uint8_t Assembler::encode_opcode()
+    consteval uint8_t Assembler::encode_opcode()
     {
         auto op = static_cast<uint8_t>(Op);
         switch (Size)
@@ -501,7 +501,7 @@ namespace x86
     }
 
     template <Opcode Op>
-    constexpr bool Assembler::is_fast_imm_instr()
+    consteval bool Assembler::is_fast_imm_instr()
     {
         switch (Op)
         {
