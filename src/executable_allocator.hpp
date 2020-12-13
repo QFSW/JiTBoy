@@ -22,8 +22,10 @@ public:
     [[nodiscard]] size_t get_total() const noexcept;
     
 private:
-    __declspec(align(win_page_size))
+    alignas(win_page_size)
     uint8_t _buffer[BufferSize] = {};
+
+    alignas(win_page_size)
     size_t _page_size;
     size_t _consumed;
     size_t _dead_space;
@@ -65,7 +67,7 @@ uint8_t* ExecutableAllocator<BufferSize>::alloc(const size_t size)
     _consumed += size;
     if (get_used() > BufferSize)
     {
-        throw std::runtime_error("Buffer full");
+        throw std::runtime_error("Could not allocate executable memory: buffer full");
     }
 
     DWORD dummy;
