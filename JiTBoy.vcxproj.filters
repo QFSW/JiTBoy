@@ -93,7 +93,7 @@
     <ClCompile Include="src\mips\memory_map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\nameof.cpp">
+    <ClCompile Include="src\utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -204,9 +204,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mips\memory_map.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\utils\nameof.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -33,4 +33,10 @@ namespace utils
             return (obj->*F)(args...);
         }
     };
+
+    template <typename T>
+    constexpr const char* nameof()
+    {
+        return typeid(T).name();
+    }
 }

@@ -1,8 +1,8 @@
 #include "compiler.hpp"
 
+#include <config.hpp>
 #include <mips/utils.hpp>
 #include <utils/functional.hpp>
-#include <utils/nameof.hpp>
 
 Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, Allocator& allocator)
     : _regs(regs)
@@ -353,7 +353,7 @@ void Compiler::compile_compute_mem_addr(const x86::Register dst, const mips::Ins
     }
     else
     {
-        compile_reg_load(Register::EDX, instr.rs);
+        compile_reg_load(dst, instr.rs);
     }
 }
 
