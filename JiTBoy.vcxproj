@@ -186,6 +186,7 @@
     <ClCompile Include="src\compiler.cpp" />
     <ClCompile Include="src/executable_allocator.cpp" />
     <ClCompile Include="src/label_generator.cpp" />
+    <ClCompile Include="src\utils\nameof.cpp" />
     <ClCompile Include="src\x86\linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />
@@ -198,6 +199,7 @@
   <ItemGroup>
     <ClInclude Include="src\mips\memory_map.hpp" />
     <ClInclude Include="src\error\parse_error.hpp" />
+    <ClInclude Include="src\utils\nameof.hpp" />
     <ClInclude Include="src\utils\regex_parser.hpp" />
     <ClInclude Include="src\mips\loader.hpp" />
     <ClInclude Include="src\mips\parser.hpp" />

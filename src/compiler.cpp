@@ -2,6 +2,7 @@
 
 #include <mips/utils.hpp>
 #include <utils/functional.hpp>
+#include <utils/nameof.hpp>
 
 Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, Allocator& allocator)
     : _regs(regs)
@@ -360,7 +361,7 @@ template <typename T>
 void Compiler::compile_mem_write(const mips::InstructionI instr)
 {
     using namespace x86;
-    const static auto name = strtools::catf("mem_write<%s>", typeid(T).name());
+    const static auto name = strtools::catf("mem_write<%s>", utils::nameof<T>());
     const static auto label = _label_generator.generate(name);
     const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write<T>>;
 
@@ -383,7 +384,7 @@ template <typename T>
 void Compiler::compile_mem_read(const mips::InstructionI instr)
 {
     using namespace x86;
-    const static auto name = strtools::catf("mem_read<%s>", typeid(T).name());
+    const static auto name = strtools::catf("mem_read<%s>", utils::nameof<T>());
     const static auto label = _label_generator.generate(name);
     const static auto func = utils::instance_proxy<uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::read<T>>;
 
