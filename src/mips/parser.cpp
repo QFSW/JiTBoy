@@ -256,8 +256,8 @@ namespace mips
         {
             .op = opcode,
             .rd = dst,
-            .rs = src,
-            .rt = Register::$zero,
+            .rs = Register::$zero,
+            .rt = src,
             .sa = sa
         };
     }

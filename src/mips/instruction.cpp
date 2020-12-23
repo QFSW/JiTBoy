@@ -64,7 +64,7 @@ namespace mips
                 {
                     os << opcode_to_string(instr.op)
                     << " " << reg_to_string(instr.rd)
-                    << ", " << reg_to_string(instr.rs)
+                    << ", " << reg_to_string(instr.rt)
                     << ", " << static_cast<uint32_t>(instr.sa);
                 }
                 break;
