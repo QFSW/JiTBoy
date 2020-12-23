@@ -5,7 +5,8 @@
 #include <filesystem>
 #include <stdexcept>
 #include <fstream>
-#include <intrin.h>
+
+#include <utils/utils.hpp>
 
 namespace io
 {
@@ -39,10 +40,7 @@ namespace io
         if constexpr (Endian == Endianness::Big)
         {
             for (auto& word : words)
-            {
-                if constexpr (sizeof(T) == 4) word = _byteswap_ulong(word);
-                else throw std::logic_error("Big endian of this size not yet supported");
-            }
+                word = utils::bswap(word);
         }
 
         return words;
