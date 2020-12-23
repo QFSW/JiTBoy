@@ -37,10 +37,10 @@ namespace x86
         OR_I  = 0x80,
         XOR_I = 0x80,
         CMP_I = 0x80,
-        SAL_I = 0xC0,
-        SAR_I = 0xC0,
-        SHL_I = 0xC0,
-        SHR_I = 0xC0,
+        SAL_I = 0xC1,
+        SAR_I = 0xC1,
+        SHL_I = 0xC1,
+        SHR_I = 0xC1,
 
         ADD_I_EAX = 0x50,
 

@@ -132,6 +132,9 @@ namespace x86
         template <Opcode Op>
         static consteval bool is_fast_imm_instr();
 
+        template <Opcode Op>
+        static consteval bool is_imm8_only_instr();
+
         template <JumpAdjust Adjust, uint8_t NearSize = 2>
         static constexpr bool is_near_jump(int32_t offset);
 
@@ -508,9 +511,22 @@ namespace x86
         case Opcode::MOV_I:
         case Opcode::CALL:
         case Opcode::RET:
+        case Opcode::SAL_I:
             return false;
         default:
             return true;
+        }
+    }
+
+    template <Opcode Op>
+    consteval bool Assembler::is_imm8_only_instr()
+    {
+        switch (Op)
+        {
+        case Opcode::SAL_I:
+            return true;
+        default:
+            return false;
         }
     }
 
@@ -562,7 +578,9 @@ namespace x86
         else
         {
             constexpr bool fast = is_fast_imm_instr<Op>();
-            if (fast && is_8_bit(imm)) _buffer.write<uint8_t>(imm);
+
+            if (fast && is_8_bit(imm))                      _buffer.write<uint8_t>(imm);
+            else if constexpr (is_imm8_only_instr<Op>())    _buffer.write<uint8_t>(imm);
             else if constexpr (Size == RegisterSize::Reg16) _buffer.write<uint16_t>(imm);
             else if constexpr (Size == RegisterSize::Reg32) _buffer.write<uint32_t>(imm);
             else throw std::logic_error("Unsupported register size");
