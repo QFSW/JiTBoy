@@ -2,9 +2,9 @@
 #
 # init: $1 = 30
 # init: $2 = -7
-# assert: $1 == 2
-# assert: $2 == -4
+# assert: $1 == 0
+# assert: $2 == 30
 
-div $1, $2
+divu $1, $2
 mfhi $1
 mflo $2
