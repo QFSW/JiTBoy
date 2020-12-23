@@ -106,6 +106,7 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::XOR:  compile<Opcode::XOR>(instr); break;
         case mips::OpcodeR::NOR:  compile_nor(instr); break;
         case mips::OpcodeR::JR:   compile_jump(instr.rs); break;
+        case mips::OpcodeR::JALR: compile_jump_and_link(instr.rs, instr.rd, addr); break;
         case mips::OpcodeR::SLT:  compile_compare<CondCode::L>(instr); break;
         case mips::OpcodeR::SLTU: compile_compare<CondCode::B>(instr); break;
         case mips::OpcodeR::SLL:  compile_shift_imm<Opcode::SHL_I, OpcodeExt::SHL_I>(instr); break;
@@ -341,6 +342,13 @@ void Compiler::compile_jump(const mips::Register target)
 {
     compile_reg_load(return_reg, target);
     _assembler.instr<x86::Opcode::RET>();
+}
+
+void Compiler::compile_jump_and_link(const mips::Register target, const mips::Register link_reg, const uint32_t addr)
+{
+    const uint32_t link = addr + 4;
+    compile_reg_write(link_reg, link);
+    compile_jump(target);
 }
 
 void Compiler::compile_compute_mem_addr(const x86::Register dst, const mips::InstructionI instr)

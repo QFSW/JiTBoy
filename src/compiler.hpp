@@ -83,6 +83,7 @@ private:
     void compile_call(void (*f)());
     void compile_jump(uint32_t target);
     void compile_jump(mips::Register target);
+    void compile_jump_and_link(mips::Register target, mips::Register link_reg, uint32_t addr);
     void compile_compute_mem_addr(x86::Register dst, mips::InstructionI instr);
 
     template <typename T = uint32_t>
