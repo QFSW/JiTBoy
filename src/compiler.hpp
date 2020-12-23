@@ -79,6 +79,7 @@ private:
     template <x86::CondCode Cond>
     void compile_branch_and_link(mips::InstructionI instr, uint32_t addr);
 
+    void compile_nor(mips::InstructionR instr);
     void compile_call(void (*f)());
     void compile_jump(uint32_t target);
     void compile_jump(mips::Register target);

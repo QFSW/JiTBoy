@@ -104,6 +104,7 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::AND:  compile<Opcode::AND>(instr); break;
         case mips::OpcodeR::OR:   compile<Opcode::OR>(instr); break;
         case mips::OpcodeR::XOR:  compile<Opcode::XOR>(instr); break;
+        case mips::OpcodeR::NOR:  compile_nor(instr); break;
         case mips::OpcodeR::JR:   compile_jump(instr.rs); break;
         case mips::OpcodeR::SLT:  compile_compare<CondCode::L>(instr); break;
         case mips::OpcodeR::SLTU: compile_compare<CondCode::B>(instr); break;
@@ -309,6 +310,15 @@ void Compiler::compile_reg_write(const mips::Register dst, const uint32_t imm)
         throw std::logic_error("Cannot write to $zero");
 
     _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, imm, calc_reg_offset(dst));
+}
+
+void Compiler::compile_nor(const mips::InstructionR instr)
+{
+    using namespace x86;
+    if (instr.rd == mips::Register::$zero) return;
+
+    compile<Opcode::OR>(instr);
+    _assembler.instr<Opcode::NOT, OpcodeExt::NOT, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rd));
 }
 
 void Compiler::compile_call(void (*const f)())
