@@ -4,6 +4,12 @@
 
 namespace mips::testing
 {
+    TestResult::TestResult()
+        : name()
+        , status()
+        , time()
+    { }
+
     std::ostream& operator<<(std::ostream& o, const TestResult::Status status)
     {
         switch (status)

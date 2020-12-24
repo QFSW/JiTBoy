@@ -90,11 +90,15 @@ namespace mips::testing
 
     std::chrono::duration<double> Runner::measure_execution_time(const Test& test) const
     {
-        constexpr size_t count = config::debug
+        constexpr size_t batch_size = config::debug
             ? 1
-            : 1000;
+            : 100;
 
-        return benchmark::measure([&]
+        constexpr double precision = config::debug
+            ? 0.1
+            : 0.01;
+
+        return benchmark::measure_auto([&]
         {
             Runtime runtime;
 
@@ -102,6 +106,6 @@ namespace mips::testing
                 initializer.invoke(runtime.get_regs());
 
             runtime.execute(utils::copy(test.code));
-        }, count);
+        }, batch_size, precision, 10);
     }
 }
