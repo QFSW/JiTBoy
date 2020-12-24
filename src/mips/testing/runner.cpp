@@ -22,6 +22,7 @@ namespace mips::testing
             Runtime runtime;
             TestResult result;
             result.name = test.name;
+            result.source_instr_count = test.code.size();
 
             std::cout << "   - " << test.name;
 

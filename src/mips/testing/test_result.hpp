@@ -17,6 +17,7 @@ namespace mips::testing
         std::string name;
         Status status;
         std::chrono::duration<double> time;
+        uint32_t source_instr_count;
 
         TestResult();
     };

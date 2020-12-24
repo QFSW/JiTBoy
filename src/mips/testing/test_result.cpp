@@ -8,6 +8,7 @@ namespace mips::testing
         : name()
         , status()
         , time()
+        , source_instr_count()
     { }
 
     std::ostream& operator<<(std::ostream& o, const TestResult::Status status)
@@ -26,7 +27,7 @@ namespace mips::testing
 
 template<> void csv::write_header<mips::testing::TestResult>(std::ostream& o)
 {
-    o << "name, status, time (us)";
+    o << "name, status, time (us), source instructions";
 }
 
 template<> void csv::write_row<mips::testing::TestResult>(std::ostream& o, const mips::testing::TestResult& result)
@@ -34,5 +35,6 @@ template<> void csv::write_row<mips::testing::TestResult>(std::ostream& o, const
     o
     << result.name << ", "
     << result.status << ", "
-    << std::chrono::duration_cast<std::chrono::microseconds>(result.time).count();
+    << std::chrono::duration_cast<std::chrono::microseconds>(result.time).count() << ", "
+    << result.source_instr_count;
 }
