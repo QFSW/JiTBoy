@@ -2,6 +2,12 @@
 
 namespace x86
 {
+    Assembler::Assembler()
+        : _buffer()
+        , _instr_count()
+        , _debug_stream()
+    { }
+
     void Assembler::reset()
     {
         _buffer.reset();
@@ -11,6 +17,11 @@ namespace x86
     size_t Assembler::size() const noexcept
     {
         return _buffer.size();
+    }
+
+    size_t Assembler::instr_count() const noexcept
+    {
+        return _instr_count;
     }
 
     void Assembler::copy(void* ptr) const

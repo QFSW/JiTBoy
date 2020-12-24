@@ -29,9 +29,12 @@ namespace x86
     class Assembler
     {
     public:
+        Assembler();
+
         void reset();
         void copy(void* ptr) const;
         [[nodiscard]] size_t size() const noexcept;
+        [[nodiscard]] size_t instr_count() const noexcept;
         [[nodiscard]] std::string get_debug() const;
 
         #pragma region Non Immediate Instructions
@@ -107,6 +110,7 @@ namespace x86
         
     private:
         VectorBuffer _buffer;
+        size_t _instr_count;
 
         template <Opcode Op, InstrMode Mode, RegisterSize Size>
         static consteval uint8_t encode_opcode();
@@ -149,6 +153,8 @@ namespace x86
     template <Opcode Op, InstrMode Mode, RegisterSize Size>
     void Assembler::instr(const Register dst, const Register src)
     {
+        _instr_count++;
+
         write_opcode<Op, Mode, Size>();
         
         if constexpr (Mode == InstrMode::RR) encode_regs(RegisterMode::Register, dst, src);
@@ -175,6 +181,8 @@ namespace x86
     template <Opcode Op, InstrMode Mode, RegisterSize Size>
     void Assembler::instr(const Register dst, const Register src, const int32_t addr_offset)
     {
+        _instr_count++;
+
         write_opcode<Op, Mode, Size>();
         
         if constexpr (Mode == InstrMode::RM) encode_regs_offset(dst, src, addr_offset);
@@ -231,6 +239,8 @@ namespace x86
     template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
     void Assembler::instr_imm(const Register dst, const uint32_t imm)
     {
+        _instr_count++;
+
         write_imm_opcode<Op, Size>(imm);
 
         if constexpr (Mode == InstrMode::IR) encode_regs(RegisterMode::Register, dst, static_cast<Register>(Ext));
@@ -256,6 +266,8 @@ namespace x86
     template <Opcode Op, OpcodeExt Ext, InstrMode Mode, RegisterSize Size>
     void Assembler::instr_imm(const Register dst, const uint32_t imm, const int32_t addr_offset)
     {
+        _instr_count++;
+
         write_imm_opcode<Op, Size>(imm);
 
         if constexpr (Mode == InstrMode::IM) encode_regs_offset(dst, static_cast<Register>(Ext), addr_offset);
@@ -293,6 +305,8 @@ namespace x86
     template <JumpAdjust Adjust>
     void Assembler::jump(int32_t offset)
     {
+        _instr_count++;
+
         const bool is_near = is_near_jump<Adjust>(offset);
         const uint8_t instr_size = 1 + (is_near ? 1 : 4);
         
@@ -318,6 +332,8 @@ namespace x86
     template <CondCode Cond, JumpAdjust Adjust>
     void Assembler::jump_cond(int32_t offset)
     {
+        _instr_count++;
+
         const bool is_near = is_near_jump<Adjust>(offset);
         const uint8_t instr_size = 1 + (is_near ? 1 : 5);
 
@@ -348,6 +364,8 @@ namespace x86
     template <JumpAdjust Adjust>
     void Assembler::call(int32_t offset)
     {
+        _instr_count++;
+
         offset = adjust_offset<Adjust>(offset, 5);
 
         _buffer.write(Opcode::CALL);
