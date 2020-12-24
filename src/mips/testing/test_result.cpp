@@ -14,9 +14,9 @@ namespace mips::testing
     {
         switch (status)
         {
-            case TestResult::Status::Passed: o << "Passed"; break;
-            case TestResult::Status::Failed: o << "Failed"; break;
-            case TestResult::Status::Faulted: o << "Faulted"; break;
+            case TestResult::Status::Passed: o << "passed"; break;
+            case TestResult::Status::Failed: o << "failed"; break;
+            case TestResult::Status::Faulted: o << "faulted"; break;
             default: o << "???"; break;
         }
 
