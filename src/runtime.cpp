@@ -43,14 +43,13 @@ SourceBlock Runtime::partition_block(const uint32_t addr) const
     return SourceBlock(std::move(code), addr);
 }
 
-CompiledBlock Runtime::get_or_compile_block(const uint32_t addr)
+const CompiledBlock& Runtime::get_or_compile_block(const uint32_t addr)
 {
     if (_blocks.find(addr) != _blocks.end())
         return _blocks[addr];
 
     const SourceBlock input = partition_block(addr);
     const CompiledBlock block = _compiler.compile(input, CompilerConfig());
-    _blocks[input.addr] = block;
 
     if constexpr (debug)
     {
@@ -58,7 +57,7 @@ CompiledBlock Runtime::get_or_compile_block(const uint32_t addr)
             << strtools::catf("Registering compiled block 0x%p to 0x%x\n", block.code, input.addr);
     }
 
-    return block;
+    return _blocks[input.addr] = block;
 }
 
 void Runtime::execute(std::vector<mips::Instruction>&& code)
@@ -72,7 +71,7 @@ void Runtime::execute(const uint32_t addr)
     _current_pc = addr;
     while (valid_pc(_current_pc))
     {
-        const CompiledBlock block = get_or_compile_block(_current_pc);
+        const CompiledBlock& block = get_or_compile_block(_current_pc);
 
         if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _current_pc);
         _current_pc = block();

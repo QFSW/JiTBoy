@@ -5,9 +5,11 @@ CompiledBlock::CompiledBlock()
     , size(0)
     , host_instr_count(0)
     , source_instr_count(0)
+    , execution_count()
 { }
 
 uint32_t CompiledBlock::operator()() const
 {
+    execution_count++;
     return code();
 }

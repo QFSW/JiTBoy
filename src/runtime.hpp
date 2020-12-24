@@ -35,6 +35,6 @@ private:
 
     [[nodiscard]] bool valid_pc(uint32_t addr) const noexcept;
     [[nodiscard]] SourceBlock partition_block(uint32_t addr) const;
-    [[nodiscard]] CompiledBlock get_or_compile_block(uint32_t addr);
+    [[nodiscard]] const CompiledBlock& get_or_compile_block(uint32_t addr);
 };
 

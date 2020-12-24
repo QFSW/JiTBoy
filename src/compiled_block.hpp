@@ -15,5 +15,7 @@ struct CompiledBlock
     size_t source_instr_count;
     CompilerConfig config;
 
+    mutable size_t execution_count;
+
     uint32_t operator()() const;
 };

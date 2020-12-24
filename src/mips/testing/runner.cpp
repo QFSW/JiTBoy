@@ -62,8 +62,11 @@ namespace mips::testing
                     result.time = measure_execution_time(test);
                     for (const auto& [_, block] : runtime.get_blocks())
                     {
-                        result.host_instr_count += block.host_instr_count;
                         result.block_count++;
+                        result.blocks_executed += block.execution_count;
+                        result.host_instr_count += block.host_instr_count;
+                        result.host_instrs_executed += block.host_instr_count * block.execution_count;
+                        result.source_instrs_emulated += block.source_instr_count * block.execution_count;
                     }
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
                 }
