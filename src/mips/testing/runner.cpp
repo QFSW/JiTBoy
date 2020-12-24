@@ -92,7 +92,7 @@ namespace mips::testing
     {
         constexpr size_t count = config::debug
             ? 1
-            : 10000;
+            : 1000;
 
         return benchmark::measure([&]
         {
