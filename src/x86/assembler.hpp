@@ -298,7 +298,7 @@ namespace x86
         
         offset = adjust_offset<Adjust>(offset, instr_size);
 
-        if (is_near)
+        if (is_near) [[likely]]
         {
             _buffer.write(Opcode::JMP_8);
             _buffer.write<int8_t>(offset);
@@ -323,7 +323,7 @@ namespace x86
 
         offset = adjust_offset<Adjust>(offset, instr_size);
 
-        if (is_near)
+        if (is_near) [[likely]]
         {
             constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Opcode::Jcc_8);
             
