@@ -14,18 +14,18 @@ setup:
 
 # $5 is output, $6 is input
 factorial:
-    fac-init:
+    fac_init:
         sw $ra, 0($sp)
         addiu $sp, $sp, 4
 
-        bgtz $6, fac-mul
+        bgtz $6, fac_mul
 
-    fac-base:
+    fac_base:
         addiu $5, $0, 1
-        j fac-return
+        j fac_return
         nop
 
-    fac-mul:
+    fac_mul:
         sw $6, 0($sp)
         addiu $sp, $sp, 4
 
@@ -40,7 +40,7 @@ factorial:
         multu $5, $6
         mflo $5
 
-    fac-return:
+    fac_return:
         addiu $sp, $sp, -4
         lw $ra, 0($sp)
         nop
