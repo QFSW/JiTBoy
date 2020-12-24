@@ -31,7 +31,7 @@ namespace mips::utils
                     default: return false;
                 }
             },
-            [](const InstructionJ& x) { return true; }
+            [](const InstructionJ&) { return true; }
         }, instr);
     }
 }
