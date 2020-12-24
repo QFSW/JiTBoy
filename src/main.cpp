@@ -42,16 +42,21 @@ void test_bench()
 {
     using namespace mips::testing;
     const std::string tests_csv_path = "output/tests.csv";
+    const std::string results_csv_path = "output/results.csv";
 
     Loader loader;
     Runner runner;
 
     const auto tests = loader.load_tests("tests/mips");
     std::cout << "\n";
-    runner.run(tests);
+
+    const auto results = runner.run(tests);
 
     std::cout << "\nWriting tests to " + tests_csv_path + "\n";
     csv::write_file(tests_csv_path, tests);
+
+    std::cout << "Writing test results to " + results_csv_path + "\n";
+    csv::write_file(results_csv_path, results);
 
     std::cout << "\n";
 }

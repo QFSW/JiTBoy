@@ -1,14 +1,14 @@
 #pragma once
 
 #include <mips/testing/test.hpp>
+#include <mips/testing/test_result.hpp>
 
 namespace mips::testing
 {
     class Runner
     {
     public:
-        // make this return a TestResult
-        void run(const std::vector<Test>& tests);
+        std::vector<TestResult> run(const std::vector<Test>& tests);
 
     private:
         // add debug_stream;

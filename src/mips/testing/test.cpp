@@ -12,5 +12,5 @@ template<> void csv::write_row<mips::testing::Test>(std::ostream& o, const mips:
     o
     << test.name << ", "
     << test.description << ", "
-    << test.src << ", ";
+    << test.src;
 }

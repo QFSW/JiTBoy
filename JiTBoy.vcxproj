@@ -190,6 +190,7 @@
     <ClCompile Include="src\mips\testing\loader.cpp" />
     <ClCompile Include="src\mips\testing\parser.cpp" />
     <ClCompile Include="src\mips\testing\runner.cpp" />
+    <ClCompile Include="src\mips\testing\test_result.cpp" />
     <ClCompile Include="src\mips\utils.cpp" />
     <ClCompile Include="src\runtime.cpp" />
     <ClCompile Include="src\mips\mips.cpp" />
@@ -210,6 +211,7 @@
   <ItemGroup>
     <ClInclude Include="src\mips\memory_map.hpp" />
     <ClInclude Include="src\error\parse_error.hpp" />
+    <ClInclude Include="src\mips\testing\test_result.hpp" />
     <ClInclude Include="src\utils\csv.hpp" />
     <ClInclude Include="src\utils\regex_parser.hpp" />
     <ClInclude Include="src\mips\loader.hpp" />
