@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <chrono>
 
 namespace mips::testing
 {
@@ -15,5 +16,6 @@ namespace mips::testing
 
         std::string name;
         Status status;
+        std::chrono::duration<double> time;
     };
 }

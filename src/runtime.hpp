@@ -20,11 +20,6 @@ public:
     [[nodiscard]] std::string get_debug_with_dumps() const;
     
 private:
-    [[nodiscard]] bool valid_pc(uint32_t addr) const noexcept;
-
-    [[nodiscard]] SourceBlock partition_block(uint32_t addr) const;
-    [[nodiscard]] CompiledBlock get_or_compile_block(uint32_t addr);
-
     mips::RegisterFile _regs;
     mips::MemoryMap _mem;
     Compiler::Allocator _allocator;
@@ -37,5 +32,9 @@ private:
     static constexpr uint32_t instruction_mem_addr = 0x0;
     static constexpr bool debug = config::debug;
     std::stringstream _debug_stream;
+
+    [[nodiscard]] bool valid_pc(uint32_t addr) const noexcept;
+    [[nodiscard]] SourceBlock partition_block(uint32_t addr) const;
+    [[nodiscard]] CompiledBlock get_or_compile_block(uint32_t addr);
 };
 

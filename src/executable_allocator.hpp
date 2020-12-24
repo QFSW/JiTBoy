@@ -56,7 +56,7 @@ template <size_t BufferSize>
 ExecutableAllocator<BufferSize>::~ExecutableAllocator()
 {
     DWORD dummy;
-    VirtualProtect(_buffer, BufferSize, PAGE_READWRITE, &dummy);
+    VirtualProtect(_buffer + _dead_space, BufferSize - _dead_space, PAGE_READWRITE, &dummy);
 }
 
 template <size_t BufferSize>

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <runtime.hpp>
+#include <utils/benchmark.hpp>
 #include <utils/strtools.hpp>
 
 namespace mips::testing
@@ -39,8 +40,8 @@ namespace mips::testing
                     {
                         if (!failed)
                         {
-                            std::cout << colorize(" failed\n", strtools::AnsiColor::Red);
                             result.status = TestResult::Status::Failed;
+                            std::cout << colorize(" failed\n", strtools::AnsiColor::Red);
                         }
 
                         failed = true;
@@ -56,14 +57,15 @@ namespace mips::testing
                 else
                 {
                     pass_count++;
-                    std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
                     result.status = TestResult::Status::Passed;
+                    result.time = measure_execution_time(test);
+                    std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
                 }
             }
             catch (const std::exception& e)
             {
-                std::cout << colorize(" faulted\n", strtools::AnsiColor::Red);
                 result.status = TestResult::Status::Faulted;
+                std::cout << colorize(" faulted\n", strtools::AnsiColor::Red);
 
                 std::stringstream ss;
                 ss << e.what() << "\n";
@@ -86,4 +88,20 @@ namespace mips::testing
         return results;
     }
 
+    std::chrono::duration<double> Runner::measure_execution_time(const Test& test) const
+    {
+        constexpr size_t count = config::debug
+            ? 1
+            : 10000;
+
+        return benchmark::measure([&]
+        {
+            Runtime runtime;
+
+            for (const auto& initializer : test.initializers)
+                initializer.invoke(runtime.get_regs());
+
+            runtime.execute(utils::copy(test.code));
+        }, count);
+    }
 }

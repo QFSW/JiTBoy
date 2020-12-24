@@ -216,7 +216,7 @@
     <ClInclude Include="src\utils\regex_parser.hpp" />
     <ClInclude Include="src\mips\loader.hpp" />
     <ClInclude Include="src\mips\parser.hpp" />
-    <ClInclude Include="src\benchmark.hpp" />
+    <ClInclude Include="src\utils\benchmark.hpp" />
     <ClInclude Include="src\compiled_block.hpp" />
     <ClInclude Include="src\compiler_config.hpp" />
     <ClInclude Include="src\config.hpp" />

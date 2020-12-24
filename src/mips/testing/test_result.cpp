@@ -20,12 +20,13 @@ namespace mips::testing
 
 template<> void csv::write_header<mips::testing::TestResult>(std::ostream& o)
 {
-    o << "name, status";
+    o << "name, status, time (us)";
 }
 
 template<> void csv::write_row<mips::testing::TestResult>(std::ostream& o, const mips::testing::TestResult& result)
 {
     o
     << result.name << ", "
-    << result.status;
+    << result.status << ", "
+    << std::chrono::duration_cast<std::chrono::microseconds>(result.time).count();
 }

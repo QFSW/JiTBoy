@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <runtime.hpp>
-#include <benchmark.hpp>
+#include <utils/benchmark.hpp>
 #include <utils/utils.hpp>
 #include <utils/csv.hpp>
 #include <mips/loader.hpp>
