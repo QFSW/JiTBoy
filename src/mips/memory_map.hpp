@@ -31,7 +31,7 @@ namespace mips
         const uint32_t word = _map[addr - offset];
         const int shamt = 8 * (sizeof(uint32_t) - offset - sizeof(T));
 
-        T data = word >> shamt;
+        T data = static_cast<T>(word >> shamt);
         return static_cast<uint32_t>(data);
     }
 
