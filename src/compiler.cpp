@@ -39,24 +39,30 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
         compile_jump(target);
     }
 
+    CompiledBlock output;
+    output.size = _assembler.size();
+    output.host_instr_count = _assembler.instr_count();
+    output.source_instr_count = block.code.size();
+    output.config = config;
+
     if constexpr (debug)
     {
-        _debug_stream << "Generated x86 instructions\n" << _assembler.get_debug();
+        _debug_stream << "Generated " << output.host_instr_count << " x86 instructions\n" << _assembler.get_debug();
     }
 
-    auto const size = _assembler.size();
-    auto const buffer = _allocator.alloc(size);
+    auto const buffer = _allocator.alloc(output.size);
     _assembler.copy(buffer);
     _linker.terminate_local(buffer);
-    _allocator.commit(buffer, size);
+    _allocator.commit(buffer, output.size);
     _assembler.reset();
+    output.code = reinterpret_cast<CompiledBlock::func>(buffer);
 
     if constexpr (debug)
     {
         const auto usage = 100 * _allocator.get_used() / static_cast<float>(_allocator.get_total());
-        _debug_stream << strtools::catf("\nAllocated %db of executable memory - %f%% used\n", size, usage);
+        _debug_stream << strtools::catf("\nAllocated %db of executable memory - %f%% used\n", output.size, usage);
 
-        for (size_t i = 0; i < size; ++i)
+        for (size_t i = 0; i < output.size; ++i)
         {
             _debug_stream << strtools::catf("%02x ", buffer[i]);
         }
@@ -72,12 +78,7 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
         }
     }
 
-    return CompiledBlock
-    (
-        reinterpret_cast<CompiledBlock::func>(buffer),
-        size,
-        config
-    );
+    return output;
 }
 
 std::string Compiler::get_debug() const

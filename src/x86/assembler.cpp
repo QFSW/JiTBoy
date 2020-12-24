@@ -11,6 +11,7 @@ namespace x86
     void Assembler::reset()
     {
         _buffer.reset();
+        _instr_count = 0;
         if constexpr (debug) std::stringstream().swap(_debug_stream);
     }
 

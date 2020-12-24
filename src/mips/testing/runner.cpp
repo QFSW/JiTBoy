@@ -60,6 +60,11 @@ namespace mips::testing
                     pass_count++;
                     result.status = TestResult::Status::Passed;
                     result.time = measure_execution_time(test);
+                    for (const auto& [_, block] : runtime.get_blocks())
+                    {
+                        result.host_instr_count += block.host_instr_count;
+                        result.block_count++;
+                    }
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
                 }
             }

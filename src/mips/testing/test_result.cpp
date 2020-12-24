@@ -7,8 +7,10 @@ namespace mips::testing
     TestResult::TestResult()
         : name()
         , status()
-        , time()
-        , source_instr_count()
+        , time(0)
+        , host_instr_count(0)
+        , source_instr_count(0)
+        , block_count(0)
     { }
 
     std::ostream& operator<<(std::ostream& o, const TestResult::Status status)
@@ -27,7 +29,7 @@ namespace mips::testing
 
 template<> void csv::write_header<mips::testing::TestResult>(std::ostream& o)
 {
-    o << "name, status, time (us), source instructions";
+    o << "name, status, time (us), host instructions, source instructions, blocks";
 }
 
 template<> void csv::write_row<mips::testing::TestResult>(std::ostream& o, const mips::testing::TestResult& result)
@@ -36,5 +38,7 @@ template<> void csv::write_row<mips::testing::TestResult>(std::ostream& o, const
     << result.name << ", "
     << result.status << ", "
     << std::chrono::duration_cast<std::chrono::microseconds>(result.time).count() << ", "
-    << result.source_instr_count;
+    << result.host_instr_count << ", "
+    << result.source_instr_count << ", "
+    << result.block_count;
 }
