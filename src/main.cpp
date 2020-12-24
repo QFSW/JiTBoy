@@ -3,6 +3,7 @@
 #include <runtime.hpp>
 #include <benchmark.hpp>
 #include <utils/utils.hpp>
+#include <utils/csv.hpp>
 #include <mips/loader.hpp>
 #include <mips/testing/loader.hpp>
 #include <mips/testing/runner.hpp>
@@ -40,12 +41,17 @@ void execute_single(const std::string& path)
 void test_bench()
 {
     using namespace mips::testing;
+    const std::string tests_csv_path = "output/tests.csv";
+
     Loader loader;
     Runner runner;
 
     const auto tests = loader.load_tests("tests/mips");
     std::cout << "\n";
     runner.run(tests);
+
+    std::cout << "\nWriting tests to " + tests_csv_path + "\n";
+    csv::write_file(tests_csv_path, tests);
 
     std::cout << "\n";
 }

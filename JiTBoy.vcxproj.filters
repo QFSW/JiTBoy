@@ -96,6 +96,9 @@
     <ClCompile Include="src\utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\mips\testing\test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/executable_allocator.hpp">
@@ -204,6 +207,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mips\memory_map.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\csv.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

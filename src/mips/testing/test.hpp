@@ -18,4 +18,3 @@ namespace mips::testing
         std::vector<Initializer> initializers;
     };
 }
-
