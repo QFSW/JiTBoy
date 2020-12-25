@@ -37,6 +37,7 @@ namespace strtools
 
 	std::vector<std::string> split(const std::string& str, char delim);
 	std::string remove_after(const std::string& str, char delim);
+	std::string remove_before(const std::string& str, char delim);
 
 	enum class AnsiColor
 	{

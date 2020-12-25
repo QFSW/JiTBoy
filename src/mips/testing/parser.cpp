@@ -8,7 +8,7 @@ namespace mips::testing
 {
     std::regex Parser::gen_regex(const std::string& id)
     {
-        return std::regex(R"(\s*#\s*)" + id + R"(:\s*(.+))");
+        return std::regex(R"(\s*)" + id + R"(:\s*(.+))");
     }
 
     const std::regex Parser::assert_regex = gen_regex("assert");
@@ -24,7 +24,10 @@ namespace mips::testing
         {
             static thread_local std::smatch matches;
 
-            if (std::regex_search(line, matches, name_regex))
+            const std::string preprocessed = strtools::remove_before(line, '#');
+            if (strtools::isspace(preprocessed)) break;
+
+            if (std::regex_search(preprocessed, matches, name_regex))
             {
                 if (!test.name.empty())
                     throw std::runtime_error("Test cannot contain more than 1 name directive");
@@ -32,7 +35,7 @@ namespace mips::testing
                 test.name = matches[1];
             }
 
-            if (std::regex_search(line, matches, desc_regex))
+            if (std::regex_search(preprocessed, matches, desc_regex))
             {
                 if (!test.description.empty())
                     throw std::runtime_error("Test cannot contain more than 1 desc directive");
@@ -40,10 +43,10 @@ namespace mips::testing
                 test.description = matches[1];
             }
 
-            if (std::regex_search(line, matches, assert_regex))
+            if (std::regex_search(preprocessed, matches, assert_regex))
                 test.assertions.push_back(parse_assertion(matches[1]));
 
-            if (std::regex_search(line, matches, init_regex))
+            if (std::regex_search(preprocessed, matches, init_regex))
                 test.initializers.push_back(parse_initializer(matches[1]));
         }
 

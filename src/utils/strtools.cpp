@@ -19,6 +19,15 @@ namespace strtools
 		return item;
 	}
 
+	std::string remove_before(const std::string& str, const char delim)
+	{
+		size_t pos = str.find(delim);
+		if (pos != std::string::npos)
+			return str.substr(pos);
+
+		return std::string();
+	}
+
 	std::string colorize(const std::string& str, const AnsiColor col)
 	{
 		return catf("\033[1;%dm%s\033[0m", col, str.c_str());
