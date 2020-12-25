@@ -198,7 +198,6 @@
     <ClCompile Include="src\compiler.cpp" />
     <ClCompile Include="src/executable_allocator.cpp" />
     <ClCompile Include="src/label_generator.cpp" />
-    <ClCompile Include="src\utils\utils.cpp" />
     <ClCompile Include="src\x86\linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />

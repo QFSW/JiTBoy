@@ -93,9 +93,6 @@
     <ClCompile Include="src\mips\memory_map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\mips\testing\test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
