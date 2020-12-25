@@ -98,25 +98,26 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
     using namespace x86;
     switch (instr.op)
     {
-        case mips::OpcodeR::ADDU: compile<Opcode::ADD>(instr); break;
-        case mips::OpcodeR::ADD:  compile<Opcode::ADD>(instr); break;
-        case mips::OpcodeR::SUBU: compile<Opcode::SUB>(instr); break;
-        case mips::OpcodeR::SUB:  compile<Opcode::SUB>(instr); break;
-        case mips::OpcodeR::AND:  compile<Opcode::AND>(instr); break;
-        case mips::OpcodeR::OR:   compile<Opcode::OR>(instr); break;
-        case mips::OpcodeR::XOR:  compile<Opcode::XOR>(instr); break;
-        case mips::OpcodeR::NOR:  compile_nor(instr); break;
-        case mips::OpcodeR::JR:   compile_jump(instr.rs); break;
-        case mips::OpcodeR::JALR: compile_jump_and_link(instr.rs, instr.rd, addr); break;
-        case mips::OpcodeR::SLT:  compile_compare<CondCode::L>(instr); break;
-        case mips::OpcodeR::SLTU: compile_compare<CondCode::B>(instr); break;
-        case mips::OpcodeR::SLL:  compile_shift_imm<Opcode::SHL_I, OpcodeExt::SHL_I>(instr); break;
-        case mips::OpcodeR::SRA:  compile_shift_imm<Opcode::SAR_I, OpcodeExt::SAR_I>(instr); break;
-        case mips::OpcodeR::SRL:  compile_shift_imm<Opcode::SHR_I, OpcodeExt::SHR_I>(instr); break;
-        case mips::OpcodeR::MFHI: compile_mfhi(instr); break;
-        case mips::OpcodeR::MFLO: compile_mflo(instr); break;
-        case mips::OpcodeR::MTHI: compile_mthi(instr); break;
-        case mips::OpcodeR::MTLO: compile_mtlo(instr); break;
+        case mips::OpcodeR::ADDU:  compile<Opcode::ADD>(instr); break;
+        case mips::OpcodeR::ADD:   compile<Opcode::ADD>(instr); break;
+        case mips::OpcodeR::SUBU:  compile<Opcode::SUB>(instr); break;
+        case mips::OpcodeR::SUB:   compile<Opcode::SUB>(instr); break;
+        case mips::OpcodeR::AND:   compile<Opcode::AND>(instr); break;
+        case mips::OpcodeR::OR:    compile<Opcode::OR>(instr); break;
+        case mips::OpcodeR::XOR:   compile<Opcode::XOR>(instr); break;
+        case mips::OpcodeR::NOR:   compile_nor(instr); break;
+        case mips::OpcodeR::JR:    compile_jump(instr.rs); break;
+        case mips::OpcodeR::JALR:  compile_jump_and_link(instr.rs, instr.rd, addr); break;
+        case mips::OpcodeR::SLT:   compile_compare<CondCode::L>(instr); break;
+        case mips::OpcodeR::SLTU:  compile_compare<CondCode::B>(instr); break;
+        case mips::OpcodeR::SLL:   compile_shift_imm<Opcode::SHL_I, OpcodeExt::SHL_I>(instr); break;
+        case mips::OpcodeR::SRA:   compile_shift_imm<Opcode::SAR_I, OpcodeExt::SAR_I>(instr); break;
+        case mips::OpcodeR::SRL:   compile_shift_imm<Opcode::SHR_I, OpcodeExt::SHR_I>(instr); break;
+        case mips::OpcodeR::MFHI:  compile_mfhi(instr); break;
+        case mips::OpcodeR::MFLO:  compile_mflo(instr); break;
+        case mips::OpcodeR::MTHI:  compile_mthi(instr); break;
+        case mips::OpcodeR::MTLO:  compile_mtlo(instr); break;
+        case mips::OpcodeR::MULTU: compile_mul_div<Opcode::MUL, OpcodeExt::MUL>(instr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -274,6 +275,16 @@ void Compiler::compile_branch_and_link(const mips::InstructionI instr, const uin
     const uint32_t link = addr + 4;
     compile_reg_write(mips::Register::$ra, link);
     compile_branch<Cond>(instr, addr);
+}
+
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_mul_div(const mips::InstructionR instr)
+{
+    using namespace x86;
+    compile_reg_load(Register::EAX, instr.rs);
+    _assembler.instr<Op, Ext, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
+    compile_reg_write(mips::RegisterFile::hi_reg, Register::EDX);
+    compile_reg_write(mips::RegisterFile::lo_reg, Register::EAX);
 }
 
 void Compiler::throw_invalid_instr(mips::Instruction instr)

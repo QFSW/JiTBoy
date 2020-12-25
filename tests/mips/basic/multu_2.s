@@ -3,7 +3,7 @@
 # init: $1 = 5
 # init: $2 = -1
 # assert: $1 == 4
-# assert: $2 == -1
+# assert: $2 == -5
 
 multu $1, $2
 mfhi $1
