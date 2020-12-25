@@ -33,7 +33,7 @@ namespace mips
             case OpcodeR::MTLO:
             {
                 os << opcode_to_string(instr.op)
-                << " " << reg_to_string(instr.rs);
+                << " " << reg_to_string(instr.rd);
                 break;
             }
             case OpcodeR::MULT:
