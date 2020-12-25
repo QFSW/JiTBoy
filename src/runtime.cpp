@@ -4,7 +4,7 @@
 #include <mips/utils.hpp>
 
 Runtime::Runtime()
-    : _compiler(_regs, _mem, _allocator)
+    : _compiler(_regs, _mem)
     , _current_pc(instruction_mem_addr)
 { }
 

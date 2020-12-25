@@ -4,10 +4,9 @@
 #include <mips/utils.hpp>
 #include <utils/functional.hpp>
 
-Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, Allocator& allocator)
+Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem)
     : _regs(regs)
     , _mem(mem)
-    , _allocator(allocator)
 { }
 
 CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)

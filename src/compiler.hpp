@@ -1,12 +1,12 @@
 #pragma once
 
 #include <config.hpp>
-#include <executable_allocator.hpp>
 #include <x86/assembler.hpp>
 #include <x86/linker.hpp>
 #include <mips/instruction.hpp>
 #include <mips/register_file.hpp>
 #include <mips/memory_map.hpp>
+#include <memory/dynamic_executable_allocator.hpp>
 #include <label_generator.hpp>
 #include <compiled_block.hpp>
 #include <source_block.hpp>
@@ -15,19 +15,20 @@
 class Compiler
 {    
 public:
-    using Allocator = ExecutableAllocator<4096>;
-    Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, Allocator& allocator);
+    Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem);
 
     CompiledBlock compile(const SourceBlock& block, CompilerConfig config);
     [[nodiscard]] std::string get_debug() const;
     
 private:
+    using Allocator = memory::DynamicExecutableAllocator<4096>;
+
+    Allocator _allocator;
     LabelGenerator _label_generator;
     x86::Linker _linker;
     x86::Assembler _assembler;
     mips::RegisterFile& _regs;
     mips::MemoryMap& _mem;
-    Allocator& _allocator;
 
     static constexpr x86::Register addr_reg = x86::Register::ECX;
     static constexpr x86::Register return_reg = x86::Register::EAX;

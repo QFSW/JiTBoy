@@ -23,7 +23,6 @@ public:
 private:
     mips::RegisterFile _regs;
     mips::MemoryMap _mem;
-    Compiler::Allocator _allocator;
     Compiler _compiler;
     std::vector<mips::Instruction> _source;
     std::map<uint32_t, CompiledBlock> _blocks;
