@@ -29,6 +29,11 @@ namespace x86
         PUSH = 0xFF,
         POP  = 0x8F,
 
+        SAL  = 0xD2,
+        SAR  = 0xD2,
+        SHL  = 0xD2,
+        SHR  = 0xD2,
+
         NOP  = 0x90,
 
         ADD_I = 0x80,
@@ -72,6 +77,10 @@ namespace x86
         IMUL = 5,
         DIV  = 6,
         IDIV = 7,
+        SAL = 4,
+        SAR = 7,
+        SHL = 4,
+        SHR = 5,
 
         ADD_I = 0,
         ADC_I = 2,

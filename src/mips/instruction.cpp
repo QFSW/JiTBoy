@@ -69,6 +69,16 @@ namespace mips
                 }
                 break;
             }
+            case OpcodeR::SLLV:
+            case OpcodeR::SRAV:
+            case OpcodeR::SRLV:
+            {
+                os << opcode_to_string(instr.op)
+                << " " << reg_to_string(instr.rd)
+                << ", " << reg_to_string(instr.rt)
+                << ", " << reg_to_string(instr.rs);
+                break;
+            }
             default:
             {
                 os << opcode_to_string(instr.op)

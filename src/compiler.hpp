@@ -62,9 +62,6 @@ private:
     void compile(mips::InstructionI instr);
 
     template <x86::Opcode Op, x86::OpcodeExt Ext>
-    void compile_shift_imm(mips::InstructionR instr);
-
-    template <x86::Opcode Op, x86::OpcodeExt Ext>
     void compile_imm(mips::Register dst, mips::Register src, uint32_t imm);
 
     template <x86::CondCode Cond>
@@ -78,6 +75,12 @@ private:
 
     template <x86::CondCode Cond>
     void compile_branch_and_link(mips::InstructionI instr, uint32_t addr);
+
+    template <x86::Opcode Op, x86::OpcodeExt Ext>
+    void compile_shift_imm(mips::InstructionR instr);
+
+    template <x86::Opcode Op, x86::OpcodeExt Ext>
+    void compile_shift(mips::InstructionR instr);
 
     template <x86::Opcode Op, x86::OpcodeExt Ext>
     void compile_mul(mips::InstructionR instr);

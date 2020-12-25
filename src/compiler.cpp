@@ -113,6 +113,9 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::SLL:   compile_shift_imm<Opcode::SHL_I, OpcodeExt::SHL_I>(instr); break;
         case mips::OpcodeR::SRA:   compile_shift_imm<Opcode::SAR_I, OpcodeExt::SAR_I>(instr); break;
         case mips::OpcodeR::SRL:   compile_shift_imm<Opcode::SHR_I, OpcodeExt::SHR_I>(instr); break;
+        case mips::OpcodeR::SLLV:  compile_shift<Opcode::SHL, OpcodeExt::SHL>(instr); break;
+        case mips::OpcodeR::SRAV:  compile_shift<Opcode::SAR, OpcodeExt::SAR>(instr); break;
+        case mips::OpcodeR::SRLV:  compile_shift<Opcode::SHR, OpcodeExt::SHR>(instr); break;
         case mips::OpcodeR::MFHI:  compile_mfhi(instr); break;
         case mips::OpcodeR::MFLO:  compile_mflo(instr); break;
         case mips::OpcodeR::MTHI:  compile_mthi(instr); break;
@@ -203,12 +206,6 @@ void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
 }
 
 template <x86::Opcode Op, x86::OpcodeExt Ext>
-void Compiler::compile_shift_imm(const mips::InstructionR instr)
-{
-    compile_imm<Op, Ext>(instr.rd, instr.rt, instr.sa);
-}
-
-template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_imm(const mips::Register dst, const mips::Register src, const uint32_t imm)
 {
     if (dst == mips::Register::$zero) return;
@@ -278,6 +275,30 @@ void Compiler::compile_branch_and_link(const mips::InstructionI instr, const uin
     const uint32_t link = addr + 4;
     compile_reg_write(mips::Register::$ra, link);
     compile_branch<Cond>(instr, addr);
+}
+
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_shift_imm(const mips::InstructionR instr)
+{
+    compile_imm<Op, Ext>(instr.rd, instr.rt, instr.sa);
+}
+
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_shift(const mips::InstructionR instr)
+{
+    using namespace x86;
+
+    if (instr.rt != instr.rd)
+    {
+        compile_reg_load(acc1_reg, instr.rt);
+        compile_reg_write(instr.rd, acc1_reg);
+    }
+
+    _assembler.instr<Opcode::MOV>(acc1_reg, addr_reg);
+    compile_reg_load(Register::ECX, instr.rs);
+    _assembler.instr_imm<Opcode::AND_I, OpcodeExt::AND_I>(Register::ECX, 0b11111);
+    _assembler.instr<Op, Ext, InstrMode::RM>(acc1_reg, calc_reg_offset(instr.rd));
+    _assembler.instr<Opcode::MOV>(addr_reg, acc1_reg);
 }
 
 template <x86::Opcode Op, x86::OpcodeExt Ext>

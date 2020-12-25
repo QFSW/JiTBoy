@@ -137,9 +137,10 @@ namespace mips
         if (op == "xor")    return parse_instruction_r(OpcodeR::XOR, instr);
         if (op == "slt")    return parse_instruction_r(OpcodeR::SLT, instr);
         if (op == "sltu")   return parse_instruction_r(OpcodeR::SLTU, instr);
-        if (op == "sllv")   return parse_instruction_r(OpcodeR::SLLV, instr);
-        if (op == "srav")   return parse_instruction_r(OpcodeR::SRAV, instr);
-        if (op == "srlv")   return parse_instruction_r(OpcodeR::SRLV, instr);
+
+        if (op == "sllv")   return parse_sxxv(OpcodeR::SLLV, instr);
+        if (op == "srav")   return parse_sxxv(OpcodeR::SRAV, instr);
+        if (op == "srlv")   return parse_sxxv(OpcodeR::SRLV, instr);
 
         if (op == "sll")    return parse_instruction_r_sa(OpcodeR::SLL, instr);
         if (op == "sra")    return parse_instruction_r_sa(OpcodeR::SRA, instr);
@@ -258,6 +259,21 @@ namespace mips
             .rd = src,
             .rs = Register::$zero,
             .rt = Register::$zero,
+            .sa = 0
+        };
+    }
+
+    InstructionR Parser::parse_sxxv(OpcodeR opcode, const std::string& instr) const
+    {
+        static const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ??, ??, ??)");
+        const auto [dst, src1, src2] = parser.evaluate(instr);
+
+        return InstructionR
+        {
+            .op = opcode,
+            .rd = dst,
+            .rs = src2,
+            .rt = src1,
             .sa = 0
         };
     }
