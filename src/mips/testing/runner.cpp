@@ -22,7 +22,6 @@ namespace mips::testing
             Runtime runtime;
             TestResult result;
             result.name = test.name;
-            result.source_instr_count = test.code.size();
 
             std::cout << "   - " << test.name;
 
@@ -65,6 +64,7 @@ namespace mips::testing
                         result.block_count++;
                         result.blocks_executed += block.execution_count;
                         result.host_instr_count += block.host_instr_count;
+                        result.source_instr_count += block.source_instr_count;
                         result.host_instrs_executed += block.host_instr_count * block.execution_count;
                         result.source_instrs_emulated += block.source_instr_count * block.execution_count;
                     }
