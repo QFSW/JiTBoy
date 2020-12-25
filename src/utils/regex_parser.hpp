@@ -3,6 +3,8 @@
 #include <string>
 #include <regex>
 #include <functional>
+#include <unordered_map>
+#include <unordered_set>
 #include <error/parse_error.hpp>
 
 namespace mips
@@ -27,6 +29,8 @@ namespace mips
         std::smatch _matches;
         std::string _err_string;
         std::function<bool(const std::string&, std::tuple<Ts...>&)> _evaluator;
+        std::unordered_map<std::string, std::tuple<Ts...>> _parse_cache;
+        std::unordered_set<std::string> _parse_fail_cache;
 
         static constexpr auto default_err = "Could not parse %s";
 
@@ -60,12 +64,22 @@ namespace mips
     {
         _evaluator = [&](const std::string& raw, std::tuple<Ts...>& result)
         {
-            if (std::regex_search(raw, _matches, _regex) && _matches.size() == sizeof...(Ts) + 1)
+            if (_parse_cache.find(raw) != _parse_cache.end())
             {
-                result = parse<Ts...>(_matches, 1);
+                result = _parse_cache[raw];
                 return true;
             }
 
+            if (_parse_fail_cache.contains(raw))
+                return false;
+
+            if (std::regex_search(raw, _matches, _regex) && _matches.size() == sizeof...(Ts) + 1)
+            {
+                result = _parse_cache[raw] = parse<Ts...>(_matches, 1);
+                return true;
+            }
+
+            _parse_fail_cache.emplace(raw);
             return false;
         };
     }
