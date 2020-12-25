@@ -117,8 +117,9 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::MFLO:  compile_mflo(instr); break;
         case mips::OpcodeR::MTHI:  compile_mthi(instr); break;
         case mips::OpcodeR::MTLO:  compile_mtlo(instr); break;
-        case mips::OpcodeR::MULT:  compile_mul_div<Opcode::IMUL, OpcodeExt::IMUL>(instr); break;
-        case mips::OpcodeR::MULTU: compile_mul_div<Opcode::MUL, OpcodeExt::MUL>(instr); break;
+        case mips::OpcodeR::MULT:  compile_mul<Opcode::IMUL, OpcodeExt::IMUL>(instr); break;
+        case mips::OpcodeR::MULTU: compile_mul<Opcode::MUL, OpcodeExt::MUL>(instr); break;
+        case mips::OpcodeR::DIVU:  compile_div<Opcode::DIV, OpcodeExt::DIV>(instr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -279,10 +280,23 @@ void Compiler::compile_branch_and_link(const mips::InstructionI instr, const uin
 }
 
 template <x86::Opcode Op, x86::OpcodeExt Ext>
-void Compiler::compile_mul_div(const mips::InstructionR instr)
+void Compiler::compile_mul(const mips::InstructionR instr)
 {
     using namespace x86;
+
     compile_reg_load(Register::EAX, instr.rs);
+    _assembler.instr<Op, Ext, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
+    compile_reg_write(mips::RegisterFile::hi_reg, Register::EDX);
+    compile_reg_write(mips::RegisterFile::lo_reg, Register::EAX);
+}
+
+template <x86::Opcode Op, x86::OpcodeExt Ext>
+void Compiler::compile_div(const mips::InstructionR instr)
+{
+    using namespace x86;
+
+    compile_reg_load(Register::EAX, instr.rs);
+    _assembler.instr<Opcode::XOR>(Register::EDX, Register::EDX);
     _assembler.instr<Op, Ext, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
     compile_reg_write(mips::RegisterFile::hi_reg, Register::EDX);
     compile_reg_write(mips::RegisterFile::lo_reg, Register::EAX);

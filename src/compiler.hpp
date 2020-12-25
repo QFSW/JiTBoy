@@ -80,7 +80,10 @@ private:
     void compile_branch_and_link(mips::InstructionI instr, uint32_t addr);
 
     template <x86::Opcode Op, x86::OpcodeExt Ext>
-    void compile_mul_div(mips::InstructionR instr);
+    void compile_mul(mips::InstructionR instr);
+
+    template <x86::Opcode Op, x86::OpcodeExt Ext>
+    void compile_div(mips::InstructionR instr);
 
     void compile_nor(mips::InstructionR instr);
     void compile_mfhi(mips::InstructionR instr);

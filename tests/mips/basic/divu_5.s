@@ -2,8 +2,8 @@
 #
 # init: $1 = -30
 # init: $2 = -6
-# assert: $1 == 0x00000000
-# assert: $2 == 0xFFFFFFE2
+# assert: $1 == -30
+# assert: $2 == 0
 
 divu $1, $2
 mfhi $1
