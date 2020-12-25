@@ -35,6 +35,17 @@ namespace memory
         [[nodiscard]] size_t page_aligned(size_t size) const noexcept;
     };
 
+    template<>
+    class ExecutableAllocator<0>
+    {
+        uint8_t* alloc(size_t) { throw std::logic_error("Empty allocator cannot allocate"); }
+        void commit(void*, size_t) { }
+
+        [[nodiscard]] size_t get_used() const noexcept { return 0; }
+        [[nodiscard]] size_t get_free() const noexcept { return 0; }
+        [[nodiscard]] size_t get_total() const noexcept { return 0; }
+    };
+
     template <size_t BufferSize>
     ExecutableAllocator<BufferSize>::ExecutableAllocator()
     {
