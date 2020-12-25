@@ -19,6 +19,7 @@ namespace x86
         MUL  = 0xF6,
         IMUL = 0xF6,
         DIV  = 0xF6,
+        IDIV = 0xF6,
 
         AND  = 0x20,
         OR   = 0x08,
@@ -70,6 +71,7 @@ namespace x86
         MUL  = 4,
         IMUL = 5,
         DIV  = 6,
+        IDIV = 7,
 
         ADD_I = 0,
         ADC_I = 2,

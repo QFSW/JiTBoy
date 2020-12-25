@@ -119,7 +119,8 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::MTLO:  compile_mtlo(instr); break;
         case mips::OpcodeR::MULT:  compile_mul<Opcode::IMUL, OpcodeExt::IMUL>(instr); break;
         case mips::OpcodeR::MULTU: compile_mul<Opcode::MUL, OpcodeExt::MUL>(instr); break;
-        case mips::OpcodeR::DIVU:  compile_div<Opcode::DIV, OpcodeExt::DIV>(instr); break;
+        case mips::OpcodeR::DIV:   compile_div(instr); break;
+        case mips::OpcodeR::DIVU:  compile_divu(instr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -286,20 +287,34 @@ void Compiler::compile_mul(const mips::InstructionR instr)
 
     compile_reg_load(Register::EAX, instr.rs);
     _assembler.instr<Op, Ext, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
-    compile_reg_write(mips::RegisterFile::hi_reg, Register::EDX);
-    compile_reg_write(mips::RegisterFile::lo_reg, Register::EAX);
+    compile_hi_lo_writeback();
 }
 
-template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_div(const mips::InstructionR instr)
 {
     using namespace x86;
 
     compile_reg_load(Register::EAX, instr.rs);
+    _assembler.instr<Opcode::MOV>(Register::EDX, Register::EAX);
+    _assembler.instr_imm<Opcode::SAR_I, OpcodeExt::SAR_I>(Register::EDX, 31);
+    _assembler.instr<Opcode::IDIV, OpcodeExt::IDIV, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
+    compile_hi_lo_writeback();
+}
+
+void Compiler::compile_divu(const mips::InstructionR instr)
+{
+    using namespace x86;
+
+    compile_reg_load(Register::EAX, instr.rs);
     _assembler.instr<Opcode::XOR>(Register::EDX, Register::EDX);
-    _assembler.instr<Op, Ext, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
-    compile_reg_write(mips::RegisterFile::hi_reg, Register::EDX);
-    compile_reg_write(mips::RegisterFile::lo_reg, Register::EAX);
+    _assembler.instr<Opcode::DIV, OpcodeExt::DIV, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
+    compile_hi_lo_writeback();
+}
+
+void Compiler::compile_hi_lo_writeback()
+{
+    compile_reg_write(mips::RegisterFile::hi_reg, x86::Register::EDX);
+    compile_reg_write(mips::RegisterFile::lo_reg, x86::Register::EAX);
 }
 
 void Compiler::throw_invalid_instr(mips::Instruction instr)

@@ -82,8 +82,9 @@ private:
     template <x86::Opcode Op, x86::OpcodeExt Ext>
     void compile_mul(mips::InstructionR instr);
 
-    template <x86::Opcode Op, x86::OpcodeExt Ext>
     void compile_div(mips::InstructionR instr);
+    void compile_divu(mips::InstructionR instr);
+    void compile_hi_lo_writeback();
 
     void compile_nor(mips::InstructionR instr);
     void compile_mfhi(mips::InstructionR instr);
