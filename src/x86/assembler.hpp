@@ -52,11 +52,7 @@ namespace x86
         void instr(Register reg, int32_t addr_offset);
 
         template <Opcode Op>
-        void instr()
-        {
-            _buffer.write(Op);
-            if constexpr (debug) _debug_stream << opcode_to_string(Op) << "\n";
-        }
+        void instr();
         
         #pragma endregion 
 
@@ -230,6 +226,14 @@ namespace x86
         {
             _debug_stream << "???\n";
         }
+    }
+
+    template <Opcode Op>
+    void Assembler::instr()
+    {
+        _instr_count++;
+        _buffer.write(Op);
+        if constexpr (debug) _debug_stream << opcode_to_string(Op) << "\n";
     }
 
     #pragma endregion

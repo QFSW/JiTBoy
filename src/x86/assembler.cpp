@@ -32,6 +32,8 @@ namespace x86
 
     void Assembler::bswap(Register dst)
     {
+        _instr_count++;
+
         _buffer.write<uint8_t>(0x0F);
         _buffer.write<uint8_t>(0xC8 | static_cast<uint8_t>(dst));
 
@@ -43,6 +45,8 @@ namespace x86
 
     void Assembler::enter(const uint16_t size, const uint8_t nesting)
     {
+        _instr_count++;
+
         _buffer.write(Opcode::ENTER);
         _buffer.write(size);
         _buffer.write(nesting);
