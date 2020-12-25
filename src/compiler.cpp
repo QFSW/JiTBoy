@@ -413,9 +413,9 @@ void Compiler::compile_mem_write(const mips::InstructionI instr)
     const static auto label = _label_generator.generate(name);
     const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write<T>>;
 
-    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
     _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
     _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
+    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
 
     compile_compute_mem_addr(Register::EDX, instr);
 
@@ -436,8 +436,8 @@ void Compiler::compile_mem_read(const mips::InstructionI instr)
     const static auto label = _label_generator.generate(name);
     const static auto func = utils::instance_proxy<uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::read<T>>;
 
-    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
     _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
+    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
 
     compile_compute_mem_addr(Register::EDX, instr);
 

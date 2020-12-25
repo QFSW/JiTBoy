@@ -29,10 +29,10 @@ private:
     mips::MemoryMap& _mem;
     Allocator& _allocator;
 
-    static constexpr x86::Register addr_reg = x86::Register::EDX;
+    static constexpr x86::Register addr_reg = x86::Register::ECX;
     static constexpr x86::Register return_reg = x86::Register::EAX;
     static constexpr x86::Register acc1_reg = x86::Register::EAX;
-    static constexpr x86::Register acc2_reg = x86::Register::ECX;
+    static constexpr x86::Register acc2_reg = x86::Register::EDX;
 
     void compile(mips::Instruction instr, uint32_t addr);
     void compile(mips::InstructionR instr, uint32_t addr);
