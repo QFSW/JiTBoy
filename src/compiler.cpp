@@ -113,6 +113,10 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::SLL:  compile_shift_imm<Opcode::SHL_I, OpcodeExt::SHL_I>(instr); break;
         case mips::OpcodeR::SRA:  compile_shift_imm<Opcode::SAR_I, OpcodeExt::SAR_I>(instr); break;
         case mips::OpcodeR::SRL:  compile_shift_imm<Opcode::SHR_I, OpcodeExt::SHR_I>(instr); break;
+        case mips::OpcodeR::MFHI: compile_mfhi(instr); break;
+        case mips::OpcodeR::MFLO: compile_mflo(instr); break;
+        case mips::OpcodeR::MTHI: compile_mthi(instr); break;
+        case mips::OpcodeR::MTLO: compile_mtlo(instr); break;
         default: throw_invalid_instr(instr);
     }
 }
@@ -322,6 +326,31 @@ void Compiler::compile_nor(const mips::InstructionR instr)
     compile<Opcode::OR>(instr);
     _assembler.instr<Opcode::NOT, OpcodeExt::NOT, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rd));
 }
+
+void Compiler::compile_mfhi(const mips::InstructionR instr)
+{
+    compile_reg_load(acc1_reg, mips::RegisterFile::hi_reg);
+    compile_reg_write(instr.rd, acc1_reg);
+}
+
+void Compiler::compile_mflo(const mips::InstructionR instr)
+{
+    compile_reg_load(acc1_reg, mips::RegisterFile::lo_reg);
+    compile_reg_write(instr.rd, acc1_reg);
+}
+
+void Compiler::compile_mthi(const mips::InstructionR instr)
+{
+    compile_reg_load(acc1_reg, instr.rd);
+    compile_reg_write(mips::RegisterFile::hi_reg, acc1_reg);
+}
+
+void Compiler::compile_mtlo(const mips::InstructionR instr)
+{
+    compile_reg_load(acc1_reg, instr.rd);
+    compile_reg_write(mips::RegisterFile::lo_reg, acc1_reg);
+}
+
 
 void Compiler::compile_call(void (*const f)())
 {
