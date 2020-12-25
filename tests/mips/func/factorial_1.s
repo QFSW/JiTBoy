@@ -1,8 +1,9 @@
-# desc: recursive factorial using stack, computes 10!
+# name: factorial(1)
+# desc: recursive factorial using stack, computes 1!
 #
 # init: $sp = 0x20000000
-# init: $6 = 10
-# assert: $5 == 3628800
+# init: $6 = 1
+# assert: $5 == 1
 
 setup:
     jal factorial
