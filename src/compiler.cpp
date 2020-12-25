@@ -117,6 +117,7 @@ void Compiler::compile(const mips::InstructionR instr, const uint32_t addr)
         case mips::OpcodeR::MFLO:  compile_mflo(instr); break;
         case mips::OpcodeR::MTHI:  compile_mthi(instr); break;
         case mips::OpcodeR::MTLO:  compile_mtlo(instr); break;
+        case mips::OpcodeR::MULT:  compile_mul_div<Opcode::IMUL, OpcodeExt::IMUL>(instr); break;
         case mips::OpcodeR::MULTU: compile_mul_div<Opcode::MUL, OpcodeExt::MUL>(instr); break;
         default: throw_invalid_instr(instr);
     }

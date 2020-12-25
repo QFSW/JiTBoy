@@ -2,7 +2,7 @@
 #
 # init: $1 = 0xFFFFFFFF
 # init: $2 = 2
-# assert: $1 == 0
+# assert: $1 == -1
 # assert: $2 == -2
 
 mult $1, $2

@@ -8,26 +8,27 @@ namespace x86
 {
     enum class Opcode : uint8_t
     {
-        ADD = 0x00,
-        ADC = 0x10,
-        SUB = 0x29,
-        MOV = 0x88,
-        INC = 0xFE,
-        DEC = 0xFE,
-        NEG = 0xF6,
-        CMP = 0x38,
-        MUL = 0xF6,
-        DIV = 0xF6,
+        ADD  = 0x00,
+        ADC  = 0x10,
+        SUB  = 0x29,
+        MOV  = 0x88,
+        INC  = 0xFE,
+        DEC  = 0xFE,
+        NEG  = 0xF6,
+        CMP  = 0x38,
+        MUL  = 0xF6,
+        IMUL = 0xF6,
+        DIV  = 0xF6,
 
-        AND = 0x20,
-        OR  = 0x08,
-        XOR = 0x30,
-        NOT = 0xF6,
+        AND  = 0x20,
+        OR   = 0x08,
+        XOR  = 0x30,
+        NOT  = 0xF6,
 
         PUSH = 0xFF,
         POP  = 0x8F,
 
-        NOP = 0x90,
+        NOP  = 0x90,
 
         ADD_I = 0x80,
         ADC_I = 0x80,
@@ -67,6 +68,7 @@ namespace x86
         PUSH = 6,
         POP  = 0,
         MUL  = 4,
+        IMUL = 5,
         DIV  = 6,
 
         ADD_I = 0,
