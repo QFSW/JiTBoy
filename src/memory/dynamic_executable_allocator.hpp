@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <memory>
 
 #include <utils/strtools.hpp>
@@ -23,7 +23,7 @@ namespace memory
     private:
         using Allocator = ExecutableAllocator<PartitionSize>;
         std::vector<std::unique_ptr<Allocator>> _allocators;
-        std::map<void*, Allocator*> _allocations;
+        std::unordered_map<void*, Allocator*> _allocations;
     };
 
     template <size_t PartitionSize>

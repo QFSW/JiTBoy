@@ -1,6 +1,6 @@
 #include "parser.hpp"
 
-#include <map>
+#include <unordered_map>
 #include <stdexcept>
 #include <utils/functional.hpp>
 #include <iostream>
@@ -407,7 +407,7 @@ namespace mips
 
     Register Parser::parse_register(const std::string& reg)
     {
-        static const std::map<std::string, Register> reg_mapping =
+        static const std::unordered_map<std::string, Register> reg_mapping =
         {
             { "$0", Register::$0 },
             { "$1", Register::$1 },

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <regex>
 
 #include <mips/instruction.hpp>
@@ -24,8 +24,8 @@ namespace mips
 
     private:
         uint32_t _pc = 0;
-        std::map<std::string, uint32_t> _labels;
-        std::map<uint32_t, std::string> _unresolved_locals;
+        std::unordered_map<std::string, uint32_t> _labels;
+        std::unordered_map<uint32_t, std::string> _unresolved_locals;
 
         void reset();
         void extract_labels(std::string& raw);

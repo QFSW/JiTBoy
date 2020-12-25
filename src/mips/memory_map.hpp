@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <type_traits>
 
 namespace mips
@@ -18,7 +18,7 @@ namespace mips
         void write(uint32_t addr, uint32_t value);
 
     private:
-        std::map<uint32_t, uint32_t> _map;
+        std::unordered_map<uint32_t, uint32_t> _map;
     };
 
     template <typename T>
