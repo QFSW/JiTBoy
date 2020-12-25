@@ -19,6 +19,9 @@ namespace mips
             if (reg > 0 || !omit_zeroes) ss << strtools::catf("$%d: %d\n", i, reg);
         }
 
+        if (!omit_zeroes || _hi != 0) ss << strtools::catf("$hi: %d\n", _hi);
+        if (!omit_zeroes || _lo != 0) ss << strtools::catf("$lo: %d\n", _lo);
+
         return ss.str();
     }
 

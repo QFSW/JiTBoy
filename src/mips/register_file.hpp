@@ -10,6 +10,10 @@ namespace mips
         [[nodiscard]] size_t size() const noexcept { return reg_count; }
         [[nodiscard]] uint32_t* data() noexcept { return _regs; }
         [[nodiscard]] const uint32_t* data() const noexcept { return _regs; }
+        [[nodiscard]] uint32_t& hi() noexcept { return _hi; }
+        [[nodiscard]] uint32_t& lo() noexcept { return _lo; }
+        [[nodiscard]] const uint32_t& hi() const noexcept { return _hi; }
+        [[nodiscard]] const uint32_t& lo() const noexcept { return _lo; }
 
         std::string generate_dump(bool omit_zeroes = true) const;
 
@@ -21,6 +25,8 @@ namespace mips
     private:
         static constexpr size_t reg_count = 32;
         uint32_t _regs[reg_count] = {};
+        uint32_t _hi = 0;
+        uint32_t _lo = 0;
     };
 }
 
