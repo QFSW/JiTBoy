@@ -137,6 +137,11 @@ namespace emulation
         switch (instr.op)
         {
             case OpcodeJ::J:
+            {
+                const uint32_t target = (0xF0000000 & _pc) | (instr.target << 2);
+                jump(target);
+                break;
+            }
             case OpcodeJ::JAL:
             default: throw_invalid_instr(instr);
         }
@@ -147,6 +152,11 @@ namespace emulation
         std::visit(functional::overload{
         [&](const auto& x) { throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(x.op) + " is not supported"); }
         }, instr);
+    }
+
+    void Interpreter::jump(const uint32_t target)
+    {
+        _pc = target - 4;
     }
 
     void Interpreter::execute_add(const mips::InstructionR instr)

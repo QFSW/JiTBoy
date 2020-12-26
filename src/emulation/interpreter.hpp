@@ -45,6 +45,8 @@ namespace emulation
 
         void throw_invalid_instr(mips::Instruction instr);
 
+        void jump(uint32_t target);
+
         void execute_add(mips::InstructionR instr);
     };
 }
