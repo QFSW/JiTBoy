@@ -23,12 +23,19 @@ def parse_attributes(raw):
     return raw
 
 statistics = {
-    'mips'                      : (False, 'source instructions emulated', 'time'),
-    'hotness'                   : (True , 'blocks executed'             , 'blocks'),
-    'host block size'           : (True , 'host instructions'           , 'blocks'),
-    'source block size'         : (True , 'source instructions'         , 'blocks'),
-    'compilation inefficiency'  : (True , 'host instructions'           , 'source instructions'),
-    'execution inefficiency'    : (True , 'host instructions executed'  , 'source instructions emulated')
+#   'metric'                        : (jit  , 'op', 'operand1'                    , 'operand2'),
+    'blocks'                        : (True , '=>'),
+    'blocks executed'               : (True , '=>'),
+    'host instructions'             : (True , '=>'),
+    'source instructions'           : (True , '=>'),
+    'host instructions executed'    : (True , '=>'),
+
+    'mips'                          : (False, '/' , 'source instructions emulated', 'time'),
+    'hotness'                       : (True , '/' , 'blocks executed'             , 'blocks'),
+    'host block size'               : (True , '/' , 'host instructions'           , 'blocks'),
+    'source block size'             : (True , '/' , 'source instructions'         , 'blocks'),
+    'compilation inefficiency'      : (True , '/' , 'host instructions'           , 'source instructions'),
+    'execution inefficiency'        : (True , '/' , 'host instructions executed'  , 'source instructions emulated')
 }
 
 statistic_cache = {}
@@ -40,10 +47,17 @@ def compute_statistics(item, jit=False):
 
     for metric in statistics:
         jit_only = statistics[metric][0]
+        operator = statistics[metric][1]
+
         if jit or not jit_only:
-            left = statistics[metric][1]
-            right = statistics[metric][2]
-            item[metric] = item[left] / item[right]
+            if operator == '=>':
+                pass
+            elif operator == '/':
+                left = statistics[metric][2]
+                right = statistics[metric][3]
+                item[metric] = item[left] / item[right]
+            else:
+                raise ValueError("Unsupported operator %s" % operator)
 
             if metric not in statistic_cache[name]:
                 statistic_cache[name][metric] = item[metric]
