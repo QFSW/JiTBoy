@@ -39,7 +39,7 @@ template<> void csv::write_header<mips::testing::TestResult>(std::ostream& o)
     "host instructions, "
     "source instructions, "
     "host instructions executed, "
-    "source instructions simulated";
+    "source instructions emulated";
 }
 
 template<> void csv::write_row<mips::testing::TestResult>(std::ostream& o, const mips::testing::TestResult& result)
