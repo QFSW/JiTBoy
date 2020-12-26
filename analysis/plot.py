@@ -47,7 +47,7 @@ def scatter(datasets, x, y, path, xscale='linear', yscale='linear'):
         xdata = list(map(lambda i: i[x], data))
         ydata = list(map(lambda i: i[y], data))
 
-        plt.plot(xdata, ydata, 'x', label=name)
+        plt.plot(xdata, ydata, 'x', alpha=0.8, label=name)
 
     plt.xlabel(axis_case(x))
     plt.ylabel(axis_case(y))
@@ -104,7 +104,7 @@ def histogram(datasets, x, path, bins=30, yscale='linear'):
 
 def boxplot(datasets, x, path):
     title = header_case(x)
-    print("Drawing boxplot %s" % title)
+    print("Drawing box plot %s" % title)
 
     datas = []
     names = []
