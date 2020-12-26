@@ -1,5 +1,6 @@
 import loader
 import plot
+import data_proc
 
 data_path = "output/results.csv"
 output_base = "output/graphs"
@@ -31,18 +32,21 @@ def draw_unroll(data):
     import re
     base = "%s/unroll" % output_base
     pattern = re.compile('unroll\([0-9]+\/[0-9]+\)')
-    unroll = list(filter(lambda x: pattern.match(x['name']), data))
+    data = data_proc.select(data, ['JIT', 'JIT (Release)'])
+    unroll = data_proc.filter_rows(data, lambda x: pattern.match(x['name']))
+
     plot.bar_categoric(unroll, 'name', 'time', '%s/time.png' % base)
     plot.bar_categoric(unroll, 'name', 'mips', '%s/mips.png' % base)
 
 def main():
     data = {
-        'JIT': loader.load_data(data_path)
+        'JIT (Release)': loader.load_data('output/results_release.csv'),
+        'JIT (Debug)': loader.load_data('output/results_debug.csv')
     }
 
     draw_scatters(data)
-    draw_histograms(data['JIT'])
-    draw_unroll(data['JIT'])
+    draw_histograms(data['JIT (Release)'])
+    draw_unroll(data)
 
 if __name__ == "__main__":
     main()

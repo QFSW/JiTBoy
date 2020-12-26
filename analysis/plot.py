@@ -4,6 +4,7 @@ import matplotlib.style as style
 import numpy as np
 
 style.use('ggplot')
+
 bar_padding = 0.1
 
 def savefig(path):
@@ -65,16 +66,25 @@ def bar(data, x, y, path, xscale='linear', yscale='linear'):
     plt.bar(xdata, ydata)
     savefig(path)
 
-def bar_categoric(data, x, y, path, yscale='linear'):
+def bar_categoric(datasets, x, y, path, yscale='linear'):
+    data = datasets[next(iter(datasets))]
     xdata = list(map(lambda i: i[x], data))
-    ydata = list(map(lambda i: i[y], data))
     ypos = np.arange(len(xdata))
+
+    cols = len(datasets)
+    width = (1 - 2 * bar_padding) / cols
+
+    for i, name in enumerate(datasets):
+        data = datasets[name]
+        ydata = list(map(lambda i: i[y], data))
+
+        offset = i - cols / 2
+        plt.bar(ypos + offset * width, ydata, width=width, align='center', label=name)
 
     plt.ylabel(axis_case(y))
     plt.yscale(yscale)
     plt.xticks(ypos, xdata, rotation=90)
     plt.title("%s" % header_case(y))
-    plt.bar(ypos, ydata, align='center', label='JIT')
     plt.legend(loc='upper left')
     savefig(path)
 
