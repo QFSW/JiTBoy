@@ -39,6 +39,9 @@ def axis_case(name):
     return name.title()
 
 def scatter(datasets, x, y, path, xscale='linear', yscale='linear'):
+    title = "%s vs %s" % (header_case(y), header_case(x))
+    print("Drawing scatterplot %s" % title)
+
     for name in datasets:
         data = datasets[name]
         xdata = list(map(lambda i: i[x], data))
@@ -51,10 +54,13 @@ def scatter(datasets, x, y, path, xscale='linear', yscale='linear'):
     plt.xscale(xscale)
     plt.yscale(yscale)
     plt.legend(loc='upper left')
-    plt.title("%s vs %s" % (header_case(y), header_case(x)))
+    plt.title(title)
     savefig(path)
 
 def bar_categoric(datasets, x, y, path, yscale='linear'):
+    title = header_case(y)
+    print("Drawing bar chart %s" % title)
+
     data = datasets[next(iter(datasets))]
     xdata = list(map(lambda i: i[x], data))
     ypos = np.arange(len(xdata))
@@ -72,11 +78,14 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
     plt.ylabel(axis_case(y))
     plt.yscale(yscale)
     plt.xticks(ypos, xdata, rotation=90)
-    plt.title("%s" % header_case(y))
+    plt.title(title)
     plt.legend(loc='upper left')
     savefig(path)
 
 def histogram(datasets, x, path, bins=30, yscale='linear'):
+    title = header_case(x)
+    print("Drawing histogram %s" % title)
+
     cols = len(datasets)
     alpha = 1 / cols
 
@@ -84,16 +93,19 @@ def histogram(datasets, x, path, bins=30, yscale='linear'):
         data = datasets[name]
         xdata = list(map(lambda i: i[x], data))
 
-        plt.hist(xdata, bins=bins, label=name, alpha=alpha)
+        plt.hist(xdata, density=True, bins=bins, label=name, alpha=alpha)
 
     plt.xlabel(axis_case(x))
-    plt.ylabel("Count")
+    plt.ylabel("%")
     plt.yscale(yscale)
-    plt.title(header_case(x))
+    plt.title(title)
     plt.legend(loc='upper left')
     savefig(path)
 
 def boxplot(datasets, x, path):
+    title = header_case(x)
+    print("Drawing boxplot %s" % title)
+
     datas = []
     names = []
 
@@ -106,5 +118,5 @@ def boxplot(datasets, x, path):
 
     plt.boxplot(datas, showfliers=False, labels=names)
     plt.ylabel(axis_case(x))
-    plt.title(header_case(x))
+    plt.title(title)
     savefig(path)

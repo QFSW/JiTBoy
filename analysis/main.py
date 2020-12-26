@@ -29,8 +29,11 @@ def draw_histograms(data):
         'compilation inefficiency',
         'execution inefficiency'
     ]
+
     for p in plots:
-        plot.histogram(data, p, '%s/%s.png' % (base_hist, p), yscale="log")
+        plot.histogram(data, p, '%s/%s.png' % (base_hist, p))
+
+    for p in plots:
         plot.boxplot(data, p, '%s/%s.png' % (base_box, p))
 
 def draw_unroll(data):
