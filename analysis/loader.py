@@ -46,8 +46,8 @@ def load_data(path):
                     item['hotness'] = item['blocks executed'] / item['blocks']
                     item['host block size'] = item['host instructions'] / item['blocks']
                     item['source block size'] = item['source instructions'] / item['blocks']
-                    item['efficiency c'] = item['host instructions'] / item['source instructions']
-                    item['efficiency e'] = item['host instructions executed'] / item['source instructions simulated']
+                    item['compilation inefficiency'] = item['host instructions'] / item['source instructions']
+                    item['execution inefficiency'] = item['host instructions executed'] / item['source instructions simulated']
                     data.append(item)
                 line_count += 1
 

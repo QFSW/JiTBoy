@@ -54,18 +54,6 @@ def scatter(datasets, x, y, path, xscale='linear', yscale='linear'):
     plt.title("%s vs %s" % (header_case(y), header_case(x)))
     savefig(path)
 
-def bar(data, x, y, path, xscale='linear', yscale='linear'):
-    xdata = list(map(lambda i: i[x], data))
-    ydata = list(map(lambda i: i[y], data))
-
-    plt.xlabel(axis_case(x))
-    plt.ylabel(axis_case(y))
-    plt.xscale(xscale)
-    plt.yscale(yscale)
-    plt.title("%s vs %s" % (header_case(y), header_case(x)))
-    plt.bar(xdata, ydata)
-    savefig(path)
-
 def bar_categoric(datasets, x, y, path, yscale='linear'):
     data = datasets[next(iter(datasets))]
     xdata = list(map(lambda i: i[x], data))
@@ -88,12 +76,19 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
     plt.legend(loc='upper left')
     savefig(path)
 
-def histogram(data, x, path, bins=30, yscale='linear'):
-    xdata = list(map(lambda i: i[x], data))
+def histogram(datasets, x, path, bins=30, yscale='linear'):
+    cols = len(datasets)
+    alpha = 1 / cols
+
+    for name in datasets:
+        data = datasets[name]
+        xdata = list(map(lambda i: i[x], data))
+
+        plt.hist(xdata, bins=bins, label=name, alpha=alpha)
 
     plt.xlabel(axis_case(x))
     plt.ylabel("Count")
     plt.yscale(yscale)
     plt.title(header_case(x))
-    plt.hist(xdata, bins=bins)
+    plt.legend(loc='upper left')
     savefig(path)

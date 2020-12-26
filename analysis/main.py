@@ -8,7 +8,8 @@ output_base = "output/graphs"
 def draw_scatters(data):
     base = "%s/scatter" % output_base
     plot.scatter(data, 'hotness', 'mips', '%s/hotness.png' % base, xscale='log', yscale='log')
-    plot.scatter(data, 'source block size', 'efficiency c', '%s/efficiency.png' % base, xscale='log', yscale='linear')
+    plot.scatter(data, 'source block size', 'compilation inefficiency', '%s/c-efficiency.png' % base, xscale='log', yscale='linear')
+    plot.scatter(data, 'source block size', 'execution inefficiency', '%s/e-efficiency.png' % base, xscale='log', yscale='linear')
 
 def draw_histograms(data):
     base = "%s/histogram" % output_base
@@ -23,7 +24,9 @@ def draw_histograms(data):
         'mips',
         'hotness',
         'host block size',
-        'source block size'
+        'source block size',
+        'compilation inefficiency',
+        'execution inefficiency'
     ]
     for p in plots:
         plot.histogram(data, p, '%s/%s.png' % (base, p), yscale="log")
@@ -40,12 +43,11 @@ def draw_unroll(data):
 
 def main():
     data = {
-        'JIT (Release)': loader.load_data('output/results_release.csv'),
-        'JIT (Debug)': loader.load_data('output/results_debug.csv')
+        'JIT': loader.load_data('output/results.csv')
     }
 
     draw_scatters(data)
-    draw_histograms(data['JIT (Release)'])
+    draw_histograms(data)
     draw_unroll(data)
 
 if __name__ == "__main__":
