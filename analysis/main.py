@@ -36,10 +36,13 @@ def draw_unroll(data):
     plot.bar_categoric(unroll, 'name', 'mips', '%s/mips.png' % base)
 
 def main():
-    data = loader.load_data(data_path)
+    data = {
+        'JIT': loader.load_data(data_path)
+    }
+
     draw_scatters(data)
-    draw_histograms(data)
-    draw_unroll(data)
+    draw_histograms(data['JIT'])
+    draw_unroll(data['JIT'])
 
 if __name__ == "__main__":
     main()

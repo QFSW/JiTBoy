@@ -4,6 +4,7 @@ import matplotlib.style as style
 import numpy as np
 
 style.use('ggplot')
+bar_padding = 0.1
 
 def savefig(path):
     directory = os.path.dirname(path)
@@ -36,16 +37,20 @@ def axis_case(name):
 
     return name.title()
 
-def scatter(data, x, y, path, xscale='linear', yscale='linear'):
-    xdata = list(map(lambda i: i[x], data))
-    ydata = list(map(lambda i: i[y], data))
+def scatter(datasets, x, y, path, xscale='linear', yscale='linear'):
+    for name in datasets:
+        data = datasets[name]
+        xdata = list(map(lambda i: i[x], data))
+        ydata = list(map(lambda i: i[y], data))
+
+        plt.plot(xdata, ydata, 'x', label=name)
 
     plt.xlabel(axis_case(x))
     plt.ylabel(axis_case(y))
     plt.xscale(xscale)
     plt.yscale(yscale)
+    plt.legend(loc='upper left')
     plt.title("%s vs %s" % (header_case(y), header_case(x)))
-    plt.plot(xdata, ydata, 'x')
     savefig(path)
 
 def bar(data, x, y, path, xscale='linear', yscale='linear'):
