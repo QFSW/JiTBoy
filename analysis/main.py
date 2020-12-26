@@ -11,8 +11,21 @@ def draw_scatters(data):
 
 def draw_histograms(data):
     base = "%s/histogram" % output_base
-    plot.histogram(data, 'time (us)', '%s/time.png' % base, yscale="log")
-    plot.histogram(data, 'mips', '%s/mips.png' % base, yscale="log")
+    plots = [
+        'time',
+        'blocks',
+        'blocks executed',
+        'host instructions',
+        'source instructions',
+        'host instructions executed',
+        'source instructions simulated',
+        'mips',
+        'hotness',
+        'host block size',
+        'source block size'
+    ]
+    for p in plots:
+        plot.histogram(data, p, '%s/%s.png' % (base, p), yscale="log")
 
 def main():
     data = loader.load_data(data_path)

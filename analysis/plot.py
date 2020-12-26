@@ -12,12 +12,23 @@ def savefig(path):
     plt.savefig(path)
     plt.clf()
 
+def name_case(name):
+    mapping = {
+        'mips': 'mips',
+        'time': 'time (μs)'
+    }
+
+    if name in mapping:
+        return mapping[name]
+
+    return name.title()
+
 def scatter(data, x, y, path, xscale='linear', yscale='linear'):
     xdata = list(map(lambda i: i[x], data))
     ydata = list(map(lambda i: i[y], data))
 
-    plt.xlabel(x)
-    plt.ylabel(y)
+    plt.xlabel(name_case(x))
+    plt.ylabel(name_case(y))
     plt.xscale(xscale)
     plt.yscale(yscale)
     plt.plot(xdata, ydata, 'x', color='black')
@@ -26,7 +37,7 @@ def scatter(data, x, y, path, xscale='linear', yscale='linear'):
 def histogram(data, x, path, bins=30, yscale='linear'):
     xdata = list(map(lambda i: i[x], data))
 
-    plt.xlabel(x)
+    plt.xlabel(name_case(x))
     plt.ylabel("Count")
     plt.yscale(yscale)
     plt.hist(xdata, bins=bins)

@@ -1,7 +1,11 @@
 import csv
 
+rename_cols = [
+    ('time (us)', 'time')
+]
+
 int_cols = [
-    'time (us)',
+    'time',
     'blocks',
     'blocks executed',
     'host instructions',
@@ -9,6 +13,14 @@ int_cols = [
     'host instructions executed',
     'source instructions simulated'
 ]
+
+def parse_attributes(raw):
+    for col in rename_cols:
+        for i in range(len(raw)):
+            if raw[i] == col[0]:
+                raw[i] = col[1]
+    
+    return raw
 
 def load_data(path):
     data = []
@@ -19,7 +31,7 @@ def load_data(path):
         line_count = 0
         for row in csv_reader:
             if line_count == 0:
-                attributes = row
+                attributes = parse_attributes(row)
                 line_count += 1
             else:
                 item = {}
@@ -30,7 +42,7 @@ def load_data(path):
                     item[col] = int(item[col])
                 
                 if item['status'] == 'passed':
-                    item['mips'] = item['source instructions simulated'] / item['time (us)']
+                    item['mips'] = item['source instructions simulated'] / item['time']
                     item['hotness'] = item['blocks executed'] / item['blocks']
                     item['host block size'] = item['host instructions'] / item['blocks']
                     item['source block size'] = item['source instructions'] / item['blocks']
