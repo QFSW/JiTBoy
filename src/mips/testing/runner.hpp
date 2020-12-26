@@ -8,12 +8,13 @@
 #include <sstream>
 #include <emulation/runtime.hpp>
 #include <utils/benchmark.hpp>
-#include <utils/strtools.hpp>
 //
 
+#include <emulation/emulator.hpp>
+#include <emulation/interpreter.hpp>
 #include <mips/testing/test.hpp>
 #include <mips/testing/test_result.hpp>
-#include <emulation/emulator.hpp>
+#include <utils/utils.hpp>
 
 namespace mips::testing
 {
@@ -27,7 +28,12 @@ namespace mips::testing
         // add debug_stream
 
         void log_test_failure(const Test& test, const std::string& error);
-        [[nodiscard]] std::chrono::duration<double> measure_execution_time(const Test& test) const;
+
+        template <typename Emulator>
+        void execute_test(Emulator& emulator, const Test& test) const;
+
+        template <typename Emulator>
+        std::chrono::duration<double> measure_execution_time(const Test& test) const;
 
         template <typename Emulator>
         void get_statistics(const Emulator& emulator, TestResult& result) const;
@@ -38,8 +44,8 @@ namespace mips::testing
     template <typename Emulator>
     std::vector<TestResult> Runner::run(const std::vector<Test>& tests)
     {
-        static_assert(std::is_base_of<emulation::Emulator, Emulator>::value, "Test runner requires an emulator type");
-        std::cout << "Running tests\n";
+        static_assert(std::is_base_of<emulation::Emulator, Emulator>::value, "Runner::run requires an emulator type");
+        std::cout << "Running tests" << "\n";
 
         size_t pass_count = 0;
         std::vector<std::tuple<Test, std::string>> failures;
@@ -55,10 +61,7 @@ namespace mips::testing
 
             try
             {
-                for (const auto& initializer : test.initializers)
-                    initializer.invoke(emulator.get_regs());
-
-                emulator.execute(utils::copy(test.code));
+                execute_test(emulator, test);
 
                 bool failed = false;
                 std::stringstream ss;
@@ -86,7 +89,7 @@ namespace mips::testing
                 {
                     pass_count++;
                     result.status = TestResult::Status::Passed;
-                    result.time = measure_execution_time(test);
+                    result.time = measure_execution_time<Emulator>(test);
                     get_statistics(emulator, result);
 
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
@@ -113,6 +116,33 @@ namespace mips::testing
     }
 
     template <typename Emulator>
+    void Runner::execute_test(Emulator& emulator, const Test& test) const
+    {
+        for (const auto& initializer : test.initializers)
+            initializer.invoke(emulator.get_regs());
+
+        emulator.execute(utils::copy(test.code));
+    }
+
+    template <typename Emulator>
+    std::chrono::duration<double> Runner::measure_execution_time(const Test& test) const
+    {
+        constexpr size_t batch_size = config::debug
+            ? 1
+            : 100;
+
+        constexpr double precision = config::debug
+            ? 0.1
+            : 0.01;
+
+        return benchmark::measure_auto([&]
+        {
+            Emulator emulator;
+            execute_test(emulator, test);
+        }, batch_size, precision, 10);
+    }
+
+    template <typename Emulator>
     void Runner::get_statistics(const Emulator&, TestResult&) const { }
 
     template<>
@@ -127,5 +157,11 @@ namespace mips::testing
             result.host_instrs_executed += block.host_instr_count * block.execution_count;
             result.source_instrs_emulated += block.source_instr_count * block.execution_count;
         }
+    }
+
+    template<>
+    inline void Runner::get_statistics<emulation::Interpreter>(const emulation::Interpreter& emulator, TestResult& result) const
+    {
+        result.source_instrs_emulated = emulator.get_instruction_count();
     }
 }

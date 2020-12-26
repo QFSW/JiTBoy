@@ -5,6 +5,7 @@
 #include <utils/benchmark.hpp>
 #include <utils/utils.hpp>
 #include <utils/csv.hpp>
+#include <utils/strtools.hpp>
 #include <mips/loader.hpp>
 #include <mips/testing/loader.hpp>
 #include <mips/testing/runner.hpp>
@@ -39,11 +40,19 @@ void execute_single(const std::string& path)
     std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;
 }
 
+void write_test_results(const std::vector<mips::testing::TestResult>& results, const std::string name)
+{
+    const std::string path = strtools::catf("output/results_%s.csv", name.c_str());
+
+    std::cout << strtools::catf( "Writing %s test results to %s\n", name.c_str(), path.c_str());
+    csv::write_file(path, results);
+}
+
 void test_bench()
 {
     using namespace mips::testing;
     const std::string tests_csv_path = "output/tests.csv";
-    const std::string results_csv_path = "output/results.csv";
+    const std::string results_csv_path = "output/results_%s.csv";
 
     Loader loader;
     Runner runner;
@@ -51,13 +60,14 @@ void test_bench()
     const auto tests = loader.load_tests("tests/mips");
     std::cout << "\n";
 
-    const auto results = runner.run<emulation::Runtime>(tests);
+    const auto results_jit = runner.run<emulation::Runtime>(tests);
+    const auto results_interpreter = runner.run<emulation::Interpreter>(tests);
 
     std::cout << "\nWriting tests to " + tests_csv_path + "\n";
     csv::write_file(tests_csv_path, tests);
 
-    std::cout << "Writing test results to " + results_csv_path + "\n";
-    csv::write_file(results_csv_path, results);
+    write_test_results(results_jit, "jit");
+    write_test_results(results_interpreter, "interpreter");
 
     std::cout << "\n";
 }
