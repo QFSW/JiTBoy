@@ -1,7 +1,7 @@
 import os
 import shutil
 
-path = "mips/perf/unroll/"
+path = "tests/mips/perf/unroll/"
 tests = 10
 
 def main():
