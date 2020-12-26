@@ -70,30 +70,30 @@ namespace emulation
         {
             case OpcodeR::ADD:  execute_add(instr); break;
             case OpcodeR::ADDU: execute_add(instr); break;
-            case OpcodeR::SUB:
-            case OpcodeR::SUBU:
-            case OpcodeR::AND:
-            case OpcodeR::OR:
-            case OpcodeR::NOR:
-            case OpcodeR::XOR:
-            case OpcodeR::JR:
-            case OpcodeR::JALR:
-            case OpcodeR::MULT:
-            case OpcodeR::MULTU:
-            case OpcodeR::DIV:
-            case OpcodeR::DIVU:
-            case OpcodeR::MFHI:
-            case OpcodeR::MFLO:
-            case OpcodeR::MTHI:
-            case OpcodeR::MTLO:
-            case OpcodeR::SLT:
-            case OpcodeR::SLTU:
-            case OpcodeR::SLL:
-            case OpcodeR::SLLV:
-            case OpcodeR::SRA:
-            case OpcodeR::SRAV:
-            case OpcodeR::SRL:
-            case OpcodeR::SRLV:
+            // case OpcodeR::SUB:
+            // case OpcodeR::SUBU:
+            // case OpcodeR::AND:
+            // case OpcodeR::OR:
+            // case OpcodeR::NOR:
+            // case OpcodeR::XOR:
+            // case OpcodeR::JR:
+            // case OpcodeR::JALR:
+            // case OpcodeR::MULT:
+            // case OpcodeR::MULTU:
+            // case OpcodeR::DIV:
+            // case OpcodeR::DIVU:
+            // case OpcodeR::MFHI:
+            // case OpcodeR::MFLO:
+            // case OpcodeR::MTHI:
+            // case OpcodeR::MTLO:
+            // case OpcodeR::SLT:
+            // case OpcodeR::SLTU:
+            // case OpcodeR::SLL:
+            // case OpcodeR::SLLV:
+            // case OpcodeR::SRA:
+            // case OpcodeR::SRAV:
+            // case OpcodeR::SRL:
+            // case OpcodeR::SRLV:
             default: throw_invalid_instr(instr);
         }
     }
@@ -102,32 +102,32 @@ namespace emulation
     {
         switch (instr.op)
         {
-            case OpcodeI::ADDI:
-            case OpcodeI::ADDIU:
-            case OpcodeI::ANDI:
-            case OpcodeI::ORI:
-            case OpcodeI::XORI:
-            case OpcodeI::SLTI:
-            case OpcodeI::SLTIU:
-            case OpcodeI::LUI:
-            case OpcodeI::LW:
-            case OpcodeI::LB:
-            case OpcodeI::LBU:
-            case OpcodeI::LH:
-            case OpcodeI::LHU:
-            case OpcodeI::SW:
-            case OpcodeI::SB:
-            case OpcodeI::SH:     break;
+            // case OpcodeI::ADDI:
+            // case OpcodeI::ADDIU:
+            // case OpcodeI::ANDI:
+            // case OpcodeI::ORI:
+            // case OpcodeI::XORI:
+            // case OpcodeI::SLTI:
+            // case OpcodeI::SLTIU:
+            // case OpcodeI::LUI:
+            // case OpcodeI::LW:
+            // case OpcodeI::LB:
+            // case OpcodeI::LBU:
+            // case OpcodeI::LH:
+            // case OpcodeI::LHU:
+            // case OpcodeI::SW:
+            // case OpcodeI::SB:
+            // case OpcodeI::SH:     
             case OpcodeI::BEQ:    execute_beq(instr); break;
-            case OpcodeI::BGTZ:
-            case OpcodeI::BLEZ:
-            case OpcodeI::BNE:
-            case OpcodeI::LWL:
-            case OpcodeI::LWR:
-            case OpcodeI::BGEZ:
-            case OpcodeI::BGEZAL:
-            case OpcodeI::BLTZ:
-            case OpcodeI::BLTZAL:
+            case OpcodeI::BGTZ:   execute_bgtz(instr); break;
+            case OpcodeI::BLEZ:   execute_blez(instr); break;
+            case OpcodeI::BNE:    execute_bne(instr); break;
+            // case OpcodeI::LWL:
+            // case OpcodeI::LWR:
+            case OpcodeI::BGEZ:   execute_bgez(instr); break;
+            // case OpcodeI::BGEZAL: 
+            case OpcodeI::BLTZ:   execute_bltz(instr); break;
+            // case OpcodeI::BLTZAL:
             default: throw_invalid_instr(instr);
         }
     }
@@ -173,6 +173,36 @@ namespace emulation
     void Interpreter::execute_beq(const InstructionI instr)
     {
         if (_regs[instr.rs] == _regs[instr.rt])
+            branch(instr);
+    }
+
+    void Interpreter::execute_bgtz(const InstructionI instr)
+    {
+        if (static_cast<int32_t>(_regs[instr.rs]) > 0)
+            branch(instr);
+    }
+
+    void Interpreter::execute_blez(const InstructionI instr)
+    {
+        if (static_cast<int32_t>(_regs[instr.rs]) <= 0)
+            branch(instr);
+    }
+
+    void Interpreter::execute_bne(const InstructionI instr)
+    {
+        if (_regs[instr.rs] != _regs[instr.rt])
+            branch(instr);
+    }
+
+    void Interpreter::execute_bgez(const InstructionI instr)
+    {
+        if (static_cast<int32_t>(_regs[instr.rs]) >= 0)
+            branch(instr);
+    }
+
+    void Interpreter::execute_bltz(const InstructionI instr)
+    {
+        if (static_cast<int32_t>(_regs[instr.rs]) < 0)
             branch(instr);
     }
 }
