@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <emulation/runtime.hpp>
+#include <emulation/interpreter.hpp>
 #include <utils/benchmark.hpp>
 #include <utils/utils.hpp>
 #include <utils/csv.hpp>
@@ -50,7 +51,7 @@ void test_bench()
     const auto tests = loader.load_tests("tests/mips");
     std::cout << "\n";
 
-    const auto results = runner.run(tests);
+    const auto results = runner.run<emulation::Runtime>(tests);
 
     std::cout << "\nWriting tests to " + tests_csv_path + "\n";
     csv::write_file(tests_csv_path, tests);
