@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import matplotlib.style as style
+import numpy as np
 
 style.use('ggplot')
 
@@ -9,13 +10,25 @@ def savefig(path):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+    plt.tight_layout()
     plt.savefig(path)
     plt.clf()
 
-def name_case(name):
+def header_case(name):
     mapping = {
         'mips': 'mips',
-        'time': 'time (μs)'
+        'time': 'Execution Time'
+    }
+
+    if name in mapping:
+        return mapping[name]
+
+    return name.title()
+
+def axis_case(name):
+    mapping = {
+        'mips': 'mips',
+        'time': 'Time (μs)'
     }
 
     if name in mapping:
@@ -27,18 +40,44 @@ def scatter(data, x, y, path, xscale='linear', yscale='linear'):
     xdata = list(map(lambda i: i[x], data))
     ydata = list(map(lambda i: i[y], data))
 
-    plt.xlabel(name_case(x))
-    plt.ylabel(name_case(y))
+    plt.xlabel(axis_case(x))
+    plt.ylabel(axis_case(y))
     plt.xscale(xscale)
     plt.yscale(yscale)
-    plt.plot(xdata, ydata, 'x', color='black')
+    plt.title("%s vs %s" % (header_case(y), header_case(x)))
+    plt.plot(xdata, ydata, 'x')
+    savefig(path)
+
+def bar(data, x, y, path, xscale='linear', yscale='linear'):
+    xdata = list(map(lambda i: i[x], data))
+    ydata = list(map(lambda i: i[y], data))
+
+    plt.xlabel(axis_case(x))
+    plt.ylabel(axis_case(y))
+    plt.xscale(xscale)
+    plt.yscale(yscale)
+    plt.title("%s vs %s" % (header_case(y), header_case(x)))
+    plt.bar(xdata, ydata)
+    savefig(path)
+
+def bar_categoric(data, x, y, path, yscale='linear'):
+    xdata = list(map(lambda i: i[x], data))
+    ydata = list(map(lambda i: i[y], data))
+    ypos = np.arange(len(xdata))
+
+    plt.ylabel(axis_case(y))
+    plt.yscale(yscale)
+    plt.xticks(ypos, xdata, rotation=90)
+    plt.title("%s" % header_case(y))
+    plt.bar(ypos, ydata, align='center')
     savefig(path)
 
 def histogram(data, x, path, bins=30, yscale='linear'):
     xdata = list(map(lambda i: i[x], data))
 
-    plt.xlabel(name_case(x))
+    plt.xlabel(axis_case(x))
     plt.ylabel("Count")
     plt.yscale(yscale)
+    plt.title(header_case(x))
     plt.hist(xdata, bins=bins)
     savefig(path)

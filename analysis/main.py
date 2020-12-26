@@ -27,10 +27,19 @@ def draw_histograms(data):
     for p in plots:
         plot.histogram(data, p, '%s/%s.png' % (base, p), yscale="log")
 
+def draw_unroll(data):
+    import re
+    base = "%s/unroll" % output_base
+    pattern = re.compile('unroll\([0-9]+\/[0-9]+\)')
+    unroll = list(filter(lambda x: pattern.match(x['name']), data))
+    plot.bar_categoric(unroll, 'name', 'time', '%s/time.png' % base)
+    plot.bar_categoric(unroll, 'name', 'mips', '%s/mips.png' % base)
+
 def main():
     data = loader.load_data(data_path)
     draw_scatters(data)
     draw_histograms(data)
+    draw_unroll(data)
 
 if __name__ == "__main__":
     main()
