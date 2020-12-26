@@ -178,6 +178,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\emulation\interpreter.cpp" />
     <ClCompile Include="src\mips\memory_map.cpp" />
     <ClCompile Include="src\mips\loader.cpp" />
     <ClCompile Include="src\mips\parser.cpp" />
@@ -207,6 +208,7 @@
     <ClCompile Include="src\utils\strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\emulation\emulator.hpp" />
     <ClInclude Include="src\emulation\interpreter.hpp" />
     <ClInclude Include="src\memory\dynamic_executable_allocator.hpp" />
     <ClInclude Include="src\mips\memory_map.hpp" />

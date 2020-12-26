@@ -7,7 +7,7 @@ namespace emulation
 {
     Runtime::Runtime()
         : _compiler(_regs, _mem)
-        , _current_pc(instruction_mem_addr)
+        , _pc(instruction_mem_addr)
     { }
 
     void Runtime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
@@ -70,13 +70,13 @@ namespace emulation
 
     void Runtime::execute(const uint32_t addr)
     {
-        _current_pc = addr;
-        while (valid_pc(_current_pc))
+        _pc = addr;
+        while (valid_pc(_pc))
         {
-            const CompiledBlock& block = get_or_compile_block(_current_pc);
+            const CompiledBlock& block = get_or_compile_block(_pc);
 
-            if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _current_pc);
-            _current_pc = block();
+            if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _pc);
+            _pc = block();
         }
     }
 

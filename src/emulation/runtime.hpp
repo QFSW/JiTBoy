@@ -4,10 +4,11 @@
 
 #include <config.hpp>
 #include <compiler.hpp>
+#include <emulation/emulator.hpp>
 
 namespace emulation
 {
-    class Runtime
+    class Runtime : public Emulator
     {
     public:
         Runtime();
@@ -28,7 +29,7 @@ namespace emulation
         Compiler _compiler;
         std::vector<mips::Instruction> _source;
         std::unordered_map<uint32_t, CompiledBlock> _blocks;
-        uint32_t _current_pc;
+        uint32_t _pc;
 
         static constexpr uint32_t instruction_mem_addr = 0x0;
         static constexpr bool debug = config::debug;
