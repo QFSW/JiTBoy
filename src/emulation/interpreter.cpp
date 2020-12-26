@@ -68,7 +68,32 @@ namespace emulation
     {
         switch (instr.op)
         {
-            case OpcodeR::ADD: execute_add(instr); break;
+            case OpcodeR::ADD:  execute_add(instr); break;
+            case OpcodeR::ADDU: execute_add(instr); break;
+            case OpcodeR::SUB:
+            case OpcodeR::SUBU:
+            case OpcodeR::AND:
+            case OpcodeR::OR:
+            case OpcodeR::NOR:
+            case OpcodeR::XOR:
+            case OpcodeR::JR:
+            case OpcodeR::JALR:
+            case OpcodeR::MULT:
+            case OpcodeR::MULTU:
+            case OpcodeR::DIV:
+            case OpcodeR::DIVU:
+            case OpcodeR::MFHI:
+            case OpcodeR::MFLO:
+            case OpcodeR::MTHI:
+            case OpcodeR::MTLO:
+            case OpcodeR::SLT:
+            case OpcodeR::SLTU:
+            case OpcodeR::SLL:
+            case OpcodeR::SLLV:
+            case OpcodeR::SRA:
+            case OpcodeR::SRAV:
+            case OpcodeR::SRL:
+            case OpcodeR::SRLV:
             default: throw_invalid_instr(instr);
         }
     }
@@ -77,6 +102,32 @@ namespace emulation
     {
         switch (instr.op)
         {
+            case OpcodeI::ADDI:
+            case OpcodeI::ADDIU:
+            case OpcodeI::ANDI:
+            case OpcodeI::ORI:
+            case OpcodeI::XORI:
+            case OpcodeI::SLTI:
+            case OpcodeI::SLTIU:
+            case OpcodeI::LUI:
+            case OpcodeI::LW:
+            case OpcodeI::LB:
+            case OpcodeI::LBU:
+            case OpcodeI::LH:
+            case OpcodeI::LHU:
+            case OpcodeI::SW:
+            case OpcodeI::SB:
+            case OpcodeI::SH:
+            case OpcodeI::BEQ:
+            case OpcodeI::BGTZ:
+            case OpcodeI::BLEZ:
+            case OpcodeI::BNE:
+            case OpcodeI::LWL:
+            case OpcodeI::LWR:
+            case OpcodeI::BGEZ:
+            case OpcodeI::BGEZAL:
+            case OpcodeI::BLTZ:
+            case OpcodeI::BLTZAL:
             default: throw_invalid_instr(instr);
         }
     }
@@ -85,6 +136,8 @@ namespace emulation
     {
         switch (instr.op)
         {
+            case OpcodeJ::J:
+            case OpcodeJ::JAL:
             default: throw_invalid_instr(instr);
         }
     }
