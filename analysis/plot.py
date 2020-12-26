@@ -9,7 +9,7 @@ def savefig(path):
     directory = os.path.dirname(path)
     if not os.path.exists(directory):
         os.makedirs(directory)
-
+    
     plt.tight_layout()
     plt.savefig(path)
     plt.clf()
@@ -69,7 +69,8 @@ def bar_categoric(data, x, y, path, yscale='linear'):
     plt.yscale(yscale)
     plt.xticks(ypos, xdata, rotation=90)
     plt.title("%s" % header_case(y))
-    plt.bar(ypos, ydata, align='center')
+    plt.bar(ypos, ydata, align='center', label='JIT')
+    plt.legend(loc='upper left')
     savefig(path)
 
 def histogram(data, x, path, bins=30, yscale='linear'):
