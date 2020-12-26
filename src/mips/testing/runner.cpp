@@ -3,7 +3,7 @@
 #include <map>
 #include <iostream>
 #include <sstream>
-#include <runtime.hpp>
+#include <emulation/runtime.hpp>
 #include <utils/benchmark.hpp>
 #include <utils/strtools.hpp>
 
@@ -19,7 +19,7 @@ namespace mips::testing
 
         for (const auto& test : tests)
         {
-            Runtime runtime;
+            emulation::Runtime runtime;
             TestResult result;
             result.name = test.name;
 
@@ -109,7 +109,7 @@ namespace mips::testing
 
         return benchmark::measure_auto([&]
         {
-            Runtime runtime;
+            emulation::Runtime runtime;
 
             for (const auto& initializer : test.initializers)
                 initializer.invoke(runtime.get_regs());

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <runtime.hpp>
+#include <emulation/runtime.hpp>
 #include <utils/benchmark.hpp>
 #include <utils/utils.hpp>
 #include <utils/csv.hpp>
@@ -29,7 +29,7 @@ void execute_single(const std::string& path)
 
     auto time = benchmark::measure([&]
     {
-        Runtime runtime;
+        emulation::Runtime runtime;
 
         auto _ = utils::finally([&] { std::cout << runtime.get_debug_with_dumps(); });
         runtime.execute(utils::copy(code));
