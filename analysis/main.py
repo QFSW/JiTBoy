@@ -12,7 +12,8 @@ def draw_scatters(data):
     plot.scatter(data, 'source block size', 'execution inefficiency', '%s/e-efficiency.png' % base, xscale='log', yscale='linear')
 
 def draw_histograms(data):
-    base = "%s/histogram" % output_base
+    base_hist = "%s/histogram" % output_base
+    base_box = "%s/boxplot" % output_base
     plots = [
         'time',
         'blocks',
@@ -29,7 +30,8 @@ def draw_histograms(data):
         'execution inefficiency'
     ]
     for p in plots:
-        plot.histogram(data, p, '%s/%s.png' % (base, p), yscale="log")
+        plot.histogram(data, p, '%s/%s.png' % (base_hist, p), yscale="log")
+        plot.boxplot(data, p, '%s/%s.png' % (base_box, p))
 
 def draw_unroll(data):
     import re

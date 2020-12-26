@@ -92,3 +92,19 @@ def histogram(datasets, x, path, bins=30, yscale='linear'):
     plt.title(header_case(x))
     plt.legend(loc='upper left')
     savefig(path)
+
+def boxplot(datasets, x, path):
+    datas = []
+    names = []
+
+    for name in datasets:
+        data = datasets[name]
+        xdata = list(map(lambda i: i[x], data))
+
+        datas.append(xdata)
+        names.append(name)
+
+    plt.boxplot(datas, showfliers=False, labels=names)
+    plt.ylabel(axis_case(x))
+    plt.title(header_case(x))
+    savefig(path)
