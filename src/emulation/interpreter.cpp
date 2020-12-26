@@ -57,14 +57,14 @@ namespace emulation
         return ss.str();
     }
 
-    void Interpreter::execute(const mips::Instruction instr)
+    void Interpreter::execute(const Instruction instr)
     {
         std::visit(functional::overload{
         [&](const auto& x) { execute(x); }
         }, instr);
     }
 
-    void Interpreter::execute(const mips::InstructionR instr)
+    void Interpreter::execute(const InstructionR instr)
     {
         switch (instr.op)
         {
@@ -98,7 +98,7 @@ namespace emulation
         }
     }
 
-    void Interpreter::execute(const mips::InstructionI instr)
+    void Interpreter::execute(const InstructionI instr)
     {
         switch (instr.op)
         {
@@ -117,8 +117,8 @@ namespace emulation
             case OpcodeI::LHU:
             case OpcodeI::SW:
             case OpcodeI::SB:
-            case OpcodeI::SH:
-            case OpcodeI::BEQ:
+            case OpcodeI::SH:     break;
+            case OpcodeI::BEQ:    execute_beq(instr); break;
             case OpcodeI::BGTZ:
             case OpcodeI::BLEZ:
             case OpcodeI::BNE:
@@ -147,7 +147,7 @@ namespace emulation
         }
     }
 
-    void Interpreter::throw_invalid_instr(const mips::Instruction instr)
+    void Interpreter::throw_invalid_instr(const Instruction instr)
     {
         std::visit(functional::overload{
         [&](const auto& x) { throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(x.op) + " is not supported"); }
@@ -159,8 +159,20 @@ namespace emulation
         _pc = target - 4;
     }
 
-    void Interpreter::execute_add(const mips::InstructionR instr)
+    void Interpreter::branch(const InstructionI instr)
+    {
+        const uint32_t target = _pc + (instr.constant << 2);
+        jump(target);
+    }
+
+    void Interpreter::execute_add(const InstructionR instr)
     {
         _regs[instr.rd] = _regs[instr.rs] + _regs[instr.rt];
+    }
+
+    void Interpreter::execute_beq(const InstructionI instr)
+    {
+        if (_regs[instr.rs] == _regs[instr.rt])
+            branch(instr);
     }
 }
