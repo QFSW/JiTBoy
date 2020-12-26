@@ -21,7 +21,7 @@ def draw_histograms(data):
         'host instructions',
         'source instructions',
         'host instructions executed',
-        'source instructions simulated',
+        'source instructions emulated',
         'mips',
         'hotness',
         'host block size',
@@ -37,7 +37,6 @@ def draw_unroll(data):
     import re
     base = "%s/unroll" % output_base
     pattern = re.compile('unroll\([0-9]+\/[0-9]+\)')
-    data = data_proc.select(data, ['JIT', 'JIT (Release)'])
     unroll = data_proc.filter_rows(data, lambda x: pattern.match(x['name']))
 
     plot.bar_categoric(unroll, 'name', 'time', '%s/time.png' % base)
@@ -45,7 +44,8 @@ def draw_unroll(data):
 
 def main():
     data = {
-        'JIT': loader.load_data('output/results.csv')
+        'JIT': loader.load_data('output/results_jit.csv', jit=True),
+        'Interpreter': loader.load_data('output/results_interpreter.csv')
     }
 
     draw_scatters(data)

@@ -11,7 +11,7 @@ int_cols = [
     'host instructions',
     'source instructions',
     'host instructions executed',
-    'source instructions simulated'
+    'source instructions emulated'
 ]
 
 def parse_attributes(raw):
@@ -22,7 +22,37 @@ def parse_attributes(raw):
     
     return raw
 
-def load_data(path):
+statistics = {
+    'mips'                      : (False, 'source instructions emulated', 'time'),
+    'hotness'                   : (True , 'blocks executed'             , 'blocks'),
+    'host block size'           : (True , 'host instructions'           , 'blocks'),
+    'source block size'         : (True , 'source instructions'         , 'blocks'),
+    'compilation inefficiency'  : (True , 'host instructions'           , 'source instructions'),
+    'execution inefficiency'    : (True , 'host instructions executed'  , 'source instructions emulated')
+}
+
+statistic_cache = {}
+
+def compute_statistics(item, jit=False):
+    name = item['name']
+    if name not in statistic_cache:
+        statistic_cache[name] = {}
+
+    for metric in statistics:
+        jit_only = statistics[metric][0]
+        if jit or not jit_only:
+            left = statistics[metric][1]
+            right = statistics[metric][2]
+            item[metric] = item[left] / item[right]
+
+            if metric not in statistic_cache[name]:
+                statistic_cache[name][metric] = item[metric]
+        else:
+            item[metric] = statistic_cache[name][metric]
+
+def load_data(path, jit=False):
+    print("Loading data %s" % path)
+
     data = []
     attributes = []
 
@@ -42,13 +72,7 @@ def load_data(path):
                     item[col] = int(item[col])
                 
                 if item['status'] == 'passed':
-                    item['mips'] = item['source instructions simulated'] / item['time']
-                    item['hotness'] = item['blocks executed'] / item['blocks']
-                    item['host block size'] = item['host instructions'] / item['blocks']
-                    item['source block size'] = item['source instructions'] / item['blocks']
-                    item['compilation inefficiency'] = item['host instructions'] / item['source instructions']
-                    item['execution inefficiency'] = item['host instructions executed'] / item['source instructions simulated']
+                    compute_statistics(item, jit)
                     data.append(item)
-                line_count += 1
 
     return data
