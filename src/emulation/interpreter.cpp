@@ -90,9 +90,9 @@ namespace emulation
             // case OpcodeR::SLTU:
             case OpcodeR::SLL:  execute_sll(instr); break;
             // case OpcodeR::SLLV:
-            // case OpcodeR::SRA:
+            case OpcodeR::SRA:  execute_sra(instr); break;
             // case OpcodeR::SRAV:
-            // case OpcodeR::SRL:
+            case OpcodeR::SRL:  execute_srl(instr); break;
             // case OpcodeR::SRLV:
             default: throw_invalid_instr(instr);
         }
@@ -244,6 +244,16 @@ namespace emulation
     void Interpreter::execute_sll(const InstructionR instr)
     {
         _regs[instr.rd] = _regs[instr.rt] << instr.sa;
+    }
+
+    void Interpreter::execute_sra(const InstructionR instr)
+    {
+        _regs[instr.rd] = static_cast<int32_t>(_regs[instr.rt]) >> instr.sa;
+    }
+
+    void Interpreter::execute_srl(const InstructionR instr)
+    {
+        _regs[instr.rd] = static_cast<uint32_t>(_regs[instr.rt]) >> instr.sa;
     }
 
     void Interpreter::execute_addi(const InstructionI instr)
