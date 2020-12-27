@@ -104,9 +104,9 @@ namespace emulation
         {
             case OpcodeI::ADDI:   execute_addi(instr); break;
             case OpcodeI::ADDIU:  execute_addiu(instr); break;
-            // case OpcodeI::ANDI:
-            // case OpcodeI::ORI:
-            // case OpcodeI::XORI:
+            case OpcodeI::ANDI:   execute_andi(instr); break;
+            case OpcodeI::ORI:    execute_ori(instr); break;
+            case OpcodeI::XORI:   execute_xori(instr); break;
             // case OpcodeI::SLTI:
             // case OpcodeI::SLTIU:
             // case OpcodeI::LUI:
@@ -218,6 +218,21 @@ namespace emulation
     void Interpreter::execute_addiu(const InstructionI instr)
     {
         _regs[instr.rt] = _regs[instr.rs] + instr.constant;
+    }
+
+    void Interpreter::execute_andi(const InstructionI instr)
+    {
+        _regs[instr.rt] = _regs[instr.rs] & instr.constant;
+    }
+
+    void Interpreter::execute_ori(const InstructionI instr)
+    {
+        _regs[instr.rt] = _regs[instr.rs] | instr.constant;
+    }
+
+    void Interpreter::execute_xori(const InstructionI instr)
+    {
+        _regs[instr.rt] = _regs[instr.rs] ^ instr.constant;
     }
 
     void Interpreter::execute_beq(const InstructionI instr)

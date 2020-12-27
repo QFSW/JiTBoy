@@ -60,6 +60,9 @@ namespace emulation
 
         void execute_addi(mips::InstructionI instr);
         void execute_addiu(mips::InstructionI instr);
+        void execute_andi(mips::InstructionI instr);
+        void execute_ori(mips::InstructionI instr);
+        void execute_xori(mips::InstructionI instr);
 
         void execute_beq(mips::InstructionI instr);
         void execute_bgtz(mips::InstructionI instr);
