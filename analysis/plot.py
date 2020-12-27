@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import matplotlib.style as style
+import matplotlib.ticker as mticker
 import numpy as np
 import data_proc
 import utils
@@ -13,6 +14,19 @@ def savefig(path):
     directory = os.path.dirname(path)
     if not os.path.exists(directory):
         os.makedirs(directory)
+
+    def log_format(y, pos):
+        if y == 0:
+            return '0'
+
+        dp = int(np.maximum(-np.log10(abs(y)), 0))
+        fstr = '{{:.{:1d}f}}'.format(dp)
+        return fstr.format(y)
+
+    for axis in plt.gcf().axes:
+        for ax in [axis.xaxis, axis.yaxis]:
+            if ax.get_scale() == 'log':
+                ax.set_major_formatter(mticker.FuncFormatter(log_format))
     
     plt.tight_layout()
     plt.savefig(path)
