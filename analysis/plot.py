@@ -35,7 +35,8 @@ def savefig(path):
 def header_case(name):
     mapping = {
         'mips': 'mips',
-        'time': 'Execution Time'
+        'time': 'Execution Time',
+        'jit' : 'JIT'
     }
 
     if name in mapping:
@@ -46,7 +47,8 @@ def header_case(name):
 def axis_case(name):
     mapping = {
         'mips': 'mips',
-        'time': 'Time (μs)'
+        'time': 'Time (μs)',
+        'jit' : 'JIT'
     }
 
     if name in mapping:
@@ -54,7 +56,7 @@ def axis_case(name):
 
     return name.title()
 
-def scatter(datasets, x, y, path, xscale='linear', yscale='linear'):
+def scatter(datasets, x, y, path, xscale='linear', yscale='linear', line=False):
     title = "%s vs %s" % (header_case(y), header_case(x))
     print("Drawing scatterplot %s" % title)
 
@@ -71,6 +73,18 @@ def scatter(datasets, x, y, path, xscale='linear', yscale='linear'):
     plt.yscale(yscale)
     plt.legend(loc='upper left')
     plt.title(title)
+
+    if line:
+        ax = plt.gcf().axes[0]
+        lims = [
+            np.min([ax.get_xlim(), ax.get_ylim()]),
+            np.max([ax.get_xlim(), ax.get_ylim()]) 
+        ]
+
+        ax.plot(lims, lims, 'k-', alpha=0.5)
+        ax.set_xlim(lims)
+        ax.set_ylim(lims)
+
     savefig(path)
 
 def bar_categoric(datasets, x, y, path, yscale='linear'):

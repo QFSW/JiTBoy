@@ -51,12 +51,40 @@ def draw_testbatches(data):
         plot.bar_categoric(processed, 'name', 'time', '%s/time.png' % base, yscale='log')
         plot.bar_categoric(processed, 'name', 'mips', '%s/mips.png' % base, yscale='log')
 
+def draw_jit_vs_interpreter(data):
+    plots = [
+        ('time', 'Execution Time (μs)'),
+        ('mips', 'mips')
+    ]
+
+    for p in plots:
+        values = []
+        jit = data['JIT']
+        interpreter = data['Interpreter']
+
+        for i in range(len(jit)):
+            name = jit[i]['name']
+            items = list(filter(lambda i: i['name'] == name, interpreter))
+
+            if len(items) > 0:
+                row = {
+                    'jit'          : jit[i][p[0]],
+                    'interpreter'  : items[0][p[0]]
+                }
+                values.append(row)
+        
+        processed = {p[1]: values}
+
+        base = "%s/scatter" % output_base
+        plot.scatter(processed, 'jit', 'interpreter', '%s/%s.png' % (base, p[0]), xscale='log', yscale='log', line=True)
+
 def main():
     data = {
         'JIT': loader.load_data('output/results_jit.csv', jit=True),
         'Interpreter': loader.load_data('output/results_interpreter.csv')
     }
 
+    draw_jit_vs_interpreter(data)
     draw_scatters(data)
     draw_histograms(data)
     draw_testbatches(data)
