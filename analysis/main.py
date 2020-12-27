@@ -40,11 +40,12 @@ def draw_histograms(data):
 def draw_testbatches(data):
     plots = [
         ('unroll'   , 'unroll\([0-9]+\/[0-9]+\)'),
-        ('fibonacci', 'fibonacci\([0-9]+\)')
+        ('fibonacci', 'fibonacci\([0-9]+\)'),
+        ('factorial', 'factorial\([0-9]+\)')
     ]
 
     for (name, pattern) in plots:
-        base = "%s/%s" % (output_base, name)
+        base = "%s/tests/%s" % (output_base, name)
         r = re.compile(pattern)
         processed = data_proc.filter_rows(data, lambda x: r.match(x['name']))
 

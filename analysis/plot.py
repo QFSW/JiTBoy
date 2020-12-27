@@ -4,6 +4,7 @@ import matplotlib.style as style
 import matplotlib.ticker as mticker
 import numpy as np
 import data_proc
+import display
 import utils
 
 style.use('ggplot')
@@ -32,32 +33,8 @@ def savefig(path):
     plt.savefig(path)
     plt.clf()
 
-def header_case(name):
-    mapping = {
-        'mips': 'mips',
-        'time': 'Execution Time',
-        'jit' : 'JIT'
-    }
-
-    if name in mapping:
-        return mapping[name]
-
-    return name.title()
-
-def axis_case(name):
-    mapping = {
-        'mips': 'mips',
-        'time': 'Time (μs)',
-        'jit' : 'JIT'
-    }
-
-    if name in mapping:
-        return mapping[name]
-
-    return name.title()
-
 def scatter(datasets, x, y, path, xscale='linear', yscale='linear', line=False):
-    title = "%s vs %s" % (header_case(y), header_case(x))
+    title = "%s vs %s" % (display.header_case(y), display.header_case(x))
     print("Drawing scatterplot %s" % title)
 
     for name in datasets:
@@ -67,8 +44,8 @@ def scatter(datasets, x, y, path, xscale='linear', yscale='linear', line=False):
 
         plt.plot(xdata, ydata, 'x', alpha=0.8, label=name)
 
-    plt.xlabel(axis_case(x))
-    plt.ylabel(axis_case(y))
+    plt.xlabel(display.axis_case(x))
+    plt.ylabel(display.axis_case(y))
     plt.xscale(xscale)
     plt.yscale(yscale)
     plt.legend(loc='upper left')
@@ -88,7 +65,7 @@ def scatter(datasets, x, y, path, xscale='linear', yscale='linear', line=False):
     savefig(path)
 
 def bar_categoric(datasets, x, y, path, yscale='linear'):
-    title = header_case(y)
+    title = display.header_case(y)
     print("Drawing bar chart %s" % title)
 
     xdatas = []
@@ -117,7 +94,7 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
         offset = i - cols / 2
         plt.bar(ypos + offset * width, ydata, width=width, align='center', label=name)
 
-    plt.ylabel(axis_case(y))
+    plt.ylabel(display.axis_case(y))
     plt.yscale(yscale)
     plt.xticks(ypos, xdata, rotation=90)
     plt.title(title)
@@ -125,7 +102,7 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
     savefig(path)
 
 def histogram(datasets, x, path, bins=30, yscale='linear'):
-    title = header_case(x)
+    title = display.header_case(x)
     print("Drawing histogram %s" % title)
 
     cols = len(datasets)
@@ -137,7 +114,7 @@ def histogram(datasets, x, path, bins=30, yscale='linear'):
 
         plt.hist(xdata, density=True, bins=bins, label=name, alpha=alpha)
 
-    plt.xlabel(axis_case(x))
+    plt.xlabel(display.axis_case(x))
     plt.ylabel("%")
     plt.yscale(yscale)
     plt.title(title)
@@ -145,7 +122,7 @@ def histogram(datasets, x, path, bins=30, yscale='linear'):
     savefig(path)
 
 def boxplot(datasets, x, path):
-    title = header_case(x)
+    title = display.header_case(x)
     print("Drawing box plot %s" % title)
 
     datas = []
@@ -159,6 +136,6 @@ def boxplot(datasets, x, path):
         names.append(name)
 
     plt.boxplot(datas, showfliers=False, labels=names)
-    plt.ylabel(axis_case(x))
+    plt.ylabel(display.axis_case(x))
     plt.title(title)
     savefig(path)
