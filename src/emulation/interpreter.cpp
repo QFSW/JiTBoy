@@ -72,10 +72,10 @@ namespace emulation
             case OpcodeR::ADDU: execute_addu(instr); break;
             case OpcodeR::SUB:  execute_sub(instr); break;
             case OpcodeR::SUBU: execute_subu(instr); break;
-            // case OpcodeR::AND:
-            // case OpcodeR::OR:
-            // case OpcodeR::NOR:
-            // case OpcodeR::XOR:
+            case OpcodeR::AND:  execute_and(instr); break;
+            case OpcodeR::OR:   execute_or(instr); break;
+            case OpcodeR::NOR:  execute_nor(instr); break;
+            case OpcodeR::XOR:  execute_xor(instr); break;
             // case OpcodeR::JR:
             // case OpcodeR::JALR:
             // case OpcodeR::MULT:
@@ -183,6 +183,26 @@ namespace emulation
     void Interpreter::execute_subu(const InstructionR instr)
     {
         _regs[instr.rd] = _regs[instr.rs] - _regs[instr.rt];
+    }
+
+    void Interpreter::execute_and(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs[instr.rs] & _regs[instr.rt];
+    }
+
+    void Interpreter::execute_or(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs[instr.rs] | _regs[instr.rt];
+    }
+
+    void Interpreter::execute_nor(const InstructionR instr)
+    {
+        _regs[instr.rd] = ~(_regs[instr.rs] | _regs[instr.rt]);
+    }
+
+    void Interpreter::execute_xor(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs[instr.rs] ^ _regs[instr.rt];
     }
 
     void Interpreter::execute_sll(const InstructionR instr)
