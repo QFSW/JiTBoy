@@ -76,7 +76,7 @@ namespace emulation
             case OpcodeR::OR:   execute_or(instr); break;
             case OpcodeR::NOR:  execute_nor(instr); break;
             case OpcodeR::XOR:  execute_xor(instr); break;
-            // case OpcodeR::JR:
+            case OpcodeR::JR:   execute_jr(instr); break;
             // case OpcodeR::JALR:
             // case OpcodeR::MULT:
             // case OpcodeR::MULTU:
@@ -208,6 +208,11 @@ namespace emulation
     void Interpreter::execute_xor(const InstructionR instr)
     {
         _regs[instr.rd] = _regs[instr.rs] ^ _regs[instr.rt];
+    }
+
+    void Interpreter::execute_jr(const InstructionR instr)
+    {
+        jump(_regs[instr.rs]);
     }
 
     void Interpreter::execute_mfhi(const InstructionR instr)
