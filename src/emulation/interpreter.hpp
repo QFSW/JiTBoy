@@ -68,6 +68,7 @@ namespace emulation
         void execute_andi(mips::InstructionI instr);
         void execute_ori(mips::InstructionI instr);
         void execute_xori(mips::InstructionI instr);
+        void execute_lui(mips::InstructionI instr);
         void execute_lw(mips::InstructionI instr);
         void execute_lb(mips::InstructionI instr);
         void execute_lbu(mips::InstructionI instr);

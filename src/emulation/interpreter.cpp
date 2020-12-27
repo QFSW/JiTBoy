@@ -109,7 +109,7 @@ namespace emulation
             case OpcodeI::XORI:   execute_xori(instr); break;
             // case OpcodeI::SLTI:
             // case OpcodeI::SLTIU:
-            // case OpcodeI::LUI:
+            case OpcodeI::LUI:    execute_lui(instr); break;
             case OpcodeI::LW:     execute_lw(instr); break;
             case OpcodeI::LB:     execute_lb(instr); break;
             case OpcodeI::LBU:    execute_lbu(instr); break;
@@ -258,6 +258,11 @@ namespace emulation
     void Interpreter::execute_xori(const InstructionI instr)
     {
         _regs[instr.rt] = _regs[instr.rs] ^ instr.constant;
+    }
+
+    void Interpreter::execute_lui(const InstructionI instr)
+    {
+        _regs[instr.rt] = instr.constant << 16;
     }
 
     void Interpreter::execute_lw (const InstructionI instr)
