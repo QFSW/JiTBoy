@@ -1,6 +1,7 @@
 import loader
 import plot
 import data_proc
+import re
 
 data_path = "output/results.csv"
 output_base = "output/graphs"
@@ -36,14 +37,19 @@ def draw_histograms(data):
     for p in plots:
         plot.boxplot(data, p, '%s/%s.png' % (base_box, p))
 
-def draw_unroll(data):
-    import re
-    base = "%s/unroll" % output_base
-    pattern = re.compile('unroll\([0-9]+\/[0-9]+\)')
-    unroll = data_proc.filter_rows(data, lambda x: pattern.match(x['name']))
+def draw_testbatches(data):
+    plots = [
+        ('unroll'   , 'unroll\([0-9]+\/[0-9]+\)'),
+        ('fibonacci', 'fibonacci\([0-9]+\)')
+    ]
 
-    plot.bar_categoric(unroll, 'name', 'time', '%s/time.png' % base)
-    plot.bar_categoric(unroll, 'name', 'mips', '%s/mips.png' % base)
+    for (name, pattern) in plots:
+        base = "%s/%s" % (output_base, name)
+        r = re.compile(pattern)
+        processed = data_proc.filter_rows(data, lambda x: r.match(x['name']))
+
+        plot.bar_categoric(processed, 'name', 'time', '%s/time.png' % base, yscale='log')
+        plot.bar_categoric(processed, 'name', 'mips', '%s/mips.png' % base, yscale='log')
 
 def main():
     data = {
@@ -53,7 +59,7 @@ def main():
 
     draw_scatters(data)
     draw_histograms(data)
-    draw_unroll(data)
+    draw_testbatches(data)
 
 if __name__ == "__main__":
     main()
