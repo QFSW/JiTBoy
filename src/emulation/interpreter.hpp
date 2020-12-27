@@ -60,6 +60,8 @@ namespace emulation
         void execute_xor(mips::InstructionR instr);
         void execute_jr(mips::InstructionR instr);
         void execute_jalr(mips::InstructionR instr);
+        void execute_mult(mips::InstructionR instr);
+        void execute_multu(mips::InstructionR instr);
         void execute_div(mips::InstructionR instr);
         void execute_divu(mips::InstructionR instr);
         void execute_mfhi(mips::InstructionR instr);
@@ -71,6 +73,9 @@ namespace emulation
         void execute_sll(mips::InstructionR instr);
         void execute_sra(mips::InstructionR instr);
         void execute_srl(mips::InstructionR instr);
+        void execute_sllv(mips::InstructionR instr);
+        void execute_srav(mips::InstructionR instr);
+        void execute_srlv(mips::InstructionR instr);
 
         void execute_addi(mips::InstructionI instr);
         void execute_addiu(mips::InstructionI instr);

@@ -68,32 +68,32 @@ namespace emulation
     {
         switch (instr.op)
         {
-            case OpcodeR::ADD:  execute_add(instr); break;
-            case OpcodeR::ADDU: execute_addu(instr); break;
-            case OpcodeR::SUB:  execute_sub(instr); break;
-            case OpcodeR::SUBU: execute_subu(instr); break;
-            case OpcodeR::AND:  execute_and(instr); break;
-            case OpcodeR::OR:   execute_or(instr); break;
-            case OpcodeR::NOR:  execute_nor(instr); break;
-            case OpcodeR::XOR:  execute_xor(instr); break;
-            case OpcodeR::JR:   execute_jr(instr); break;
-            case OpcodeR::JALR: execute_jalr(instr); break;
-            // case OpcodeR::MULT:
-            // case OpcodeR::MULTU:
-            case OpcodeR::DIV:  execute_div(instr); break;
-            case OpcodeR::DIVU: execute_divu(instr); break;
-            case OpcodeR::MFHI: execute_mfhi(instr); break;
-            case OpcodeR::MFLO: execute_mflo(instr); break;
-            case OpcodeR::MTHI: execute_mthi(instr); break;
-            case OpcodeR::MTLO: execute_mtlo(instr); break;
-            case OpcodeR::SLT:  execute_slt(instr); break;
-            case OpcodeR::SLTU: execute_sltu(instr); break;
-            case OpcodeR::SLL:  execute_sll(instr); break;
-            // case OpcodeR::SLLV:
-            case OpcodeR::SRA:  execute_sra(instr); break;
-            // case OpcodeR::SRAV:
-            case OpcodeR::SRL:  execute_srl(instr); break;
-            // case OpcodeR::SRLV:
+            case OpcodeR::ADD:   execute_add(instr); break;
+            case OpcodeR::ADDU:  execute_addu(instr); break;
+            case OpcodeR::SUB:   execute_sub(instr); break;
+            case OpcodeR::SUBU:  execute_subu(instr); break;
+            case OpcodeR::AND:   execute_and(instr); break;
+            case OpcodeR::OR:    execute_or(instr); break;
+            case OpcodeR::NOR:   execute_nor(instr); break;
+            case OpcodeR::XOR:   execute_xor(instr); break;
+            case OpcodeR::JR:    execute_jr(instr); break;
+            case OpcodeR::JALR:  execute_jalr(instr); break;
+            case OpcodeR::MULT:  execute_mult(instr); break;
+            case OpcodeR::MULTU: execute_multu(instr); break;
+            case OpcodeR::DIV:   execute_div(instr); break;
+            case OpcodeR::DIVU:  execute_divu(instr); break;
+            case OpcodeR::MFHI:  execute_mfhi(instr); break;
+            case OpcodeR::MFLO:  execute_mflo(instr); break;
+            case OpcodeR::MTHI:  execute_mthi(instr); break;
+            case OpcodeR::MTLO:  execute_mtlo(instr); break;
+            case OpcodeR::SLT:   execute_slt(instr); break;
+            case OpcodeR::SLTU:  execute_sltu(instr); break;
+            case OpcodeR::SLL:   execute_sll(instr); break;
+            case OpcodeR::SRA:   execute_sra(instr); break;
+            case OpcodeR::SRL:   execute_srl(instr); break;
+            case OpcodeR::SLLV:  execute_sllv(instr); break;
+            case OpcodeR::SRAV:  execute_srav(instr); break;
+            case OpcodeR::SRLV:  execute_srlv(instr); break;
             default: throw_invalid_instr(instr);
         }
     }
@@ -221,6 +221,24 @@ namespace emulation
         execute_jr(instr);
     }
 
+    void Interpreter::execute_mult(const InstructionR instr)
+    {
+        const int64_t left = static_cast<int64_t>(static_cast<int32_t>(_regs[instr.rs]));
+        const int64_t right = static_cast<int64_t>(static_cast<int32_t>(_regs[instr.rt]));
+        const int64_t res = left * right;
+        _regs.lo() = res & 0xFFFFFFFF;
+        _regs.hi() = res >> 32;
+    }
+
+    void Interpreter::execute_multu(const InstructionR instr)
+    {
+        const uint64_t left = static_cast<uint64_t>(_regs[instr.rs]);
+        const uint64_t right = static_cast<uint64_t>(_regs[instr.rt]);
+        const uint64_t res = left * right;
+        _regs.lo() = res & 0xFFFFFFFF;
+        _regs.hi() = res >> 32;
+    }
+
     void Interpreter::execute_div(const InstructionR instr)
     {
         _regs.lo() = static_cast<int32_t>(_regs[instr.rs]) / static_cast<int32_t>(_regs[instr.rt]);
@@ -282,6 +300,24 @@ namespace emulation
     void Interpreter::execute_srl(const InstructionR instr)
     {
         _regs[instr.rd] = static_cast<uint32_t>(_regs[instr.rt]) >> instr.sa;
+    }
+
+    void Interpreter::execute_sllv(const InstructionR instr)
+    {
+        const uint8_t sa = _regs[instr.rs] & 0b11111;
+        _regs[instr.rd] = _regs[instr.rt] << sa;
+    }
+
+    void Interpreter::execute_srav(const InstructionR instr)
+    {
+        const uint8_t sa = _regs[instr.rs] & 0b11111;
+        _regs[instr.rd] = static_cast<int32_t>(_regs[instr.rt]) >> sa;
+    }
+
+    void Interpreter::execute_srlv(const InstructionR instr)
+    {
+        const uint8_t sa = _regs[instr.rs] & 0b11111;
+        _regs[instr.rd] = static_cast<uint32_t>(_regs[instr.rt]) >> sa;
     }
 
     void Interpreter::execute_addi(const InstructionI instr)
