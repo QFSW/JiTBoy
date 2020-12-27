@@ -80,8 +80,8 @@ namespace emulation
             case OpcodeR::JALR: execute_jalr(instr); break;
             // case OpcodeR::MULT:
             // case OpcodeR::MULTU:
-            // case OpcodeR::DIV:
-            // case OpcodeR::DIVU:
+            case OpcodeR::DIV:  execute_div(instr); break;
+            case OpcodeR::DIVU: execute_divu(instr); break;
             case OpcodeR::MFHI: execute_mfhi(instr); break;
             case OpcodeR::MFLO: execute_mflo(instr); break;
             case OpcodeR::MTHI: execute_mthi(instr); break;
@@ -219,6 +219,18 @@ namespace emulation
     {
         link(instr.rd);
         execute_jr(instr);
+    }
+
+    void Interpreter::execute_div(const InstructionR instr)
+    {
+        _regs.lo() = static_cast<int32_t>(_regs[instr.rs]) / static_cast<int32_t>(_regs[instr.rt]);
+        _regs.hi() = static_cast<int32_t>(_regs[instr.rs]) % static_cast<int32_t>(_regs[instr.rt]);
+    }
+
+    void Interpreter::execute_divu(const InstructionR instr)
+    {
+        _regs.lo() = static_cast<uint32_t>(_regs[instr.rs]) / static_cast<uint32_t>(_regs[instr.rt]);
+        _regs.hi() = static_cast<uint32_t>(_regs[instr.rs]) % static_cast<uint32_t>(_regs[instr.rt]);
     }
 
     void Interpreter::execute_mfhi(const InstructionR instr)
