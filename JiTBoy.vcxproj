@@ -213,6 +213,7 @@
     <ClInclude Include="src\emulation\emulator.hpp" />
     <ClInclude Include="src\emulation\interpreter.hpp" />
     <ClInclude Include="src\memory\dynamic_executable_allocator.hpp" />
+    <ClInclude Include="src\memory\fixed_pool.hpp" />
     <ClInclude Include="src\mips\memory_map.hpp" />
     <ClInclude Include="src\error\parse_error.hpp" />
     <ClInclude Include="src\mips\testing\test_result.hpp" />
