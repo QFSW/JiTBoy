@@ -4,8 +4,11 @@ rename_cols = [
     ('time (us)', 'time')
 ]
 
+float_cols = [
+    'time'
+]
+
 int_cols = [
-    'time',
     'blocks',
     'blocks executed',
     'host instructions',
@@ -84,6 +87,9 @@ def load_data(path, jit=False):
 
                 for col in int_cols:
                     item[col] = int(item[col])
+
+                for col in float_cols:
+                    item[col] = float(item[col])
                 
                 if item['status'] == 'passed':
                     compute_statistics(item, jit)

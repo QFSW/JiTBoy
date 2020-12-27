@@ -47,7 +47,7 @@ template<> void csv::write_row<mips::testing::TestResult>(std::ostream& o, const
     o
     << result.name << ", "
     << result.status << ", "
-    << std::chrono::duration_cast<std::chrono::microseconds>(result.time).count() << ", "
+    << result.time.count() * 1000000 << ", "
     << result.block_count << ", "
     << result.blocks_executed << ", "
     << result.host_instr_count << ", "

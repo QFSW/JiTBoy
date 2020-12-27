@@ -69,9 +69,9 @@ namespace emulation
         switch (instr.op)
         {
             case OpcodeR::ADD:  execute_add(instr); break;
-            case OpcodeR::ADDU: execute_add(instr); break;
-            // case OpcodeR::SUB:
-            // case OpcodeR::SUBU:
+            case OpcodeR::ADDU: execute_addu(instr); break;
+            case OpcodeR::SUB:  execute_sub(instr); break;
+            case OpcodeR::SUBU: execute_subu(instr); break;
             // case OpcodeR::AND:
             // case OpcodeR::OR:
             // case OpcodeR::NOR:
@@ -103,7 +103,7 @@ namespace emulation
         switch (instr.op)
         {
             case OpcodeI::ADDI:   execute_addi(instr); break;
-            case OpcodeI::ADDIU:  execute_addi(instr); break;
+            case OpcodeI::ADDIU:  execute_addiu(instr); break;
             // case OpcodeI::ANDI:
             // case OpcodeI::ORI:
             // case OpcodeI::XORI:
@@ -170,12 +170,32 @@ namespace emulation
         _regs[instr.rd] = _regs[instr.rs] + _regs[instr.rt];
     }
 
+    void Interpreter::execute_addu(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs[instr.rs] + _regs[instr.rt];
+    }
+
+    void Interpreter::execute_sub(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs[instr.rs] - _regs[instr.rt];
+    }
+
+    void Interpreter::execute_subu(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs[instr.rs] - _regs[instr.rt];
+    }
+
     void Interpreter::execute_sll(const InstructionR instr)
     {
         _regs[instr.rd] = _regs[instr.rt] << instr.sa;
     }
 
     void Interpreter::execute_addi(const InstructionI instr)
+    {
+        _regs[instr.rt] = _regs[instr.rs] + instr.constant;
+    }
+
+    void Interpreter::execute_addiu(const InstructionI instr)
     {
         _regs[instr.rt] = _regs[instr.rs] + instr.constant;
     }
