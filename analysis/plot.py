@@ -2,6 +2,8 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.style as style
 import numpy as np
+import data_proc
+import utils
 
 style.use('ggplot')
 
@@ -61,8 +63,12 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
     title = header_case(y)
     print("Drawing bar chart %s" % title)
 
-    data = datasets[next(iter(datasets))]
-    xdata = list(map(lambda i: i[x], data))
+    xdatas = []
+    for name in datasets:
+        xdata = list(map(lambda i: i[x], datasets[name]))
+        xdatas.append(xdata)
+
+    xdata = utils.union(*xdatas)
     ypos = np.arange(len(xdata))
 
     cols = len(datasets)
@@ -70,7 +76,15 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
 
     for i, name in enumerate(datasets):
         data = datasets[name]
-        ydata = list(map(lambda i: i[y], data))
+
+        ydata = []
+        for j in range(len(xdata)):
+            xitem = xdata[j]
+            items = list(filter(lambda i: i[x] == xitem, data))
+            if len(items) > 0:
+                ydata.append(items[0][y])
+            else:
+                ydata.append(0)
 
         offset = i - cols / 2
         plt.bar(ypos + offset * width, ydata, width=width, align='center', label=name)
