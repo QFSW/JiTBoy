@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace memory
 {
@@ -33,6 +34,8 @@ namespace memory
         size_t _dead_space;
 
         [[nodiscard]] size_t page_aligned(size_t size) const noexcept;
+        [[nodiscard]] size_t get_page_size() const;
+        [[nodiscard]] size_t get_dead_space() const;
     };
 
     template<>
@@ -48,28 +51,16 @@ namespace memory
 
     template <size_t BufferSize>
     ExecutableAllocator<BufferSize>::ExecutableAllocator()
-    {
-        SYSTEM_INFO system_info;
-        GetSystemInfo(&system_info);
-        _page_size = system_info.dwPageSize;
-
-        MEMORY_BASIC_INFORMATION page_info;
-        if (!VirtualQuery(_buffer, &page_info, sizeof(page_info)))
-        {
-            const auto error = GetLastError();
-            throw std::runtime_error("VirtualQuery failed with " + std::to_string(error));
-        }
-
-        auto page_start = reinterpret_cast<uint8_t*>(page_info.BaseAddress) + _page_size;
-        _dead_space = (page_start - _buffer) % _page_size;
-        _consumed = 0;
-    }
+        : _page_size(get_page_size())
+        , _consumed(0)
+        , _dead_space(get_dead_space())
+    { }
 
     template <size_t BufferSize>
     ExecutableAllocator<BufferSize>::~ExecutableAllocator()
     {
         DWORD dummy;
-        VirtualProtect(_buffer + _dead_space, BufferSize - _dead_space, PAGE_READWRITE, &dummy);
+        VirtualProtect(_buffer + _dead_space, _consumed, PAGE_READWRITE, &dummy);
     }
 
     template <size_t BufferSize>
@@ -126,5 +117,38 @@ namespace memory
     size_t ExecutableAllocator<BufferSize>::page_aligned(const size_t size) const noexcept
     {
         return (size / _page_size + 1) * _page_size;
+    }
+
+    template <size_t BufferSize>
+    size_t ExecutableAllocator<BufferSize>::get_page_size() const
+    {
+        static thread_local size_t page_size = 0;
+
+        if (page_size)
+            return page_size;
+
+        SYSTEM_INFO system_info;
+        GetSystemInfo(&system_info);
+        return page_size = system_info.dwPageSize;
+    }
+
+    template <size_t BufferSize>
+    size_t ExecutableAllocator<BufferSize>::get_dead_space() const
+    {
+        static thread_local std::unordered_map<const uint8_t*, size_t> cache;
+        const uint8_t* buffer_ptr = _buffer;
+
+        if (cache.find(buffer_ptr) != cache.end())
+            return cache[buffer_ptr];
+
+        MEMORY_BASIC_INFORMATION page_info;
+        if (!VirtualQuery(_buffer, &page_info, sizeof(page_info)))
+        {
+            const auto error = GetLastError();
+            throw std::runtime_error("VirtualQuery failed with " + std::to_string(error));
+        }
+
+        auto page_start = reinterpret_cast<uint8_t*>(page_info.BaseAddress) + _page_size;
+        return cache[buffer_ptr] = (page_start - _buffer) % _page_size;
     }
 }
