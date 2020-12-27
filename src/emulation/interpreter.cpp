@@ -136,13 +136,8 @@ namespace emulation
     {
         switch (instr.op)
         {
-            case OpcodeJ::J:
-            {
-                const uint32_t target = (0xF0000000 & _pc) | (instr.target << 2);
-                jump(target);
-                break;
-            }
-            case OpcodeJ::JAL:
+            case OpcodeJ::J:   execute_j(instr); break;
+            case OpcodeJ::JAL: execute_jal(instr); break;
             default: throw_invalid_instr(instr);
         }
     }
@@ -152,6 +147,11 @@ namespace emulation
         std::visit(functional::overload{
         [&](const auto& x) { throw std::logic_error(std::string("Instruction ") + mips::opcode_to_string(x.op) + " is not supported"); }
         }, instr);
+    }
+
+    void Interpreter::link(const Register reg)
+    {
+        _regs[reg] = _pc + 4;
     }
 
     void Interpreter::jump(const uint32_t target)
@@ -344,5 +344,17 @@ namespace emulation
     {
         if (static_cast<int32_t>(_regs[instr.rs]) < 0)
             branch(instr);
+    }
+
+    void Interpreter::execute_j(const InstructionJ instr)
+    {
+        const uint32_t target = (0xF0000000 & _pc) | (instr.target << 2);
+        jump(target);
+    }
+
+    void Interpreter::execute_jal(const InstructionJ instr)
+    {
+        link();
+        execute_j(instr);
     }
 }

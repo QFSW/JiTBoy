@@ -45,6 +45,7 @@ namespace emulation
 
         void throw_invalid_instr(mips::Instruction instr);
 
+        void link(mips::Register reg = mips::Register::$ra);
         void jump(uint32_t target);
         void branch(mips::InstructionI instr);
         uint32_t calc_mem_target(mips::InstructionI instr);
@@ -84,5 +85,8 @@ namespace emulation
         void execute_bne(mips::InstructionI instr);
         void execute_bgez(mips::InstructionI instr);
         void execute_bltz(mips::InstructionI instr);
+
+        void execute_j(mips::InstructionJ instr);
+        void execute_jal(mips::InstructionJ instr);
     };
 }
