@@ -125,9 +125,9 @@ namespace emulation
             // case OpcodeI::LWL:
             // case OpcodeI::LWR:
             case OpcodeI::BGEZ:   execute_bgez(instr); break;
-            // case OpcodeI::BGEZAL: 
+            case OpcodeI::BGEZAL: execute_bgezal(instr); break;
             case OpcodeI::BLTZ:   execute_bltz(instr); break;
-            // case OpcodeI::BLTZAL:
+            case OpcodeI::BLTZAL: execute_bltzal(instr); break;
             default: throw_invalid_instr(instr);
         }
     }
@@ -340,10 +340,22 @@ namespace emulation
             branch(instr);
     }
 
+    void Interpreter::execute_bgezal(const InstructionI instr)
+    {
+        link();
+        execute_bgez(instr);
+    }
+
     void Interpreter::execute_bltz(const InstructionI instr)
     {
         if (static_cast<int32_t>(_regs[instr.rs]) < 0)
             branch(instr);
+    }
+
+    void Interpreter::execute_bltzal(const InstructionI instr)
+    {
+        link();
+        execute_bltz(instr);
     }
 
     void Interpreter::execute_j(const InstructionJ instr)
