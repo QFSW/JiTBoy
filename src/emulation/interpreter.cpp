@@ -272,22 +272,22 @@ namespace emulation
 
     void Interpreter::execute_lb (const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<uint8_t>(calc_mem_target(instr));
+        _regs[instr.rt] = _mem.read<int8_t>(calc_mem_target(instr));
     }
 
     void Interpreter::execute_lbu(const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<int8_t>(calc_mem_target(instr));
+        _regs[instr.rt] = _mem.read<uint8_t>(calc_mem_target(instr));
     }
 
     void Interpreter::execute_lh (const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<uint16_t>(calc_mem_target(instr));
+        _regs[instr.rt] = _mem.read<int16_t>(calc_mem_target(instr));
     }
 
     void Interpreter::execute_lhu(const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<int16_t>(calc_mem_target(instr));
+        _regs[instr.rt] = _mem.read<uint16_t>(calc_mem_target(instr));
     }
 
     void Interpreter::execute_sw (const InstructionI instr)
