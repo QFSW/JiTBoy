@@ -82,10 +82,10 @@ namespace emulation
             // case OpcodeR::MULTU:
             // case OpcodeR::DIV:
             // case OpcodeR::DIVU:
-            // case OpcodeR::MFHI:
-            // case OpcodeR::MFLO:
-            // case OpcodeR::MTHI:
-            // case OpcodeR::MTLO:
+            case OpcodeR::MFHI: execute_mfhi(instr); break;
+            case OpcodeR::MFLO: execute_mflo(instr); break;
+            case OpcodeR::MTHI: execute_mthi(instr); break;
+            case OpcodeR::MTLO: execute_mtlo(instr); break;
             // case OpcodeR::SLT:
             // case OpcodeR::SLTU:
             case OpcodeR::SLL:  execute_sll(instr); break;
@@ -203,6 +203,26 @@ namespace emulation
     void Interpreter::execute_xor(const InstructionR instr)
     {
         _regs[instr.rd] = _regs[instr.rs] ^ _regs[instr.rt];
+    }
+
+    void Interpreter::execute_mfhi(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs.hi();
+    }
+
+    void Interpreter::execute_mflo(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs.lo();
+    }
+
+    void Interpreter::execute_mthi(const InstructionR instr)
+    {
+        _regs.hi() = _regs[instr.rd];
+    }
+
+    void Interpreter::execute_mtlo(const InstructionR instr)
+    {
+        _regs.lo() = _regs[instr.rd];
     }
 
     void Interpreter::execute_sll(const InstructionR instr)

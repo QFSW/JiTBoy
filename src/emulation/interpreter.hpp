@@ -56,6 +56,10 @@ namespace emulation
         void execute_or(mips::InstructionR instr);
         void execute_nor(mips::InstructionR instr);
         void execute_xor(mips::InstructionR instr);
+        void execute_mfhi(mips::InstructionR instr);
+        void execute_mflo(mips::InstructionR instr);
+        void execute_mthi(mips::InstructionR instr);
+        void execute_mtlo(mips::InstructionR instr);
         void execute_sll(mips::InstructionR instr);
 
         void execute_addi(mips::InstructionI instr);
