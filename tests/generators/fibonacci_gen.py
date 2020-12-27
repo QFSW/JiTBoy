@@ -2,7 +2,7 @@ import os
 import shutil
 
 tpl_path = "tests/generators/fibonacci_tpl.s"
-path = "tests/mips/perf/recursion/"
+path = "tests/mips/perf/recursion/fibonacci/"
 tests = 15
 
 def fib(n):
