@@ -40,7 +40,6 @@ def draw_unroll(data):
     import re
     base = "%s/unroll" % output_base
     pattern = re.compile('unroll\([0-9]+\/[0-9]+\)')
-    data = data_proc.select(data, ['JIT', 'JIT (Release)'])
     unroll = data_proc.filter_rows(data, lambda x: pattern.match(x['name']))
 
     plot.bar_categoric(unroll, 'name', 'time', '%s/time.png' % base)

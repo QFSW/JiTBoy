@@ -298,6 +298,9 @@ namespace mips
         static const auto parser = generate_parser<Register, Register, uint8_t>(R"(\w+ ??, ??, ??)");
         const auto [dst, src, sa] = parser.evaluate(instr);
 
+        if (sa > 0b11111)
+            throw parse_error("sa greater than 31 is not supported");
+
         return InstructionR
         {
             .op = opcode,

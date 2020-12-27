@@ -88,7 +88,7 @@ namespace emulation
             // case OpcodeR::MTLO:
             // case OpcodeR::SLT:
             // case OpcodeR::SLTU:
-            // case OpcodeR::SLL:
+            case OpcodeR::SLL:  execute_sll(instr); break;
             // case OpcodeR::SLLV:
             // case OpcodeR::SRA:
             // case OpcodeR::SRAV:
@@ -102,8 +102,8 @@ namespace emulation
     {
         switch (instr.op)
         {
-            // case OpcodeI::ADDI:
-            // case OpcodeI::ADDIU:
+            case OpcodeI::ADDI:   execute_addi(instr); break;
+            case OpcodeI::ADDIU:  execute_addi(instr); break;
             // case OpcodeI::ANDI:
             // case OpcodeI::ORI:
             // case OpcodeI::XORI:
@@ -168,6 +168,16 @@ namespace emulation
     void Interpreter::execute_add(const InstructionR instr)
     {
         _regs[instr.rd] = _regs[instr.rs] + _regs[instr.rt];
+    }
+
+    void Interpreter::execute_sll(const InstructionR instr)
+    {
+        _regs[instr.rd] = _regs[instr.rt] << instr.sa;
+    }
+
+    void Interpreter::execute_addi(const InstructionI instr)
+    {
+        _regs[instr.rt] = _regs[instr.rs] + instr.constant;
     }
 
     void Interpreter::execute_beq(const InstructionI instr)

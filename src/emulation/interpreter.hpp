@@ -49,6 +49,9 @@ namespace emulation
         void branch(mips::InstructionI instr);
 
         void execute_add(mips::InstructionR instr);
+        void execute_sll(mips::InstructionR instr);
+
+        void execute_addi(mips::InstructionI instr);
 
         void execute_beq(mips::InstructionI instr);
         void execute_bgtz(mips::InstructionI instr);
