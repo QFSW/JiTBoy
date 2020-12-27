@@ -86,8 +86,8 @@ namespace emulation
             case OpcodeR::MFLO: execute_mflo(instr); break;
             case OpcodeR::MTHI: execute_mthi(instr); break;
             case OpcodeR::MTLO: execute_mtlo(instr); break;
-            // case OpcodeR::SLT:
-            // case OpcodeR::SLTU:
+            case OpcodeR::SLT:  execute_slt(instr); break;
+            case OpcodeR::SLTU: execute_sltu(instr); break;
             case OpcodeR::SLL:  execute_sll(instr); break;
             // case OpcodeR::SLLV:
             case OpcodeR::SRA:  execute_sra(instr); break;
@@ -239,6 +239,22 @@ namespace emulation
     void Interpreter::execute_mtlo(const InstructionR instr)
     {
         _regs.lo() = _regs[instr.rd];
+    }
+
+    void Interpreter::execute_slt(const InstructionR instr)
+    {
+        _regs[instr.rd] =
+            static_cast<int32_t>(_regs[instr.rs]) < static_cast<int32_t>(_regs[instr.rt])
+            ? 1
+            : 0;
+    }
+
+    void Interpreter::execute_sltu(const InstructionR instr)
+    {
+        _regs[instr.rd] =
+            static_cast<uint32_t>(_regs[instr.rs]) < static_cast<uint32_t>(_regs[instr.rt])
+            ? 1
+            : 0;
     }
 
     void Interpreter::execute_sll(const InstructionR instr)

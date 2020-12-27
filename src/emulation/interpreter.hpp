@@ -64,6 +64,8 @@ namespace emulation
         void execute_mflo(mips::InstructionR instr);
         void execute_mthi(mips::InstructionR instr);
         void execute_mtlo(mips::InstructionR instr);
+        void execute_slt(mips::InstructionR instr);
+        void execute_sltu(mips::InstructionR instr);
         void execute_sll(mips::InstructionR instr);
         void execute_sra(mips::InstructionR instr);
         void execute_srl(mips::InstructionR instr);
