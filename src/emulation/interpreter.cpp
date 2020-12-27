@@ -110,14 +110,14 @@ namespace emulation
             // case OpcodeI::SLTI:
             // case OpcodeI::SLTIU:
             // case OpcodeI::LUI:
-            // case OpcodeI::LW:
-            // case OpcodeI::LB:
-            // case OpcodeI::LBU:
-            // case OpcodeI::LH:
-            // case OpcodeI::LHU:
-            // case OpcodeI::SW:
-            // case OpcodeI::SB:
-            // case OpcodeI::SH:     
+            case OpcodeI::LW:     execute_lw(instr); break;
+            case OpcodeI::LB:     execute_lb(instr); break;
+            case OpcodeI::LBU:    execute_lbu(instr); break;
+            case OpcodeI::LH:     execute_lh(instr); break;
+            case OpcodeI::LHU:    execute_lhu(instr); break;
+            case OpcodeI::SW:     execute_sw(instr); break;
+            case OpcodeI::SB:     execute_sb(instr); break;
+            case OpcodeI::SH:     execute_sh(instr); break;
             case OpcodeI::BEQ:    execute_beq(instr); break;
             case OpcodeI::BGTZ:   execute_bgtz(instr); break;
             case OpcodeI::BLEZ:   execute_blez(instr); break;
@@ -163,6 +163,11 @@ namespace emulation
     {
         const uint32_t target = _pc + (instr.constant << 2);
         jump(target);
+    }
+
+    uint32_t Interpreter::calc_mem_target(const InstructionI instr)
+    {
+        return _regs[instr.rs] + instr.constant;
     }
 
     void Interpreter::execute_add(const InstructionR instr)
@@ -253,6 +258,46 @@ namespace emulation
     void Interpreter::execute_xori(const InstructionI instr)
     {
         _regs[instr.rt] = _regs[instr.rs] ^ instr.constant;
+    }
+
+    void Interpreter::execute_lw (const InstructionI instr)
+    {
+        _regs[instr.rt] = _mem.read<uint32_t>(calc_mem_target(instr));
+    }
+
+    void Interpreter::execute_lb (const InstructionI instr)
+    {
+        _regs[instr.rt] = _mem.read<uint8_t>(calc_mem_target(instr));
+    }
+
+    void Interpreter::execute_lbu(const InstructionI instr)
+    {
+        _regs[instr.rt] = _mem.read<int8_t>(calc_mem_target(instr));
+    }
+
+    void Interpreter::execute_lh (const InstructionI instr)
+    {
+        _regs[instr.rt] = _mem.read<uint16_t>(calc_mem_target(instr));
+    }
+
+    void Interpreter::execute_lhu(const InstructionI instr)
+    {
+        _regs[instr.rt] = _mem.read<int16_t>(calc_mem_target(instr));
+    }
+
+    void Interpreter::execute_sw (const InstructionI instr)
+    {
+        _mem.write<uint32_t>(calc_mem_target(instr), _regs[instr.rt]);
+    }
+
+    void Interpreter::execute_sb (const InstructionI instr)
+    {
+        _mem.write<uint8_t>(calc_mem_target(instr), _regs[instr.rt]);
+    }
+
+    void Interpreter::execute_sh(const InstructionI instr)
+    {
+        _mem.write<uint16_t>(calc_mem_target(instr), _regs[instr.rt]);
     }
 
     void Interpreter::execute_beq(const InstructionI instr)

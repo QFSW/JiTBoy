@@ -47,6 +47,7 @@ namespace emulation
 
         void jump(uint32_t target);
         void branch(mips::InstructionI instr);
+        uint32_t calc_mem_target(mips::InstructionI instr);
 
         void execute_add(mips::InstructionR instr);
         void execute_addu(mips::InstructionR instr);
@@ -67,7 +68,14 @@ namespace emulation
         void execute_andi(mips::InstructionI instr);
         void execute_ori(mips::InstructionI instr);
         void execute_xori(mips::InstructionI instr);
-
+        void execute_lw(mips::InstructionI instr);
+        void execute_lb(mips::InstructionI instr);
+        void execute_lbu(mips::InstructionI instr);
+        void execute_lh(mips::InstructionI instr);
+        void execute_lhu(mips::InstructionI instr);
+        void execute_sw(mips::InstructionI instr);
+        void execute_sb(mips::InstructionI instr);
+        void execute_sh(mips::InstructionI instr);
         void execute_beq(mips::InstructionI instr);
         void execute_bgtz(mips::InstructionI instr);
         void execute_blez(mips::InstructionI instr);
