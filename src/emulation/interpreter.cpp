@@ -151,7 +151,7 @@ namespace emulation
 
     void Interpreter::link(const Register reg)
     {
-        _regs[reg] = _pc + 4;
+        _regs.write(reg, _pc + 4);
     }
 
     void Interpreter::jump(const uint32_t target)
@@ -172,42 +172,42 @@ namespace emulation
 
     void Interpreter::execute_add(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rs] + _regs[instr.rt];
+        _regs.write(instr.rd, _regs[instr.rs] + _regs[instr.rt]);
     }
 
     void Interpreter::execute_addu(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rs] + _regs[instr.rt];
+        _regs.write(instr.rd, _regs[instr.rs] + _regs[instr.rt]);
     }
 
     void Interpreter::execute_sub(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rs] - _regs[instr.rt];
+        _regs.write(instr.rd, _regs[instr.rs] - _regs[instr.rt]);
     }
 
     void Interpreter::execute_subu(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rs] - _regs[instr.rt];
+        _regs.write(instr.rd, _regs[instr.rs] - _regs[instr.rt]);
     }
 
     void Interpreter::execute_and(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rs] & _regs[instr.rt];
+        _regs.write(instr.rd, _regs[instr.rs] & _regs[instr.rt]);
     }
 
     void Interpreter::execute_or(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rs] | _regs[instr.rt];
+        _regs.write(instr.rd, _regs[instr.rs] | _regs[instr.rt]);
     }
 
     void Interpreter::execute_nor(const InstructionR instr)
     {
-        _regs[instr.rd] = ~(_regs[instr.rs] | _regs[instr.rt]);
+        _regs.write(instr.rd, ~(_regs[instr.rs] | _regs[instr.rt]));
     }
 
     void Interpreter::execute_xor(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rs] ^ _regs[instr.rt];
+        _regs.write(instr.rd, _regs[instr.rs] ^ _regs[instr.rt]);
     }
 
     void Interpreter::execute_jr(const InstructionR instr)
@@ -253,12 +253,12 @@ namespace emulation
 
     void Interpreter::execute_mfhi(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs.hi();
+        _regs.write(instr.rd, _regs.hi());
     }
 
     void Interpreter::execute_mflo(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs.lo();
+        _regs.write(instr.rd, _regs.lo());
     }
 
     void Interpreter::execute_mthi(const InstructionR instr)
@@ -273,130 +273,138 @@ namespace emulation
 
     void Interpreter::execute_slt(const InstructionR instr)
     {
-        _regs[instr.rd] =
+        const uint32_t val =
             static_cast<int32_t>(_regs[instr.rs]) < static_cast<int32_t>(_regs[instr.rt])
             ? 1
             : 0;
+
+        _regs.write(instr.rd, val);
     }
 
     void Interpreter::execute_sltu(const InstructionR instr)
     {
-        _regs[instr.rd] =
+        const uint32_t val =
             static_cast<uint32_t>(_regs[instr.rs]) < static_cast<uint32_t>(_regs[instr.rt])
             ? 1
             : 0;
+
+        _regs.write(instr.rd, val);
     }
 
     void Interpreter::execute_sll(const InstructionR instr)
     {
-        _regs[instr.rd] = _regs[instr.rt] << instr.sa;
+        _regs.write(instr.rd, _regs[instr.rt] << instr.sa);
     }
 
     void Interpreter::execute_sra(const InstructionR instr)
     {
-        _regs[instr.rd] = static_cast<int32_t>(_regs[instr.rt]) >> instr.sa;
+        _regs.write(instr.rd, static_cast<int32_t>(_regs[instr.rt]) >> instr.sa);
     }
 
     void Interpreter::execute_srl(const InstructionR instr)
     {
-        _regs[instr.rd] = static_cast<uint32_t>(_regs[instr.rt]) >> instr.sa;
+        _regs.write(instr.rd, static_cast<uint32_t>(_regs[instr.rt]) >> instr.sa);
     }
 
     void Interpreter::execute_sllv(const InstructionR instr)
     {
         const uint8_t sa = _regs[instr.rs] & 0b11111;
-        _regs[instr.rd] = _regs[instr.rt] << sa;
+        _regs.write(instr.rd, _regs[instr.rt] << sa);
     }
 
     void Interpreter::execute_srav(const InstructionR instr)
     {
         const uint8_t sa = _regs[instr.rs] & 0b11111;
-        _regs[instr.rd] = static_cast<int32_t>(_regs[instr.rt]) >> sa;
+        _regs.write(instr.rd, static_cast<int32_t>(_regs[instr.rt]) >> sa);
     }
 
     void Interpreter::execute_srlv(const InstructionR instr)
     {
         const uint8_t sa = _regs[instr.rs] & 0b11111;
-        _regs[instr.rd] = static_cast<uint32_t>(_regs[instr.rt]) >> sa;
+        _regs.write(instr.rd, static_cast<uint32_t>(_regs[instr.rt]) >> sa);
     }
 
     void Interpreter::execute_addi(const InstructionI instr)
     {
-        _regs[instr.rt] = _regs[instr.rs] + instr.constant;
+        _regs.write(instr.rt, _regs[instr.rs] + instr.constant);
     }
 
     void Interpreter::execute_addiu(const InstructionI instr)
     {
-        _regs[instr.rt] = _regs[instr.rs] + instr.constant;
+        _regs.write(instr.rt, _regs[instr.rs] + instr.constant);
     }
 
     void Interpreter::execute_andi(const InstructionI instr)
     {
-        _regs[instr.rt] = _regs[instr.rs] & instr.constant;
+        _regs.write(instr.rt, _regs[instr.rs] & instr.constant);
     }
 
     void Interpreter::execute_ori(const InstructionI instr)
     {
-        _regs[instr.rt] = _regs[instr.rs] | instr.constant;
+        _regs.write(instr.rt, _regs[instr.rs] | instr.constant);
     }
 
     void Interpreter::execute_xori(const InstructionI instr)
     {
-        _regs[instr.rt] = _regs[instr.rs] ^ instr.constant;
+        _regs.write(instr.rt, _regs[instr.rs] ^ instr.constant);
     }
 
     void Interpreter::execute_slti(const InstructionI instr)
     {
-        _regs[instr.rt] =
+        const uint32_t val =
             static_cast<int32_t>(_regs[instr.rs]) < static_cast<int32_t>(instr.constant)
             ? 1
             : 0;
+
+        _regs.write(instr.rt, val);
     }
 
     void Interpreter::execute_sltiu(const InstructionI instr)
     {
-        _regs[instr.rt] =
+        const uint32_t val =
             static_cast<uint32_t>(_regs[instr.rs]) < static_cast<uint32_t>(instr.constant)
             ? 1
             : 0;
+
+        _regs.write(instr.rt, val);
     }
 
     void Interpreter::execute_lui(const InstructionI instr)
     {
-        _regs[instr.rt] = instr.constant << 16;
+        _regs.write(instr.rt, instr.constant << 16);
     }
 
-    void Interpreter::execute_lw (const InstructionI instr)
+    void Interpreter::execute_lw(const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<uint32_t>(calc_mem_target(instr));
+        _regs.write(instr.rt, _mem.read<uint32_t>(calc_mem_target(instr)));
     }
 
-    void Interpreter::execute_lb (const InstructionI instr)
+    void Interpreter::execute_lb(const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<int8_t>(calc_mem_target(instr));
+        _regs.write(instr.rt, _mem.read<int8_t>(calc_mem_target(instr)));
     }
 
     void Interpreter::execute_lbu(const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<uint8_t>(calc_mem_target(instr));
+        _regs.write(instr.rt, _mem.read<uint8_t>(calc_mem_target(instr)));
     }
 
-    void Interpreter::execute_lh (const InstructionI instr)
+    void Interpreter::execute_lh(const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<int16_t>(calc_mem_target(instr));
+        _regs.write(instr.rt, _mem.read<int16_t>(calc_mem_target(instr)));
     }
 
     void Interpreter::execute_lhu(const InstructionI instr)
     {
-        _regs[instr.rt] = _mem.read<uint16_t>(calc_mem_target(instr));
+        _regs.write(instr.rt, _mem.read<uint16_t>(calc_mem_target(instr)));
     }
 
-    void Interpreter::execute_sw (const InstructionI instr)
+    void Interpreter::execute_sw(const InstructionI instr)
     {
         _mem.write<uint32_t>(calc_mem_target(instr), _regs[instr.rt]);
     }
 
-    void Interpreter::execute_sb (const InstructionI instr)
+    void Interpreter::execute_sb(const InstructionI instr)
     {
         _mem.write<uint8_t>(calc_mem_target(instr), _regs[instr.rt]);
     }

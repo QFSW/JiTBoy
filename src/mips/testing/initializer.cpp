@@ -11,7 +11,7 @@ namespace mips::testing
 
     void Initializer::invoke(RegisterFile& regs) const
     {
-        regs[_left] = _right;
+        regs.write(_left, _right);
     }
 
     std::ostream& operator<<(std::ostream& os, const Initializer& initializer)

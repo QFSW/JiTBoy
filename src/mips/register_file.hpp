@@ -8,19 +8,18 @@ namespace mips
     {
     public:
         [[nodiscard]] size_t size() const noexcept { return reg_count; }
-        [[nodiscard]] uint32_t* data() noexcept { return _regs; }
         [[nodiscard]] const uint32_t* data() const noexcept { return _regs; }
-        [[nodiscard]] uint32_t& hi() noexcept { return (*this)[hi_reg]; }
-        [[nodiscard]] uint32_t& lo() noexcept { return (*this)[lo_reg]; }
+        [[nodiscard]] uint32_t& hi() noexcept { return _regs[static_cast<size_t>(hi_reg)]; }
+        [[nodiscard]] uint32_t& lo() noexcept { return _regs[static_cast<size_t>(lo_reg)]; }
         [[nodiscard]] const uint32_t& hi() const noexcept { return (*this)[hi_reg]; }
         [[nodiscard]] const uint32_t& lo() const noexcept { return (*this)[lo_reg]; }
 
-        std::string generate_dump(bool omit_zeroes = true) const;
+        void write(Register reg, uint32_t value);
 
-        uint32_t& operator[](size_t index);
-        uint32_t& operator[](Register reg);
         const uint32_t& operator[](Register reg) const;
         const uint32_t& operator[](size_t index) const;
+
+        std::string generate_dump(bool omit_zeroes = true) const;
         
     private:
         static constexpr size_t reg_count = 32;

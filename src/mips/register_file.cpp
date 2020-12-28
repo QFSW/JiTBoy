@@ -25,14 +25,10 @@ namespace mips
         return ss.str();
     }
 
-    uint32_t& RegisterFile::operator[](const size_t index)
+    void RegisterFile::write(const Register reg, const uint32_t value)
     {
-        return _regs[index];
-    }
-
-    uint32_t& RegisterFile::operator[](Register reg)
-    {
-        return _regs[static_cast<size_t>(reg)];
+        if (reg != Register::$zero)
+            _regs[static_cast<size_t>(reg)] = value;
     }
 
     const uint32_t& RegisterFile::operator[](Register reg) const
