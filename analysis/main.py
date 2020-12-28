@@ -16,26 +16,29 @@ def draw_histograms(data):
     base_hist = "%s/histogram" % output_base
     base_box = "%s/boxplot" % output_base
     plots = [
-        'time',
-        'blocks',
-        'blocks executed',
-        'host instructions',
-        'source instructions',
-        'host instructions executed',
-        'source instructions emulated',
-        'mips',
-        'hotness',
-        'host block size',
-        'source block size',
-        'compilation inefficiency',
-        'execution inefficiency'
+        ('time', True),
+        ('blocks', False),
+        ('blocks executed', False),
+        ('host instructions', False),
+        ('source instructions', False),
+        ('host instructions executed', False),
+        ('source instructions emulated', False),
+        ('mips', True),
+        ('hotness', False),
+        ('host block size', False),
+        ('source block size', False),
+        ('compilation inefficiency', False),
+        ('execution inefficiency', False)
     ]
 
     for p in plots:
-        plot.histogram(data, p, '%s/%s.png' % (base_hist, p))
+        name = p[0]
+        processed = data
+        if not p[1]:
+            processed = {'JIT': data['JIT']}
 
-    for p in plots:
-        plot.boxplot(data, p, '%s/%s.png' % (base_box, p))
+        plot.histogram(processed, name, '%s/%s.png' % (base_hist, name))
+        plot.boxplot(processed, name, '%s/%s.png' % (base_box, name))
 
 def draw_testbatches(data):
     plots = [

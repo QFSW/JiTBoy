@@ -121,7 +121,7 @@ def histogram(datasets, x, path, bins=30, yscale='linear'):
     plt.legend(loc='upper left')
     savefig(path)
 
-def boxplot(datasets, x, path):
+def boxplot(datasets, x, path, yscale='linear'):
     title = display.header_case(x)
     print("Drawing box plot %s" % title)
 
@@ -136,6 +136,7 @@ def boxplot(datasets, x, path):
         names.append(name)
 
     plt.boxplot(datas, showfliers=False, labels=names)
+    plt.yscale(yscale)
     plt.ylabel(display.axis_case(x))
     plt.title(title)
     savefig(path)
