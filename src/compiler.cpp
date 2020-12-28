@@ -27,16 +27,15 @@ CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig c
     const auto reg_file = reinterpret_cast<uint32_t>(_regs.data());
     _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(addr_reg, reg_file);
 
+    uint32_t pc = block.addr;
     for (uint32_t i = 0; i < block.code.size(); i++)
     {
-        compile(block.code[i], block.addr + i * 4);
+        compile(block.code[i], pc);
+        pc += 4;
     }
 
     if (!mips::utils::is_branch_instr(block.code.back()))
-    {
-        const uint32_t target = block.addr + block.code.size() * 4;
-        compile_jump(target);
-    }
+        compile_jump(pc);
 
     CompiledBlock output;
     output.size = _assembler.size();

@@ -28,7 +28,7 @@ namespace memory
         using FixedAllocator = ExecutableAllocator<StackAlloc ? PartitionSize : 0>;
 
         FixedAllocator _fixed_allocator;
-        std::unordered_set< std::unique_ptr<Allocator>> _dynamic_allocators;
+        std::unordered_set<std::unique_ptr<Allocator>> _dynamic_allocators;
         std::vector<Allocator*> _allocators;
         std::unordered_map<void*, Allocator*> _allocations;
     };
@@ -43,13 +43,13 @@ namespace memory
     template <size_t PartitionSize, bool StackAlloc>
     uint8_t* DynamicExecutableAllocator<PartitionSize, StackAlloc>::alloc(const size_t size)
     {
-        if (size > PartitionSize)
+        if (size > PartitionSize) [[unlikely]]
             throw std::runtime_error(strtools::catf("Cannot make a single allocation of size %d, max is %d", size, PartitionSize));
 
         Allocator* viable = nullptr;
         for (auto& allocator : _allocators)
         {
-            if (allocator->get_free() >= size)
+            if (allocator->get_free() >= size) [[likely]]
             {
                 viable = allocator;
                 break;
