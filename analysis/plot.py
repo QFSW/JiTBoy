@@ -91,7 +91,7 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
             else:
                 ydata.append(0)
 
-        offset = i - cols / 2
+        offset = i - (cols - 1) / 2
         plt.bar(ypos + offset * width, ydata, width=width, align='center', label=name)
 
     plt.ylabel(display.axis_case(y))
