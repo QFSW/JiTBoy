@@ -34,6 +34,8 @@ namespace x86
         SHL  = 0xD2,
         SHR  = 0xD2,
 
+        TEST = 0x84,
+
         NOP  = 0x90,
 
         ADD_I = 0x80,
