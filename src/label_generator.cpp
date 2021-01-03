@@ -1,12 +1,9 @@
 #include "label_generator.hpp"
 
-#include <sstream>
+#include <utils/strtools.hpp>
 
 std::string LabelGenerator::generate(const std::string& name)
 {
     const auto name_count = _registered_names[name]++;
-
-    std::stringstream ss;
-    ss << "<" << std::hex << name_count << std::dec << ">_" << name;
-    return ss.str();
+    return strtools::catf("<%x>_%s", name_count, name.c_str());
 }

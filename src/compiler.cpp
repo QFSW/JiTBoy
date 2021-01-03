@@ -1,6 +1,5 @@
 #include "compiler.hpp"
 
-#include <config.hpp>
 #include <mips/utils.hpp>
 #include <utils/functional.hpp>
 
@@ -363,7 +362,7 @@ void Compiler::compile_reg_read(const mips::Register src, const uint32_t imm)
 template <x86::Opcode Op>
 void Compiler::compile_reg_write(const mips::Register dst, const x86::Register src)
 {
-    if (dst == mips::Register::$zero)
+    if (dst == mips::Register::$zero) [[unlikely]]
         throw std::logic_error("Cannot write to $zero");
 
     _assembler.instr<Op, x86::InstrMode::RM>(addr_reg, src, calc_reg_offset(dst));
@@ -372,7 +371,7 @@ void Compiler::compile_reg_write(const mips::Register dst, const x86::Register s
 template <x86::Opcode Op, x86::OpcodeExt Ext>
 void Compiler::compile_reg_write(const mips::Register dst, const uint32_t imm)
 {
-    if (dst == mips::Register::$zero)
+    if (dst == mips::Register::$zero) [[unlikely]]
         throw std::logic_error("Cannot write to $zero");
 
     _assembler.instr_imm<Op, Ext, x86::InstrMode::IM>(addr_reg, imm, calc_reg_offset(dst));
@@ -389,24 +388,32 @@ void Compiler::compile_nor(const mips::InstructionR instr)
 
 void Compiler::compile_mfhi(const mips::InstructionR instr)
 {
+    if (instr.rd == mips::Register::$zero) return;
+
     compile_reg_load(acc1_reg, mips::RegisterFile::hi_reg);
     compile_reg_write(instr.rd, acc1_reg);
 }
 
 void Compiler::compile_mflo(const mips::InstructionR instr)
 {
+    if (instr.rd == mips::Register::$zero) return;
+
     compile_reg_load(acc1_reg, mips::RegisterFile::lo_reg);
     compile_reg_write(instr.rd, acc1_reg);
 }
 
 void Compiler::compile_mthi(const mips::InstructionR instr)
 {
+    if (instr.rd == mips::Register::$zero) return;
+
     compile_reg_load(acc1_reg, instr.rd);
     compile_reg_write(mips::RegisterFile::hi_reg, acc1_reg);
 }
 
 void Compiler::compile_mtlo(const mips::InstructionR instr)
 {
+    if (instr.rd == mips::Register::$zero) return;
+
     compile_reg_load(acc1_reg, instr.rd);
     compile_reg_write(mips::RegisterFile::lo_reg, acc1_reg);
 }
@@ -510,3 +517,19 @@ void Compiler::compile_mem_read(const mips::InstructionI instr)
     _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
     compile_reg_write(instr.rt, Register::EAX);
 }
+
+template <typename T, void(T::* F)()>
+void Compiler::compile_call(T& obj)
+{
+    using namespace x86;
+    const auto addr = reinterpret_cast<uint32_t>(&obj);
+    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, addr);
+
+    const auto label = _label_generator.generate("member_func");
+    _linker.label_global(label, &utils::instance_proxy<>::call<T, void, F>);
+    _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
+    {
+        _assembler.call(offset);
+    });
+}
+

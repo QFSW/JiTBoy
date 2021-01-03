@@ -113,18 +113,3 @@ private:
     static constexpr bool debug = config::debug;
     std::stringstream _debug_stream;
 };
-
-template <typename T, void(T::* F)()>
-void Compiler::compile_call(T& obj)
-{
-    using namespace x86;
-    const auto addr = reinterpret_cast<uint32_t>(&obj);
-    _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, addr);
-
-    const auto label = _label_generator.generate("member_func");
-    _linker.label_global(label, &utils::instance_proxy<>::call<T, void, F>);
-    _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
-    {
-        _assembler.call(offset);
-    });
-}

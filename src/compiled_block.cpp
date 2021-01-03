@@ -5,7 +5,7 @@ CompiledBlock::CompiledBlock()
     , size(0)
     , host_instr_count(0)
     , source_instr_count(0)
-    , execution_count()
+    , execution_count(0)
 { }
 
 uint32_t CompiledBlock::operator()() const

@@ -26,7 +26,7 @@ namespace emulation
 
     SourceBlock Runtime::partition_block(const uint32_t addr) const
     {
-        if (!valid_pc(addr))
+        if (!valid_pc(addr)) [[unlikely]]
             throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
 
         const size_t start_index = (addr - instruction_mem_addr) / 4;
