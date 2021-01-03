@@ -26,7 +26,7 @@ namespace memory
 
     private:
         alignas(win_page_size)
-        uint8_t _buffer[BufferSize] = {};
+        uint8_t _buffer[BufferSize];
 
         alignas(win_page_size)
         size_t _page_size;
