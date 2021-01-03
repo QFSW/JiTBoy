@@ -138,8 +138,8 @@ namespace memory
         static thread_local std::unordered_map<const uint8_t*, size_t> cache;
         const uint8_t* buffer_ptr = _buffer;
 
-        if (cache.find(buffer_ptr) != cache.end())
-            return cache[buffer_ptr];
+        if (auto it = cache.find(buffer_ptr); it != cache.end())
+            return it->second;
 
         MEMORY_BASIC_INFORMATION page_info;
         if (!VirtualQuery(_buffer, &page_info, sizeof(page_info)))

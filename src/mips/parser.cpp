@@ -63,9 +63,9 @@ namespace mips
 
     bool Parser::try_resolve_label(const std::string& label, uint32_t& addr) const
     {
-        if (_labels.find(label) != _labels.end())
+        if (auto it = _labels.find(label); it != _labels.end())
         {
-            addr = _labels.at(label);
+            addr = it->second;
             return true;
         }
 
@@ -485,12 +485,10 @@ namespace mips
             { "$ra", Register::$ra },
         };
 
-        if (reg_mapping.find(reg) == reg_mapping.end())
-        {
-            throw parse_error("Could not parse register " + reg);
-        }
+        if (auto it = reg_mapping.find(reg); it != reg_mapping.end())
+            return it->second;
 
-        return reg_mapping.at(reg);
+        throw parse_error("Could not parse register " + reg);
     }
 
     uint32_t Parser::parse_constant_32(const std::string& value)

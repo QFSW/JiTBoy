@@ -16,20 +16,16 @@ namespace x86
 
     int32_t Linker::resolve_begin(const std::string& name, const uint32_t current) const
     {
-        if (_local_map.find(name) == _local_map.end())
-        {
-            return 0;
-        }
+        if (auto it = _local_map.find(name); it != _local_map.end())
+            return it->second - current;
 
-        return _local_map.at(name) - current;
+        return 0;
     }
 
     void Linker::resolve_end(const std::string& name, const uint32_t current)
     {
         if (_local_map.find(name) == _local_map.end())
-        {
             _unresolved_locals[current] = name;
-        }
     }
 
     void Linker::resolve(const std::string& name,
@@ -58,13 +54,10 @@ namespace x86
             auto* end_ptr = block_addr + offset_end;
             auto* offset_ptr = reinterpret_cast<int32_t*>(end_ptr - sizeof(int32_t));
 
-            auto global_label = _global_map.find(label);
-            if (global_label == _global_map.end())
-            {
+            if (auto it = _global_map.find(label); it != _global_map.end())
+                *offset_ptr = it->second - end_ptr;
+            else
                 throw std::runtime_error("Unable to resolve symbol " + label);
-            }
-
-            *offset_ptr = global_label->second - end_ptr;
         }
 
         _unresolved_locals.clear();

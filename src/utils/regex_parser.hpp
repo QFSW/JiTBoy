@@ -64,9 +64,9 @@ namespace mips
     {
         _evaluator = [&](const std::string& raw, std::tuple<Ts...>& result)
         {
-            if (_parse_cache.find(raw) != _parse_cache.end())
+            if (auto it = _parse_cache.find(raw); it != _parse_cache.end())
             {
-                result = _parse_cache[raw];
+                result = it->second;
                 return true;
             }
 
