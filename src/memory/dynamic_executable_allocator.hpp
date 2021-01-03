@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <unordered_map>
 #include <unordered_set>
 #include <memory>
 
@@ -30,7 +29,6 @@ namespace memory
         FixedAllocator _fixed_allocator;
         std::unordered_set<std::unique_ptr<Allocator>> _dynamic_allocators;
         std::vector<Allocator*> _allocators;
-        std::unordered_map<void*, Allocator*> _allocations;
     };
 
     template <size_t PartitionSize, bool StackAlloc>
@@ -64,16 +62,16 @@ namespace memory
             _allocators.push_back(viable);
         }
 
-        uint8_t* allocation = viable->alloc(size);
-        _allocations[static_cast<void*>(allocation)] = viable;
-
-        return allocation;
+        return viable->alloc(size);
     }
 
     template <size_t PartitionSize, bool StackAlloc>
     void DynamicExecutableAllocator<PartitionSize, StackAlloc>::commit(void* buffer, const size_t size)
     {
-        _allocations[buffer]->commit(buffer, size);
+        if (_allocators.size() == 0) [[unlikely]]
+            throw std::runtime_error("Cannot commit allocation as no allocations were made");
+
+        _allocators[0]->commit(buffer, size);
     }
 
     template <size_t PartitionSize, bool StackAlloc>
