@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <unordered_set>
 #include <memory>
 
 #include <utils/strtools.hpp>
@@ -27,7 +26,7 @@ namespace memory
         using FixedAllocator = ExecutableAllocator<StackAlloc ? PartitionSize : 0>;
 
         FixedAllocator _fixed_allocator;
-        std::unordered_set<std::unique_ptr<Allocator>> _dynamic_allocators;
+        std::vector<std::unique_ptr<Allocator>> _dynamic_allocators;
         std::vector<Allocator*> _allocators;
     };
 
@@ -58,7 +57,7 @@ namespace memory
         {
             auto allocator = std::make_unique<Allocator>();
             viable = allocator.get();
-            _dynamic_allocators.emplace(std::move(allocator));
+            _dynamic_allocators.push_back(std::move(allocator));
             _allocators.push_back(viable);
         }
 

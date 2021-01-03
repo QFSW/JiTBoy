@@ -37,7 +37,7 @@ namespace x86
         resolve_end(name, get_current());
     }
 
-    const std::unordered_map<std::string, uint8_t*>& Linker::global_map() const
+    const common::unordered_map<std::string, uint8_t*>& Linker::global_map() const
     {
         return _global_map;
     }

@@ -1,6 +1,8 @@
 #pragma once
+
 #include <string>
-#include <unordered_map>
+
+#include <common/common.hpp>
 
 class LabelGenerator
 {
@@ -8,6 +10,6 @@ public:
     [[nodiscard]] std::string generate(const std::string& name);
 
 private:
-    std::unordered_map<std::string, size_t> _registered_names;
+    common::unordered_map<std::string, size_t> _registered_names;
 };
 

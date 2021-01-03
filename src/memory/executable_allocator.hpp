@@ -135,7 +135,7 @@ namespace memory
     template <size_t BufferSize>
     size_t ExecutableAllocator<BufferSize>::get_dead_space() const
     {
-        static thread_local std::unordered_map<const uint8_t*, size_t> cache;
+        static thread_local common::unordered_map<const uint8_t*, size_t> cache;
         const uint8_t* buffer_ptr = _buffer;
 
         if (auto it = cache.find(buffer_ptr); it != cache.end())

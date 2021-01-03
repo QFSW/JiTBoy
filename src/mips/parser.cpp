@@ -410,7 +410,7 @@ namespace mips
 
     Register Parser::parse_register(const std::string& reg)
     {
-        static const std::unordered_map<std::string, Register> reg_mapping =
+        static const common::unordered_map<std::string, Register> reg_mapping =
         {
             { "$0", Register::$0 },
             { "$1", Register::$1 },

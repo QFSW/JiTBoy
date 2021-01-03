@@ -214,8 +214,13 @@
     <ClCompile Include="src\utils\strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\common\common.hpp" />
     <ClInclude Include="src\emulation\emulator.hpp" />
     <ClInclude Include="src\emulation\interpreter.hpp" />
+    <ClInclude Include="src\libs\tsl\robin_growth_policy.h" />
+    <ClInclude Include="src\libs\tsl\robin_hash.h" />
+    <ClInclude Include="src\libs\tsl\robin_map.h" />
+    <ClInclude Include="src\libs\tsl\robin_set.h" />
     <ClInclude Include="src\memory\dynamic_executable_allocator.hpp" />
     <ClInclude Include="src\memory\fixed_pool.hpp" />
     <ClInclude Include="src\mips\memory_map.hpp" />

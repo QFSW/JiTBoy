@@ -3,8 +3,8 @@
 #include <string>
 #include <regex>
 #include <functional>
-#include <unordered_map>
-#include <unordered_set>
+
+#include <common/common.hpp>
 #include <error/parse_error.hpp>
 
 namespace mips
@@ -29,8 +29,8 @@ namespace mips
         std::smatch _matches;
         std::string _err_string;
         std::function<bool(const std::string&, std::tuple<Ts...>&)> _evaluator;
-        std::unordered_map<std::string, std::tuple<Ts...>> _parse_cache;
-        std::unordered_set<std::string> _parse_fail_cache;
+        common::unordered_map<std::string, std::tuple<Ts...>> _parse_cache;
+        common::unordered_set<std::string> _parse_fail_cache;
 
         static constexpr auto default_err = "Could not parse %s";
 

@@ -2,13 +2,13 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <regex>
 
 #include <mips/instruction.hpp>
 #include <utils/strtools.hpp>
 #include <utils/regex_parser.hpp>
 #include <utils/variadic.hpp>
+#include <common/common.hpp>
 
 namespace mips
 {
@@ -24,8 +24,8 @@ namespace mips
 
     private:
         uint32_t _pc = 0;
-        std::unordered_map<std::string, uint32_t> _labels;
-        std::unordered_map<uint32_t, std::string> _unresolved_locals;
+        common::unordered_map<std::string, uint32_t> _labels;
+        common::unordered_map<uint32_t, std::string> _unresolved_locals;
 
         void reset();
         void extract_labels(std::string& raw);

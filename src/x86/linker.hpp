@@ -1,7 +1,8 @@
 #pragma once
 
-#include <unordered_map>
 #include <functional>
+
+#include <common/common.hpp>
 
 namespace x86
 {
@@ -20,12 +21,12 @@ namespace x86
 
         void terminate_local(uint8_t* block_addr);
 
-        [[nodiscard]] const std::unordered_map<std::string, uint8_t*>& global_map() const;
+        [[nodiscard]] const common::unordered_map<std::string, uint8_t*>& global_map() const;
 
     private:
-        std::unordered_map<int32_t, std::string> _unresolved_locals;
-        std::unordered_map<std::string, int32_t> _local_map;
-        std::unordered_map<std::string, uint8_t*> _global_map;
+        common::unordered_map<int32_t, std::string> _unresolved_locals;
+        common::unordered_map<std::string, int32_t> _local_map;
+        common::unordered_map<std::string, uint8_t*> _global_map;
     };
 }
 

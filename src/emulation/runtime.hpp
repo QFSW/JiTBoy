@@ -19,7 +19,7 @@ namespace emulation
 
         [[nodiscard]] mips::RegisterFile& get_regs() noexcept { return _regs; }
         [[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _regs; }
-        [[nodiscard]] const std::unordered_map<uint32_t, CompiledBlock>& get_blocks() const noexcept { return _blocks; }
+        [[nodiscard]] const common::unordered_map<uint32_t, CompiledBlock>& get_blocks() const noexcept { return _blocks; }
         [[nodiscard]] std::string get_debug() const;
         [[nodiscard]] std::string get_debug_with_dumps() const;
 
@@ -28,7 +28,7 @@ namespace emulation
         mips::MemoryMap _mem;
         Compiler _compiler;
         std::vector<mips::Instruction> _source;
-        std::unordered_map<uint32_t, CompiledBlock> _blocks;
+        common::unordered_map<uint32_t, CompiledBlock> _blocks;
         uint32_t _pc;
 
         static constexpr uint32_t instruction_mem_addr = 0x0;
