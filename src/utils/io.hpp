@@ -19,6 +19,8 @@ namespace io
     std::string read_text_file(const std::string& filepath);
     std::vector<std::filesystem::path> get_files_recursive(const std::string& dir_path);
 
+    void create_directories_for_file(const std::string& filepath);
+
     template <typename T = uint8_t, Endianness Endian = Endianness::Little>
     std::vector<T> read_binary_file(const std::string& filepath)
     {

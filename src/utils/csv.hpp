@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vector>
 
+#include <utils/io.hpp>
+
 namespace csv
 {
     template <typename T>
@@ -26,6 +28,8 @@ namespace csv
     void write_file(const std::string& filepath, const std::vector<T>& rows)
     {
         std::ofstream file;
+
+        io::create_directories_for_file(filepath);
 
         file.open(filepath);
         if (!file.is_open())

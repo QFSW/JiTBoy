@@ -5,6 +5,8 @@
 
 namespace io
 {
+    namespace fs = std::filesystem;
+
     std::string read_text_file(const std::string& filepath)
     {
         const std::ifstream file(filepath);
@@ -17,10 +19,10 @@ namespace io
         return buf.str();
     }
 
-    std::vector<std::filesystem::path> get_files_recursive(const std::string& dir_path)
+    std::vector<fs::path> get_files_recursive(const std::string& dir_path)
     {
-        std::vector<std::filesystem::path> files;
-        for (const auto& entry : std::filesystem::recursive_directory_iterator(dir_path))
+        std::vector<fs::path> files;
+        for (const auto& entry : fs::recursive_directory_iterator(dir_path))
         {
             if (entry.is_regular_file())
             {
@@ -29,5 +31,14 @@ namespace io
         }
 
         return files;
+    }
+
+    void create_directories_for_file(const std::string& filepath)
+    {
+        fs::path path = filepath;
+        fs::path dir = path.parent_path();
+
+        if (!fs::exists(dir) || !fs::is_directory(dir))
+            fs::create_directories(dir);
     }
 }
