@@ -44,7 +44,8 @@ def draw_testbatches(data):
     plots = [
         ('unroll'   , 'unroll\([0-9]+\/[0-9]+\)'),
         ('fibonacci', 'fibonacci\([0-9]+\)'),
-        ('factorial', 'factorial\([0-9]+\)')
+        ('factorial', 'factorial\([0-9]+\)'),
+        ('primal'   , 'primal\([0-9]+\)')
     ]
 
     for (name, pattern) in plots:
