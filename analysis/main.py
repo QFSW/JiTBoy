@@ -54,7 +54,7 @@ def draw_testbatches(data):
         processed = data_proc.filter_rows(data, lambda x: r.match(x['name']))
 
         plot.bar_categoric(processed, 'name', 'time', '%s/time.png' % base, yscale='log')
-        plot.bar_categoric(processed, 'name', 'mips', '%s/mips.png' % base, yscale='log')
+        plot.bar_categoric(processed, 'name', 'mips', '%s/mips.png' % base, yscale='linear')
 
 def draw_jit_vs_interpreter(data):
     plots = [
