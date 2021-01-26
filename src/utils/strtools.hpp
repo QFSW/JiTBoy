@@ -13,7 +13,7 @@ namespace strtools
 		static_assert(traits::for_none<std::is_class, Args...>(), "strtools::catf does not work with classes");
 
 		static thread_local char buf[BufSize];
-		sprintf_s(buf, format, args...);
+		snprintf(buf, BufSize, format, args...);
 		return std::string(buf);
 	}
 
