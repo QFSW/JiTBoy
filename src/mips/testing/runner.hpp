@@ -129,7 +129,7 @@ namespace mips::testing
     {
         constexpr size_t batch_size = config::debug
             ? 1
-            : 100;
+            : 10;
 
         constexpr double precision = config::debug
             ? 0.1
