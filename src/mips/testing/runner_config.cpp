@@ -32,8 +32,8 @@ namespace mips::testing
     RunnerConfig::Timing RunnerConfig::Timing::final()
     {
         return Timing{
-            .batch_size = 10,
-            .threshold = 10,
+            .batch_size = 100,
+            .threshold = 100,
             .precision = 0.0001,
         };
     }
