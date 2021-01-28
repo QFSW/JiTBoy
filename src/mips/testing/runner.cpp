@@ -12,4 +12,22 @@ namespace mips::testing
 
         std::cout << error;
     }
+
+    template<> void Runner::get_statistics<emulation::Runtime>(const emulation::Runtime& emulator, TestResult& result) const
+    {
+        for (const auto& [_, block] : emulator.get_blocks())
+        {
+            result.block_count++;
+            result.blocks_executed += block.execution_count;
+            result.host_instr_count += block.host_instr_count;
+            result.source_instr_count += block.source_instr_count;
+            result.host_instrs_executed += block.host_instr_count * block.execution_count;
+            result.source_instrs_emulated += block.source_instr_count * block.execution_count;
+        }
+    }
+
+    template<> void Runner::get_statistics<emulation::Interpreter>(const emulation::Interpreter& emulator, TestResult& result) const
+    {
+        result.source_instrs_emulated = emulator.get_instruction_count();
+    }
 }

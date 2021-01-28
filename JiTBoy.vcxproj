@@ -192,6 +192,7 @@
     <ClCompile Include="src\mips\encoding.cpp" />
     <ClCompile Include="src\mips\instruction.cpp" />
     <ClCompile Include="src\mips\testing\assertion.cpp" />
+    <ClCompile Include="src\mips\testing\runner_config.cpp" />
     <ClCompile Include="src\mips\testing\test.cpp" />
     <ClCompile Include="src\mips\testing\initializer.cpp" />
     <ClCompile Include="src\mips\testing\loader.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="src\memory\fixed_pool.hpp" />
     <ClInclude Include="src\mips\memory_map.hpp" />
     <ClInclude Include="src\error\parse_error.hpp" />
+    <ClInclude Include="src\mips\testing\runner_config.hpp" />
     <ClInclude Include="src\mips\testing\test_result.hpp" />
     <ClInclude Include="src\utils\csv.hpp" />
     <ClInclude Include="src\utils\regex_parser.hpp" />

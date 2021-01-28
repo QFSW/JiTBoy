@@ -3,13 +3,13 @@
 #include <type_traits>
 
 // Try to reduce
-#include <map>
 #include <iostream>
 #include <sstream>
 #include <emulation/runtime.hpp>
 #include <utils/benchmark.hpp>
 //
 
+#include <mips/testing/runner_config.hpp>
 #include <emulation/emulator.hpp>
 #include <emulation/interpreter.hpp>
 #include <mips/testing/test.hpp>
@@ -21,8 +21,10 @@ namespace mips::testing
     class Runner
     {
     public:
+        using Config = RunnerConfig;
+
         template <typename Emulator>
-        std::vector<TestResult> run(const std::vector<Test>& tests);
+        std::vector<TestResult> run(const std::vector<Test>& tests, const Config& config);
 
     private:
         // add debug_stream
@@ -33,7 +35,7 @@ namespace mips::testing
         void execute_test(Emulator& emulator, const Test& test) const;
 
         template <typename Emulator>
-        std::chrono::duration<double> measure_execution_time(const Test& test) const;
+        std::chrono::duration<double> measure_execution_time(const Test& test, const Config::Timing& config) const;
 
         template <typename Emulator>
         void get_statistics(const Emulator& emulator, TestResult& result) const;
@@ -42,7 +44,7 @@ namespace mips::testing
 
     // Try to move as much of this out to the .cpp as possible
     template <typename Emulator>
-    std::vector<TestResult> Runner::run(const std::vector<Test>& tests)
+    std::vector<TestResult> Runner::run(const std::vector<Test>& tests, const Config& config)
     {
         static_assert(std::is_base_of<emulation::Emulator, Emulator>::value, "Runner::run requires an emulator type");
         std::cout << "Running tests" << "\n";
@@ -89,7 +91,7 @@ namespace mips::testing
                 {
                     pass_count++;
                     result.status = TestResult::Status::Passed;
-                    result.time = measure_execution_time<Emulator>(test);
+                    result.time = measure_execution_time<Emulator>(test, config.timing);
                     get_statistics(emulator, result);
 
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
@@ -125,43 +127,18 @@ namespace mips::testing
     }
 
     template <typename Emulator>
-    std::chrono::duration<double> Runner::measure_execution_time(const Test& test) const
+    std::chrono::duration<double> Runner::measure_execution_time(const Test& test, const Config::Timing& config) const
     {
-        constexpr size_t batch_size = config::debug
-            ? 1
-            : 10;
-
-        constexpr double precision = config::debug
-            ? 0.1
-            : 0.01;
-
         return benchmark::measure_auto([&]
         {
             Emulator emulator;
             execute_test(emulator, test);
-        }, batch_size, precision, 10);
+        }, config.batch_size, config.precision, config.threshold);
     }
 
     template <typename Emulator>
     void Runner::get_statistics(const Emulator&, TestResult&) const { }
 
-    template<>
-    inline void Runner::get_statistics<emulation::Runtime>(const emulation::Runtime& emulator, TestResult& result) const
-    {
-        for (const auto& [_, block] : emulator.get_blocks())
-        {
-            result.block_count++;
-            result.blocks_executed += block.execution_count;
-            result.host_instr_count += block.host_instr_count;
-            result.source_instr_count += block.source_instr_count;
-            result.host_instrs_executed += block.host_instr_count * block.execution_count;
-            result.source_instrs_emulated += block.source_instr_count * block.execution_count;
-        }
-    }
-
-    template<>
-    inline void Runner::get_statistics<emulation::Interpreter>(const emulation::Interpreter& emulator, TestResult& result) const
-    {
-        result.source_instrs_emulated = emulator.get_instruction_count();
-    }
+    template<> void Runner::get_statistics<emulation::Runtime>(const emulation::Runtime& emulator, TestResult& result) const;
+    template<> void Runner::get_statistics<emulation::Interpreter>(const emulation::Interpreter& emulator, TestResult& result) const;
 }
