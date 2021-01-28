@@ -3,7 +3,7 @@ import shutil
 
 tpl_path = "tests/generators/fibonacci_tpl.s"
 path = "tests/mips/perf/recursion/fibonacci/"
-tests = 20
+tests = 25
 
 def fib(n):
     if (n <= 1):
