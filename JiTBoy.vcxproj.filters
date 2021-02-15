@@ -30,9 +30,6 @@
     <ClCompile Include="src/x86/assembler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\compiler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\mips\register_file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,9 +37,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\mips\instruction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\compiled_block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\source_block.cpp">
@@ -102,6 +96,12 @@
     <ClCompile Include="src\mips\testing\runner_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\emulation\compiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulation\compiled_block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/label_generator.hpp">
@@ -125,9 +125,6 @@
     <ClInclude Include="src\mips\instruction.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\compiler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\utils\functional.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -135,12 +132,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\config.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\compiled_block.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\compiler_config.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\source_block.hpp">
@@ -249,6 +240,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\emulation\emulator_state.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulation\compiler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulation\compiler_config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulation\compiled_block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

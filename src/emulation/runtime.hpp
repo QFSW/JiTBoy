@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include <config.hpp>
-#include <compiler.hpp>
+#include <emulation/compiler.hpp>
 #include <emulation/emulator.hpp>
 
 namespace emulation
