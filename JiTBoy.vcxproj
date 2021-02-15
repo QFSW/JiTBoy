@@ -217,6 +217,7 @@
   <ItemGroup>
     <ClInclude Include="src\common\common.hpp" />
     <ClInclude Include="src\emulation\emulator.hpp" />
+    <ClInclude Include="src\emulation\emulator_state.hpp" />
     <ClInclude Include="src\emulation\interpreter.hpp" />
     <ClInclude Include="src\libs\tsl\robin_growth_policy.h" />
     <ClInclude Include="src\libs\tsl\robin_hash.h" />
