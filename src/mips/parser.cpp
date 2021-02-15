@@ -121,7 +121,7 @@ namespace mips
 
     Instruction Parser::parse_instruction(const std::string& instr)
     {
-        static const auto parser = generate_parser<std::string>(R"((\w+).*)", "Could not determine opcode from %s");
+        static thread_local const auto parser = generate_parser<std::string>(R"((\w+).*)", "Could not determine opcode from %s");
         const auto [op] = parser.evaluate(instr);
 
         if (op == "nop")    return parse_nop(instr);
@@ -129,6 +129,7 @@ namespace mips
         if (op == "subi")   return parse_subi(instr);
         if (op == "b")      return parse_b(instr);
         if (op == "bal")    return parse_bal(instr);
+        if (op == "move")   return parse_move(instr);
 
         if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr);
         if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr);
@@ -199,7 +200,7 @@ namespace mips
 
     InstructionR Parser::parse_nop(const std::string& instr) const
     {
-        static const auto parser = generate_parser<std::string>(R"((\w+))");
+        static thread_local const auto parser = generate_parser<std::string>(R"((\w+))");
         auto _ = parser.evaluate(instr);
 
         return InstructionR
@@ -214,8 +215,8 @@ namespace mips
 
     InstructionR Parser::parse_jalr(const std::string& instr) const
     {
-        static const auto parser1 = generate_parser<Register, Register>(R"(\w+ ??, ??)");
-        static const auto parser2 = generate_parser<Register>(R"(\w+ ??)");
+        static thread_local const auto parser1 = generate_parser<Register, Register>(R"(\w+ ??, ??)");
+        static thread_local const auto parser2 = generate_parser<Register>(R"(\w+ ??)");
 
         Register dst;
         Register link;
@@ -238,7 +239,7 @@ namespace mips
 
     InstructionI Parser::parse_subi(const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, Register, int16_t>(R"(\w+ ??, ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, Register, int16_t>(R"(\w+ ??, ??, ??)");
         const auto [dst, src, constant] = parser.evaluate(instr);
 
         return InstructionI
@@ -252,7 +253,7 @@ namespace mips
 
     InstructionI Parser::parse_b(const std::string& instr)
     {
-        static const auto parser = generate_parser<std::string>(R"(\w+ ??)");
+        static thread_local const auto parser = generate_parser<std::string>(R"(\w+ ??)");
         const auto [target] = parser.evaluate(instr);
 
         return InstructionI
@@ -266,7 +267,7 @@ namespace mips
 
     InstructionI Parser::parse_bal(const std::string& instr)
     {
-        static const auto parser = generate_parser<std::string>(R"(\w+ ??)");
+        static thread_local const auto parser = generate_parser<std::string>(R"(\w+ ??)");
         const auto [target] = parser.evaluate(instr);
 
         return InstructionI
@@ -278,9 +279,41 @@ namespace mips
         };
     }
 
+    Instruction Parser::parse_move(const std::string& instr) const
+    {
+        static thread_local const auto parser_reg = generate_parser<Register, Register>(R"(\w+ ??, ??)");
+        static thread_local const auto parser_imm = generate_parser<Register, int16_t>(R"(\w+ ??, ??)");
+
+        Register dst;
+        Register src;
+        int16_t constant;
+
+        if (parser_imm.try_evaluate(instr, dst, constant))
+        {
+            return InstructionI
+            {
+                .op = OpcodeI::ADDIU,
+                .rt = dst,
+                .rs = Register::$zero,
+                .constant = constant
+            };
+        }
+
+        std::tie(dst, src) = parser_reg.evaluate(instr);
+
+        return InstructionR
+        {
+            .op = OpcodeR::ADDU,
+            .rd = dst,
+            .rs = src,
+            .rt = Register::$zero,
+            .sa = 0
+        };
+    }
+
     InstructionR Parser::parse_jr(OpcodeR opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register>(R"(\w+ ??)");
+        static thread_local const auto parser = generate_parser<Register>(R"(\w+ ??)");
         const auto [src] = parser.evaluate(instr);
 
         return InstructionR
@@ -295,7 +328,7 @@ namespace mips
 
     InstructionR Parser::parse_hi_lo(OpcodeR opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register>(R"(\w+ ??)");
+        static thread_local const auto parser = generate_parser<Register>(R"(\w+ ??)");
         const auto [src] = parser.evaluate(instr);
 
         return InstructionR
@@ -310,7 +343,7 @@ namespace mips
 
     InstructionR Parser::parse_sxxv(OpcodeR opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ??, ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ??, ??, ??)");
         const auto [dst, src1, src2] = parser.evaluate(instr);
 
         return InstructionR
@@ -325,7 +358,7 @@ namespace mips
 
     InstructionR Parser::parse_instruction_r(OpcodeR opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ??, ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, Register, Register>(R"(\w+ ??, ??, ??)");
         const auto [dst, src1, src2] = parser.evaluate(instr);
 
         return InstructionR
@@ -340,7 +373,7 @@ namespace mips
 
     InstructionR Parser::parse_instruction_r_sa(OpcodeR opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, Register, uint8_t>(R"(\w+ ??, ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, Register, uint8_t>(R"(\w+ ??, ??, ??)");
         const auto [dst, src, sa] = parser.evaluate(instr);
 
         if (sa > 0b11111)
@@ -358,7 +391,7 @@ namespace mips
 
     InstructionR Parser::parse_instruction_r_no_dst(OpcodeR opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, Register>(R"(\w+ ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, Register>(R"(\w+ ??, ??)");
         const auto [src1, src2] = parser.evaluate(instr);
 
         return InstructionR
@@ -373,7 +406,7 @@ namespace mips
 
     InstructionI Parser::parse_instruction_i(OpcodeI opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, Register, int16_t>(R"(\w+ ??, ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, Register, int16_t>(R"(\w+ ??, ??, ??)");
         const auto [dst, src, constant] = parser.evaluate(instr);
 
         return InstructionI
@@ -387,7 +420,7 @@ namespace mips
 
     InstructionI Parser::parse_instruction_i_1_src(OpcodeI opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, int16_t>(R"(\w+ ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, int16_t>(R"(\w+ ??, ??)");
         const auto [dst, constant] = parser.evaluate(instr);
 
         return InstructionI
@@ -401,7 +434,7 @@ namespace mips
 
     InstructionI Parser::parse_instruction_i_branch(OpcodeI opcode, const std::string& instr)
     {
-        static const auto parser = generate_parser<Register, Register, std::string>(R"(\w+ ??, ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, Register, std::string>(R"(\w+ ??, ??, ??)");
         const auto [dst, src, target] = parser.evaluate(instr);
 
         return InstructionI
@@ -415,7 +448,7 @@ namespace mips
 
     InstructionI Parser::parse_instruction_i_branch_no_dst(OpcodeI opcode, const std::string& instr)
     {
-        static const auto parser = generate_parser<Register, std::string>(R"(\w+ ??, ??)");
+        static thread_local const auto parser = generate_parser<Register, std::string>(R"(\w+ ??, ??)");
         const auto [src, target] = parser.evaluate(instr);
 
         return InstructionI
@@ -429,7 +462,7 @@ namespace mips
 
     InstructionI Parser::parse_instruction_i_memory(OpcodeI opcode, const std::string& instr) const
     {
-        static const auto parser = generate_parser<Register, int16_t, Register>(R"(\w+ ??, ??\(??\))");
+        static thread_local const auto parser = generate_parser<Register, int16_t, Register>(R"(\w+ ??, ??\(??\))");
         const auto [rt, offset, base] = parser.evaluate(instr);
 
         return InstructionI
@@ -443,7 +476,7 @@ namespace mips
 
     InstructionJ Parser::parse_instruction_j(OpcodeJ opcode, const std::string& instr)
     {
-        static const auto parser = generate_parser<std::string>(R"(\w+ ??)");
+        static thread_local const auto parser = generate_parser<std::string>(R"(\w+ ??)");
         const auto [target] = parser.evaluate(instr);
 
         return InstructionJ

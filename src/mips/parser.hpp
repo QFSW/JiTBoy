@@ -40,6 +40,7 @@ namespace mips
         [[nodiscard]] InstructionI parse_subi(const std::string& instr) const;
         [[nodiscard]] InstructionI parse_b(const std::string& instr);
         [[nodiscard]] InstructionI parse_bal(const std::string& instr);
+        [[nodiscard]] Instruction  parse_move(const std::string& instr) const;
         [[nodiscard]] InstructionR parse_jr(OpcodeR opcode, const std::string& instr) const;
         [[nodiscard]] InstructionR parse_hi_lo(OpcodeR opcode, const std::string& instr) const;
         [[nodiscard]] InstructionR parse_sxxv(OpcodeR opcode, const std::string& instr) const;
