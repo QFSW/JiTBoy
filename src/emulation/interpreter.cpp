@@ -9,10 +9,11 @@ namespace emulation
     using namespace mips;
 
     Interpreter::Interpreter()
-        : _state()
-        , _core(_state)
+        : _core(_state)
         , _executed_instructions(0)
-    { }
+    {
+        _state.pc = instruction_mem_addr;
+    }
 
     void Interpreter::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
     {

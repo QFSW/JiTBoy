@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include <config.hpp>
+#include <emulation/emulator_state.hpp>
 #include <emulation/compiler.hpp>
 #include <emulation/emulator.hpp>
 
@@ -17,19 +18,17 @@ namespace emulation
         void execute(std::vector<mips::Instruction>&& code);
         void execute(uint32_t addr);
 
-        [[nodiscard]] mips::RegisterFile& get_regs() noexcept { return _regs; }
-        [[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _regs; }
+        [[nodiscard]] mips::RegisterFile& get_regs() noexcept { return _state.regs; }
+        [[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _state.regs; }
         [[nodiscard]] const common::unordered_map<uint32_t, CompiledBlock>& get_blocks() const noexcept { return _blocks; }
         [[nodiscard]] std::string get_debug() const;
         [[nodiscard]] std::string get_debug_with_dumps() const;
 
     private:
-        mips::RegisterFile _regs;
-        mips::MemoryMap _mem;
+        EmulatorState _state;
         Compiler _compiler;
         std::vector<mips::Instruction> _source;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
-        uint32_t _pc;
 
         static constexpr uint32_t instruction_mem_addr = 0x0;
         static constexpr bool debug = config::debug;

@@ -6,9 +6,10 @@
 namespace emulation
 {
     Runtime::Runtime()
-        : _compiler(_regs, _mem)
-        , _pc(instruction_mem_addr)
-    { }
+        : _compiler(_state.regs, _state.mem)
+    {
+        _state.pc = instruction_mem_addr;
+    }
 
     void Runtime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
     {
@@ -70,13 +71,13 @@ namespace emulation
 
     void Runtime::execute(const uint32_t addr)
     {
-        _pc = addr;
-        while (valid_pc(_pc))
+        _state.pc = addr;
+        while (valid_pc(_state.pc))
         {
-            const CompiledBlock& block = get_or_compile_block(_pc);
+            const CompiledBlock& block = get_or_compile_block(_state.pc);
 
-            if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _pc);
-            _pc = block();
+            if constexpr (debug) _debug_stream << strtools::catf("Executing block 0x%x\n", _state.pc);
+            _state.pc = block();
         }
     }
 
@@ -88,7 +89,7 @@ namespace emulation
     std::string Runtime::get_debug_with_dumps() const
     {
         std::stringstream ss;
-        ss << get_debug() << "\n" << _regs.generate_dump() << "\n";
+        ss << get_debug() << "\n" << _state.regs.generate_dump() << "\n";
         return ss.str();
     }
 }
