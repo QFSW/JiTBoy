@@ -127,6 +127,8 @@ namespace mips
         if (op == "nop")    return parse_nop(instr);
         if (op == "jalr")   return parse_jalr(instr);
         if (op == "subi")   return parse_subi(instr);
+        if (op == "b")      return parse_b(instr);
+        if (op == "bal")    return parse_bal(instr);
 
         if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr);
         if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr);
@@ -245,6 +247,34 @@ namespace mips
             .rt = dst,
             .rs = src,
             .constant = -constant
+        };
+    }
+
+    InstructionI Parser::parse_b(const std::string& instr)
+    {
+        static const auto parser = generate_parser<std::string>(R"(\w+ ??)");
+        const auto [target] = parser.evaluate(instr);
+
+        return InstructionI
+        {
+            .op = OpcodeI::BEQ,
+            .rt = Register::$zero,
+            .rs = Register::$zero,
+            .constant = parse_target_rel(target, _pc)
+        };
+    }
+
+    InstructionI Parser::parse_bal(const std::string& instr)
+    {
+        static const auto parser = generate_parser<std::string>(R"(\w+ ??)");
+        const auto [target] = parser.evaluate(instr);
+
+        return InstructionI
+        {
+            .op = OpcodeI::BGEZAL,
+            .rt = Register::$zero,
+            .rs = Register::$zero,
+            .constant = parse_target_rel(target, _pc)
         };
     }
 
