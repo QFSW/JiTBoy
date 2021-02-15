@@ -33,7 +33,7 @@ namespace mips::testing
     {
         return Timing{
             .batch_size = 100,
-            .threshold = 100,
+            .threshold = 10,
             .precision = 0.0001,
         };
     }
