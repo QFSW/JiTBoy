@@ -10,7 +10,7 @@
 
 namespace emulation
 {
-    class Interpreter : public Emulator
+    class Interpreter final : public Emulator
     {
     public:
         Interpreter();

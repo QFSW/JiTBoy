@@ -9,7 +9,7 @@
 
 namespace emulation
 {
-    class Runtime : public Emulator
+    class Runtime final : public Emulator
     {
     public:
         Runtime();
