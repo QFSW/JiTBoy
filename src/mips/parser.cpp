@@ -126,6 +126,7 @@ namespace mips
 
         if (op == "nop")    return parse_nop(instr);
         if (op == "jalr")   return parse_jalr(instr);
+        if (op == "subi")   return parse_subi(instr);
 
         if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr);
         if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr);
@@ -230,6 +231,20 @@ namespace mips
             .rs = dst,
             .rt = Register::$zero,
             .sa = 0
+        };
+    }
+
+    InstructionI Parser::parse_subi(const std::string& instr) const
+    {
+        static const auto parser = generate_parser<Register, Register, int16_t>(R"(\w+ ??, ??, ??)");
+        const auto [dst, src, constant] = parser.evaluate(instr);
+
+        return InstructionI
+        {
+            .op = OpcodeI::ADDI,
+            .rt = dst,
+            .rs = src,
+            .constant = -constant
         };
     }
 
