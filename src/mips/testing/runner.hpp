@@ -29,10 +29,8 @@ namespace mips::testing
     private:
         // add debug_stream
 
+        void execute_test(emulation::Emulator& emulator, const Test& test) const;
         void log_test_failure(const Test& test, const std::string& error);
-
-        template <typename Emulator>
-        void execute_test(Emulator& emulator, const Test& test) const;
 
         template <typename Emulator>
         std::chrono::duration<double> measure_execution_time(const Test& test, const Config::Timing& config) const;
@@ -69,7 +67,7 @@ namespace mips::testing
                 std::stringstream ss;
                 for (const auto& assertion : test.assertions)
                 {
-                    if (!assertion.evaluate(emulator.get_regs()))
+                    if (!assertion.evaluate(emulator.get_state().regs))
                     {
                         if (!failed)
                         {
@@ -115,15 +113,6 @@ namespace mips::testing
 
         std::cout << strtools::catf("\n%d/%d tests passed\n", pass_count, tests.size());
         return results;
-    }
-
-    template <typename Emulator>
-    void Runner::execute_test(Emulator& emulator, const Test& test) const
-    {
-        for (const auto& initializer : test.initializers)
-            initializer.invoke(emulator.get_regs());
-
-        emulator.execute(utils::copy(test.code));
     }
 
     template <typename Emulator>

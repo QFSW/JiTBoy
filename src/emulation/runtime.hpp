@@ -14,12 +14,12 @@ namespace emulation
     public:
         Runtime();
 
+        void execute(std::vector<mips::Instruction>&& code) override final;
         void load_source(std::vector<mips::Instruction>&& code, uint32_t addr = instruction_mem_addr);
-        void execute(std::vector<mips::Instruction>&& code);
         void execute(uint32_t addr);
 
-        [[nodiscard]] mips::RegisterFile& get_regs() noexcept { return _state.regs; }
-        [[nodiscard]] const mips::RegisterFile& get_regs() const noexcept { return _state.regs; }
+        [[nodiscard]] EmulatorState& get_state() noexcept override final { return _state; }
+        [[nodiscard]] const EmulatorState& get_state() const noexcept override final { return _state; }
         [[nodiscard]] const common::unordered_map<uint32_t, CompiledBlock>& get_blocks() const noexcept { return _blocks; }
         [[nodiscard]] std::string get_debug() const;
         [[nodiscard]] std::string get_debug_with_dumps() const;

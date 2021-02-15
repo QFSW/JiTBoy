@@ -2,6 +2,14 @@
 
 namespace mips::testing
 {
+    void Runner::execute_test(emulation::Emulator& emulator, const Test& test) const
+    {
+        for (const auto& initializer : test.initializers)
+            initializer.invoke(emulator.get_state().regs);
+
+        emulator.execute(utils::copy(test.code));
+    }
+
     void Runner::log_test_failure(const Test& test, const std::string& error)
     {
         std::cout << "\n";
