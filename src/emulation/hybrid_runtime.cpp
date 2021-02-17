@@ -58,7 +58,9 @@ namespace emulation
         if (const auto it = _blocks.find(addr); it != _blocks.end())
             return &it->second;
 
-        compile_block(addr);
+        if (_block_requests[addr]++ == 1)
+            compile_block(addr);
+
         return nullptr;
     }
 

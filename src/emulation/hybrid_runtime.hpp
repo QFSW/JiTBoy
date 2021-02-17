@@ -28,6 +28,7 @@ namespace emulation
         InterpreterCore _interpreter;
         threading::ThreadPool<Compiler> _compiler_pool;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
+        common::unordered_map<uint32_t, size_t> _block_requests;
 
         struct Result
         {
