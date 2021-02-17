@@ -6,6 +6,8 @@
 #include <threading/job.hpp>
 #include <threading/concurrent_queue.hpp>
 
+#include <iostream>
+
 namespace threading
 {
     template <typename Worker>
@@ -23,12 +25,14 @@ namespace threading
         [[nodiscard]] size_t pending_jobs() const noexcept { return _job_queue.size(); };
 
     private:
+        const size_t _max_workers;
         std::function<Worker()> _factory;
         std::vector<std::thread> _workers;
         concurrent_queue<Job<Worker>> _job_queue;
         std::atomic<bool> _running;
 
         void flush_job_queue();
+        void create_worker();
         void worker_routine();
 
         static size_t get_auto_thread_count();
@@ -41,15 +45,11 @@ namespace threading
 
     template <typename Worker>
     ThreadPool<Worker>::ThreadPool(std::function<Worker()> factory, const size_t worker_count)
-        : _factory(factory)
+        : _max_workers(worker_count)
+        , _factory(factory)
         , _running(true)
     {
-        for (uint32_t i = 0; i < worker_count; i++)
-        {
-            _workers.emplace_back([&] {
-                worker_routine();
-            });
-        }
+        _workers.reserve(_max_workers);
     }
 
     template <typename Worker>
@@ -62,6 +62,11 @@ namespace threading
     void ThreadPool<Worker>::schedule_job(Job<Worker>&& job)
     {
         _job_queue.push(std::move(job));
+
+        if (_running
+        && !_job_queue.empty()
+        && _workers.size() < _max_workers)
+            create_worker();
     }
 
     template <typename Worker>
@@ -85,6 +90,14 @@ namespace threading
         {
             schedule_job(Job<Worker>([](Worker&){ }));
         }
+    }
+
+    template <typename Worker>
+    void ThreadPool<Worker>::create_worker()
+    {
+        _workers.emplace_back([&] {
+            worker_routine();
+        });
     }
 
     template <typename Worker>
