@@ -8,22 +8,24 @@
 
 namespace threading
 {
+    template <typename Worker>
     class ThreadPool
     {
     public:
-        ThreadPool();
-        explicit ThreadPool(size_t worker_count);
+        explicit ThreadPool(size_t worker_count = get_auto_thread_count());
+        explicit ThreadPool(std::function<Worker()> factory, size_t worker_count = get_auto_thread_count());
         ~ThreadPool();
 
-        void schedule_job(Job&& job);
+        void schedule_job(Job<Worker>&& job);
         void shutdown();
 
         [[nodiscard]] bool running() const noexcept { return _running; }
         [[nodiscard]] size_t pending_jobs() const noexcept { return _job_queue.size(); };
 
     private:
+        std::function<Worker()> _factory;
         std::vector<std::thread> _workers;
-        concurrent_queue<Job> _job_queue;
+        concurrent_queue<Job<Worker>> _job_queue;
         std::atomic<bool> _running;
 
         void flush_job_queue();
@@ -31,4 +33,79 @@ namespace threading
 
         static size_t get_auto_thread_count();
     };
+
+    template <typename Worker>
+    ThreadPool<Worker>::ThreadPool(const size_t worker_count)
+        : ThreadPool([] { return Worker(); }, worker_count)
+    { }
+
+    template <typename Worker>
+    ThreadPool<Worker>::ThreadPool(std::function<Worker()> factory, const size_t worker_count)
+        : _factory(factory)
+        , _running(true)
+    {
+        for (uint32_t i = 0; i < worker_count; i++)
+        {
+            _workers.emplace_back([&] {
+                worker_routine();
+            });
+        }
+    }
+
+    template <typename Worker>
+    ThreadPool<Worker>::~ThreadPool()
+    {
+        shutdown();
+    }
+
+    template <typename Worker>
+    void ThreadPool<Worker>::schedule_job(Job<Worker>&& job)
+    {
+        _job_queue.push(std::move(job));
+    }
+
+    template <typename Worker>
+    void ThreadPool<Worker>::shutdown()
+    {
+        _running = false;
+        flush_job_queue();
+
+        for (auto& worker : _workers)
+        {
+            worker.join();
+        }
+
+        _workers.clear();
+    }
+
+    template <typename Worker>
+    void ThreadPool<Worker>::flush_job_queue()
+    {
+        for (size_t i = 0; i < _workers.size(); i++)
+        {
+            schedule_job(Job<Worker>([](Worker&){ }));
+        }
+    }
+
+    template <typename Worker>
+    void ThreadPool<Worker>::worker_routine()
+    {
+        Worker worker = _factory();
+        while (_running)
+        {
+            Job<Worker> job = _job_queue.pop_wait();
+            if (!_running) return;
+
+            job.execute(worker);
+        }
+    }
+
+    template <typename Worker>
+    size_t ThreadPool<Worker>::get_auto_thread_count()
+    {
+        const uint32_t threads = std::thread::hardware_concurrency();
+        return threads > 0
+            ? threads
+            : 8;
+    }
 }

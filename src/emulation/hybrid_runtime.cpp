@@ -6,16 +6,15 @@
 namespace emulation
 {
     HybridRuntime::HybridRuntime()
-        : _compiler(_state.regs, _state.mem)
-        , _interpreter(_state)
-        , _thread_pool(1)
+        : _interpreter(_state)
+        , _compiler_pool([&] { return Compiler(_state.regs, _state.mem); })
     {
         _state.pc = instruction_mem_addr;
     }
 
     HybridRuntime::~HybridRuntime()
     {
-        _thread_pool.shutdown();
+        _compiler_pool.shutdown();
     }
 
     void HybridRuntime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
@@ -65,15 +64,14 @@ namespace emulation
 
     void HybridRuntime::compile_block(const uint32_t addr)
     {
-        _thread_pool.schedule_job(threading::Job([&, addr]
+        _compiler_pool.schedule_job(threading::Job<Compiler>([&, addr](Compiler& compiler)
         {
             const SourceBlock input = partition_block(addr);
-            const CompiledBlock block = _compiler.compile(input, CompilerConfig());
+            const CompiledBlock block = compiler.compile(input, CompilerConfig());
 
             /*if constexpr (debug)
             {
-                _debug_stream << _compiler.get_debug() << "\n"
-                    << strtools::catf("Registering compiled block 0x%p to 0x%x\n", block.code, input.addr);
+                _debug_stream << _compiler.get_debug() << "\n";
             }*/
 
             _result_queue.push(Result{
@@ -89,6 +87,11 @@ namespace emulation
         {
             Result result = _result_queue.pop_wait();
             _blocks[result.addr] = result.block;
+
+            if constexpr (debug)
+            {
+                _debug_stream << strtools::catf("Registering compiled block 0x%p to 0x%x\n", result.block.code, result.addr);
+            }
         }
     }
 

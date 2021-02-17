@@ -207,8 +207,6 @@
     <ClCompile Include="src\mips\register_file.cpp" />
     <ClCompile Include="src\emulation\compiler.cpp" />
     <ClCompile Include="src/label_generator.cpp" />
-    <ClCompile Include="src\threading\job.cpp" />
-    <ClCompile Include="src\threading\thread_pool.cpp" />
     <ClCompile Include="src\x86\linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />

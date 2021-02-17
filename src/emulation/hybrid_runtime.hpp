@@ -25,9 +25,8 @@ namespace emulation
 
     private:
         EmulatorState _state;
-        Compiler _compiler;
         InterpreterCore _interpreter;
-        threading::ThreadPool _thread_pool;
+        threading::ThreadPool<Compiler> _compiler_pool;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
 
         struct Result

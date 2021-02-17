@@ -102,12 +102,6 @@
     <ClCompile Include="src\emulation\interpreter_core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\threading\thread_pool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\threading\job.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\emulation\hybrid_runtime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

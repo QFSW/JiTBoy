@@ -4,14 +4,26 @@
 
 namespace threading
 {
+    template <typename Worker>
     class Job
     {
     public:
-        explicit Job(std::function<void()> f);
+        Job(std::function<void(Worker&)> f);
 
-        void execute() const;
+        void execute(Worker& worker) const;
 
     private:
-        std::function<void()> _f;
+        std::function<void(Worker&)> _f;
     };
+
+    template <typename Worker>
+    Job<Worker>::Job(std::function<void(Worker&)> f)
+        : _f(f)
+    { }
+
+    template <typename Worker>
+    void Job<Worker>::execute(Worker& worker) const
+    {
+        _f(worker);
+    }
 }
