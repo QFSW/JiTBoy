@@ -13,6 +13,7 @@ namespace threading
     public:
         ThreadPool();
         ThreadPool(size_t worker_count);
+        ~ThreadPool();
 
         void schedule_job(Job&& job);
 
@@ -24,8 +25,6 @@ namespace threading
         concurrent_queue<Job> _job_queue;
         std::atomic<bool> _working;
 
-        void spawn_workers();
-        void kill_workers();
         void flush_job_queue();
         void worker_routine();
 
