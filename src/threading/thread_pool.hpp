@@ -15,7 +15,7 @@ namespace threading
     {
     public:
         explicit ThreadPool(size_t worker_count = get_auto_thread_count());
-        explicit ThreadPool(std::function<Worker()> factory, size_t worker_count = get_auto_thread_count());
+        explicit ThreadPool(std::function<Worker()> factory, size_t worker_count = get_auto_thread_count() - 1);
         ~ThreadPool();
 
         void schedule_job(Job<Worker>&& job);
