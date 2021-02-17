@@ -13,14 +13,14 @@ namespace emulation
 
     void Runtime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
     {
-        _source = std::move(code);
+        _state.source = std::move(code);
     }
 
     bool Runtime::valid_pc(const uint32_t addr) const noexcept
     {
         if (addr < instruction_mem_addr)
             return false;
-        if (addr >= instruction_mem_addr + _source.size() * 4)
+        if (addr >= instruction_mem_addr + _state.source.size() * 4)
             return false;
         return true;
     }
@@ -32,9 +32,9 @@ namespace emulation
 
         const size_t start_index = (addr - instruction_mem_addr) / 4;
         uint32_t end_index = start_index;
-        for (; end_index < _source.size(); end_index++)
+        for (; end_index < _state.source.size(); end_index++)
         {
-            const auto& instr = _source[end_index];
+            const auto& instr = _state.source[end_index];
             if (mips::utils::is_branch_instr(instr))
             {
                 end_index++;
@@ -42,8 +42,8 @@ namespace emulation
             }
         }
 
-        auto code = std::span<const mips::Instruction>(_source.data() + start_index, end_index - start_index);
-        return SourceBlock(std::move(code), addr);
+        const auto code = std::span<const mips::Instruction>(_state.source.data() + start_index, end_index - start_index);
+        return SourceBlock(code, addr);
     }
 
     const CompiledBlock& Runtime::get_or_compile_block(const uint32_t addr)

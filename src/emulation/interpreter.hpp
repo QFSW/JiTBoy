@@ -15,12 +15,12 @@ namespace emulation
     public:
         Interpreter();
 
-        void execute(std::vector<mips::Instruction>&& code) override final;
+        void execute(std::vector<mips::Instruction>&& code) override;
         void load_source(std::vector<mips::Instruction>&& code, uint32_t addr = instruction_mem_addr);
         void execute(uint32_t addr);
 
-        [[nodiscard]] EmulatorState& get_state() noexcept override final { return _state; }
-        [[nodiscard]] const EmulatorState& get_state() const noexcept override final { return _state; }
+        [[nodiscard]] EmulatorState& get_state() noexcept override { return _state; }
+        [[nodiscard]] const EmulatorState& get_state() const noexcept override { return _state; }
         [[nodiscard]] std::string get_debug() const;
         [[nodiscard]] std::string get_debug_with_dumps() const;
         [[nodiscard]] size_t get_instruction_count() const noexcept { return _executed_instructions; }

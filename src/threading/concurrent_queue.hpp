@@ -49,7 +49,7 @@ namespace threading
         {
             std::lock_guard lock(_mutex);
             _queue.push(std::move(item));
-            _size++;
+            ++_size;
         }
 
         _cond.notify_one();
@@ -63,7 +63,7 @@ namespace threading
 
         T item = _queue.front();
         _queue.pop();
-        _size--;
+        --_size;
 
         return item;
     }

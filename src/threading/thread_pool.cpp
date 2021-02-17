@@ -6,32 +6,38 @@ namespace threading
         : ThreadPool(get_auto_thread_count())
     { }
 
-    ThreadPool::ThreadPool(size_t worker_count)
-        : _worker_count(worker_count)
-        , _working(true)
+    ThreadPool::ThreadPool(const size_t worker_count)
+        : _running(true)
     {
-        for (uint32_t i = 0; i < _worker_count; i++)
+        for (uint32_t i = 0; i < worker_count; i++)
         {
-            _workers.push_back(std::thread([&] {
+            _workers.emplace_back([&] {
                 worker_routine();
-            }));
+            });
         }
     }
 
     ThreadPool::~ThreadPool()
     {
-        _working = false;
-        flush_job_queue();
-
-        for (size_t i = 0; i < _workers.size(); i++)
-        {
-            _workers[i].join();
-        }
+        shutdown();
     }
 
     void ThreadPool::schedule_job(Job&& job)
     {
         _job_queue.push(std::move(job));
+    }
+
+    void ThreadPool::shutdown()
+    {
+        _running = false;
+        flush_job_queue();
+
+        for (auto& worker : _workers)
+        {
+            worker.join();
+        }
+
+        _workers.clear();
     }
 
     void ThreadPool::flush_job_queue()
@@ -44,10 +50,10 @@ namespace threading
 
     void ThreadPool::worker_routine()
     {
-        while (_working)
+        while (_running)
         {
             Job job = _job_queue.pop_wait();
-            if (!_working) return;
+            if (!_running) return;
 
             job.execute();
         }

@@ -2,6 +2,7 @@
 
 #include <mips/utils.hpp>
 #include <utils/functional.hpp>
+#include <utils/utils.hpp>
 
 namespace emulation
 {

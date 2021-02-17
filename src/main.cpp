@@ -2,6 +2,7 @@
 
 #include <emulation/runtime.hpp>
 #include <emulation/interpreter.hpp>
+#include <emulation/hybrid_runtime.hpp>
 #include <utils/benchmark.hpp>
 #include <utils/utils.hpp>
 #include <utils/csv.hpp>
@@ -82,12 +83,14 @@ void test_bench(const int argc, char** argv)
 
     const auto results_jit = runner.run<emulation::Runtime>(tests, config);
     const auto results_interpreter = runner.run<emulation::Interpreter>(tests, config);
+    const auto results_hybrid = runner.run<emulation::HybridRuntime>(tests, config);
 
     std::cout << "\nWriting tests to " + tests_csv_path + "\n";
     csv::write_file(tests_csv_path, tests);
 
     write_test_results(results_jit, "jit");
     write_test_results(results_interpreter, "interpreter");
+    write_test_results(results_hybrid, "hybrid");
 
     std::cout << "\n";
 }

@@ -7,9 +7,9 @@ namespace threading
     class Job
     {
     public:
-        Job(std::function<void()> f);
+        explicit Job(std::function<void()> f);
 
-        void execute();
+        void execute() const;
 
     private:
         std::function<void()> _f;

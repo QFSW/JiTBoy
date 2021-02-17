@@ -1,18 +1,17 @@
 #pragma once
 
-#include <unordered_map>
-
-#include <config.hpp>
-#include <emulation/emulator_state.hpp>
-#include <emulation/compiler.hpp>
+#include <threading/thread_pool.hpp>
 #include <emulation/emulator.hpp>
+#include <emulation/compiler.hpp>
+#include <emulation/interpreter_core.hpp>
 
 namespace emulation
 {
-    class Runtime final : public Emulator
+    class HybridRuntime final : public Emulator
     {
     public:
-        Runtime();
+        HybridRuntime();
+        ~HybridRuntime();
 
         void execute(std::vector<mips::Instruction>&& code) override;
         void load_source(std::vector<mips::Instruction>&& code, uint32_t addr = instruction_mem_addr);
@@ -27,7 +26,17 @@ namespace emulation
     private:
         EmulatorState _state;
         Compiler _compiler;
+        InterpreterCore _interpreter;
+        threading::ThreadPool _thread_pool;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
+
+        struct Result
+        {
+            uint32_t addr;
+            CompiledBlock block;
+        };
+
+        threading::concurrent_queue<Result> _result_queue;
 
         static constexpr uint32_t instruction_mem_addr = 0x0;
         static constexpr bool debug = config::debug;
@@ -35,6 +44,9 @@ namespace emulation
 
         [[nodiscard]] bool valid_pc(uint32_t addr) const noexcept;
         [[nodiscard]] SourceBlock partition_block(uint32_t addr) const;
-        [[nodiscard]] const CompiledBlock& get_or_compile_block(uint32_t addr);
+        [[nodiscard]] const CompiledBlock* try_get_block(uint32_t addr);
+        void compile_block(uint32_t addr);
+        void consume_results();
     };
 }
+

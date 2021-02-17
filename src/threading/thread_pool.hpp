@@ -12,18 +12,19 @@ namespace threading
     {
     public:
         ThreadPool();
-        ThreadPool(size_t worker_count);
+        explicit ThreadPool(size_t worker_count);
         ~ThreadPool();
 
         void schedule_job(Job&& job);
+        void shutdown();
 
+        [[nodiscard]] bool running() const noexcept { return _running; }
         [[nodiscard]] size_t pending_jobs() const noexcept { return _job_queue.size(); };
 
     private:
-        size_t _worker_count;
         std::vector<std::thread> _workers;
         concurrent_queue<Job> _job_queue;
-        std::atomic<bool> _working;
+        std::atomic<bool> _running;
 
         void flush_job_queue();
         void worker_routine();

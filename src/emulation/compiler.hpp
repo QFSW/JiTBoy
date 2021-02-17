@@ -1,6 +1,7 @@
 #pragma once
 
 #include <config.hpp>
+#include <emulation/source_block.hpp>
 #include <emulation/compiled_block.hpp>
 #include <emulation/compiler_config.hpp>
 #include <x86/assembler.hpp>
@@ -10,8 +11,6 @@
 #include <mips/memory_map.hpp>
 #include <memory/dynamic_executable_allocator.hpp>
 #include <label_generator.hpp>
-#include <source_block.hpp>
-#include <utils/utils.hpp>
 
 namespace emulation
 {

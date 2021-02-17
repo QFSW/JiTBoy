@@ -6,7 +6,7 @@ namespace threading
         : _f(f)
     { }
 
-    void Job::execute()
+    void Job::execute() const
     {
         _f();
     }

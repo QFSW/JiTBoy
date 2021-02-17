@@ -8,7 +8,7 @@ namespace emulation
     class InterpreterCore
     {
     public:
-        InterpreterCore(EmulatorState& state);
+        explicit InterpreterCore(EmulatorState& state);
 
         void execute_current();
 

@@ -39,9 +39,6 @@
     <ClCompile Include="src\mips\instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\source_block.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\mips\encoding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,6 +108,12 @@
     <ClCompile Include="src\threading\job.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\emulation\hybrid_runtime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulation\source_block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/label_generator.hpp">
@@ -141,9 +144,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\config.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\source_block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\mips\encoding.hpp">
@@ -270,6 +270,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\threading\job.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulation\hybrid_runtime.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulation\source_block.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

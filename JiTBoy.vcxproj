@@ -184,6 +184,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\emulation\hybrid_runtime.cpp" />
     <ClCompile Include="src\emulation\interpreter.cpp" />
     <ClCompile Include="src\emulation\interpreter_core.cpp" />
     <ClCompile Include="src\mips\memory_map.cpp" />
@@ -211,13 +212,14 @@
     <ClCompile Include="src\x86\linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />
-    <ClCompile Include="src\source_block.cpp" />
+    <ClCompile Include="src\emulation\source_block.cpp" />
     <ClCompile Include="src/x86/x86.cpp" />
     <ClCompile Include="src/x86/assembler.cpp" />
     <ClCompile Include="src\utils\io.cpp" />
     <ClCompile Include="src\utils\strtools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\emulation\hybrid_runtime.hpp" />
     <ClInclude Include="src\common\common.hpp" />
     <ClInclude Include="src\emulation\emulator.hpp" />
     <ClInclude Include="src\emulation\emulator_state.hpp" />
@@ -261,7 +263,7 @@
     <ClInclude Include="src/vector_buffer.hpp" />
     <ClInclude Include="src\mips\instruction.hpp" />
     <ClInclude Include="src\mips\mips.hpp" />
-    <ClInclude Include="src\source_block.hpp" />
+    <ClInclude Include="src\emulation\source_block.hpp" />
     <ClInclude Include="src\utils\detail\final_act.hpp" />
     <ClInclude Include="src\utils\functional.hpp" />
     <ClInclude Include="src\utils\io.hpp" />
