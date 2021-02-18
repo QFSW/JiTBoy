@@ -76,7 +76,7 @@ namespace emulation
                 _debug_stream << _compiler.get_debug() << "\n";
             }*/
 
-            _result_queue.push(Result{
+            _result_queue.enqueue(Result{
                 .addr = addr,
                 .block = block,
             });
@@ -85,9 +85,9 @@ namespace emulation
 
     void HybridRuntime::consume_results()
     {
-        while (!_result_queue.empty())
+        Result result;
+        while (_result_queue.try_dequeue(result))
         {
-            Result result = _result_queue.pop_wait();
             _blocks[result.addr] = result.block;
 
             if constexpr (debug)

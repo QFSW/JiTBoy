@@ -38,7 +38,7 @@ namespace emulation
             CompiledBlock block;
         };
 
-        threading::concurrent_queue<Result> _result_queue;
+        common::concurrent_queue<Result> _result_queue;
 
         static constexpr uint32_t instruction_mem_addr = 0x0;
         static constexpr bool debug = config::debug;
