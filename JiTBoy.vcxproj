@@ -226,9 +226,11 @@
     <ClInclude Include="src\emulation\emulator_state.hpp" />
     <ClInclude Include="src\emulation\interpreter.hpp" />
     <ClInclude Include="src\emulation\interpreter_core.hpp" />
+    <ClInclude Include="src\libs\moodycamel\atomicops.h" />
     <ClInclude Include="src\libs\moodycamel\blockingconcurrentqueue.h" />
     <ClInclude Include="src\libs\moodycamel\concurrentqueue.h" />
     <ClInclude Include="src\libs\moodycamel\lightweightsemaphore.h" />
+    <ClInclude Include="src\libs\moodycamel\readerwriterqueue.h" />
     <ClInclude Include="src\libs\tsl\robin_growth_policy.h" />
     <ClInclude Include="src\libs\tsl\robin_hash.h" />
     <ClInclude Include="src\libs\tsl\robin_map.h" />

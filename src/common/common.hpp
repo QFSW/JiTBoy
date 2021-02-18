@@ -4,6 +4,7 @@
 #include <libs/tsl/robin_set.h>
 #include <libs/moodycamel/concurrentqueue.h>
 #include <libs/moodycamel/blockingconcurrentqueue.h>
+#include <libs/moodycamel/readerwriterqueue.h>
 
 namespace common
 {
@@ -18,4 +19,10 @@ namespace common
 
     template <typename T>
     using blocking_concurrent_queue = moodycamel::BlockingConcurrentQueue<T>;
+
+    template <typename T>
+    using spsc_queue = moodycamel::ReaderWriterQueue<T>;
+
+    template <typename T>
+    using blocking_spsc_queue = moodycamel::BlockingReaderWriterQueue<T>;
 }

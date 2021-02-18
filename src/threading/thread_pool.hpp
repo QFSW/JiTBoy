@@ -3,8 +3,8 @@
 #include <vector>
 #include <thread>
 
+#include <common/common.hpp>
 #include <threading/job.hpp>
-#include <threading/concurrent_queue.hpp>
 
 namespace threading
 {
@@ -28,8 +28,9 @@ namespace threading
         const size_t _max_workers;
         Factory _factory;
         std::vector<std::thread> _workers;
-        concurrent_queue<Job<Worker>> _job_queue;
+        common::blocking_concurrent_queue<Job<Worker>> _job_queue;
         std::atomic<bool> _running;
+        std::atomic<size_t> _busy_workers;
 
         void flush_job_queue();
         void create_worker();
@@ -48,6 +49,7 @@ namespace threading
         : _max_workers(worker_count)
         , _factory(factory)
         , _running(true)
+        , _busy_workers(0)
     {
         _workers.reserve(_max_workers);
     }
@@ -61,10 +63,10 @@ namespace threading
     template <typename Worker>
     void ThreadPool<Worker>::schedule_job(Job<Worker>&& job)
     {
-        _job_queue.push(std::move(job));
+        _job_queue.enqueue(std::move(job));
 
         if (_running
-        && !_job_queue.empty()
+        && _busy_workers == _workers.size()
         && _workers.size() < _max_workers)
             create_worker();
     }
@@ -104,12 +106,16 @@ namespace threading
     void ThreadPool<Worker>::worker_routine()
     {
         Worker worker = _factory();
+        Job<Worker> job([](Worker&) {});
+
         while (_running)
         {
-            Job<Worker> job = _job_queue.pop_wait();
+            _job_queue.wait_dequeue(job);
             if (!_running) return;
 
+            ++_busy_workers;
             job.execute(worker);
+            --_busy_workers;
         }
     }
 

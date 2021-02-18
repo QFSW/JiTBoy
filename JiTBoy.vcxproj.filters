@@ -281,6 +281,12 @@
     <ClInclude Include="src\libs\moodycamel\lightweightsemaphore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\libs\moodycamel\atomicops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\libs\moodycamel\readerwriterqueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\test_main.s" />
