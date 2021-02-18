@@ -11,6 +11,7 @@ namespace threading
         Job(std::function<void(Worker&)> f);
 
         void execute(Worker& worker) const;
+        static Job empty();
 
     private:
         std::function<void(Worker&)> _f;
@@ -25,5 +26,11 @@ namespace threading
     void Job<Worker>::execute(Worker& worker) const
     {
         _f(worker);
+    }
+
+    template <typename Worker>
+    Job<Worker> Job<Worker>::empty()
+    {
+        return Job([](Worker&) {});
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <memory/pool_handle.hpp>
 
 namespace memory
 {
@@ -15,18 +16,7 @@ namespace memory
         [[nodiscard]] T* get(Args&&...args);
         void release(T* ptr);
 
-        class Handle
-        {
-        public:
-            Handle(T* obj, FixedPool* pool);
-            Handle(const Handle&) = delete;
-            Handle(Handle&& handle) noexcept;
-            ~Handle();
-
-        private:
-            T* _obj;
-            FixedPool* _pool;
-        };
+        using Handle = PoolHandle<T, FixedPool>;
 
         template <typename...Args>
         [[nodiscard]] Handle borrow(Args&&...args);
@@ -73,30 +63,6 @@ namespace memory
 
         ptr->~T();
         _ptr_stack[_size++] = ptr;
-    }
-
-    template <typename T, size_t Size>
-    FixedPool<T, Size>::Handle::Handle(T* obj, FixedPool* pool)
-        : _obj(obj)
-        , _pool(pool)
-    { }
-
-    template <typename T, size_t Size>
-    FixedPool<T, Size>::Handle::Handle(Handle&& handle) noexcept
-        : _obj(handle._obj)
-        , _pool(handle._pool)
-    {
-        handle._obj = nullptr;
-        handle._pool = nullptr;
-    }
-
-    template <typename T, size_t Size>
-    FixedPool<T, Size>::Handle::~Handle()
-    {
-        if (_obj && _pool)
-        {
-            _pool->release(_obj);
-        }
     }
 
     template <typename T, size_t Size>

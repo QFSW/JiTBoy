@@ -90,7 +90,7 @@ namespace threading
     {
         for (size_t i = 0; i < _workers.size(); i++)
         {
-            schedule_job(Job<Worker>([](Worker&){ }));
+            schedule_job(Job<Worker>::empty());
         }
     }
 
@@ -106,7 +106,7 @@ namespace threading
     void ThreadPool<Worker>::worker_routine()
     {
         Worker worker = _factory();
-        Job<Worker> job([](Worker&) {});
+        Job<Worker> job = Job<Worker>::empty();
 
         while (_running)
         {

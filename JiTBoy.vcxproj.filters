@@ -108,6 +108,9 @@
     <ClCompile Include="src\emulation\source_block.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\environment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/label_generator.hpp">
@@ -285,6 +288,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\libs\moodycamel\readerwriterqueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\pool_handle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\environment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
