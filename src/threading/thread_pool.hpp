@@ -6,16 +6,16 @@
 #include <threading/job.hpp>
 #include <threading/concurrent_queue.hpp>
 
-#include <iostream>
-
 namespace threading
 {
     template <typename Worker>
     class ThreadPool
     {
     public:
+        using Factory = std::function<Worker()>;
+
         explicit ThreadPool(size_t worker_count = get_auto_thread_count());
-        explicit ThreadPool(std::function<Worker()> factory, size_t worker_count = get_auto_thread_count() - 1);
+        explicit ThreadPool(Factory factory, size_t worker_count = get_auto_thread_count() - 1);
         ~ThreadPool();
 
         void schedule_job(Job<Worker>&& job);
@@ -26,7 +26,7 @@ namespace threading
 
     private:
         const size_t _max_workers;
-        std::function<Worker()> _factory;
+        Factory _factory;
         std::vector<std::thread> _workers;
         concurrent_queue<Job<Worker>> _job_queue;
         std::atomic<bool> _running;
@@ -44,7 +44,7 @@ namespace threading
     { }
 
     template <typename Worker>
-    ThreadPool<Worker>::ThreadPool(std::function<Worker()> factory, const size_t worker_count)
+    ThreadPool<Worker>::ThreadPool(Factory factory, const size_t worker_count)
         : _max_workers(worker_count)
         , _factory(factory)
         , _running(true)

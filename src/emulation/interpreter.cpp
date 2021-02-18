@@ -1,8 +1,6 @@
 #include "interpreter.hpp"
 
-#include <stdexcept>
 #include <mips/utils.hpp>
-#include <utils/functional.hpp>
 
 namespace emulation
 {

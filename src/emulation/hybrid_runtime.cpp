@@ -1,13 +1,13 @@
 #include "hybrid_runtime.hpp"
 
 #include <mips/utils.hpp>
-#include <iostream>
 
 namespace emulation
 {
     HybridRuntime::HybridRuntime()
         : _interpreter(_state)
         , _compiler_pool([&] { return Compiler(_state.regs, _state.mem); })
+        , _interpreted_instructions(0)
     {
         _state.pc = instruction_mem_addr;
     }
@@ -54,11 +54,11 @@ namespace emulation
 
     const CompiledBlock* HybridRuntime::try_get_block(const uint32_t addr)
     {
-        // consume_results();
+        consume_results();
         if (const auto it = _blocks.find(addr); it != _blocks.end())
             return &it->second;
 
-        if (++_block_requests[addr] == 1)
+        if (++_block_requests[addr] == 2)
             compile_block(addr);
 
         return nullptr;

@@ -44,16 +44,22 @@ namespace emulation
         output.host_instr_count = _assembler.instr_count();
         output.source_instr_count = block.code.size();
         output.config = config;
+        output.exec_mutex = &_exec_mem_mutex;
 
         if constexpr (debug)
         {
             _debug_stream << "Generated " << output.host_instr_count << " x86 instructions\n" << _assembler.get_debug();
         }
 
-        auto const buffer = _allocator.alloc(output.size);
-        _assembler.copy(buffer);
-        _linker.terminate_local(buffer);
-        _allocator.commit(buffer, output.size);
+        uint8_t* buffer;
+        {
+            std::lock_guard lock(_exec_mem_mutex);
+            buffer = _allocator.alloc(output.size);
+            _assembler.copy(buffer);
+            _linker.terminate_local(buffer);
+            _allocator.commit(buffer, output.size);
+        }
+
         _assembler.reset();
         output.code = reinterpret_cast<CompiledBlock::func>(buffer);
 

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <mutex>
+
 #include <config.hpp>
 #include <emulation/compiler_config.hpp>
 
@@ -18,6 +20,7 @@ namespace emulation
         CompilerConfig config;
 
         mutable size_t execution_count;
+        mutable std::mutex* exec_mutex;
 
         uint32_t operator()() const;
     };

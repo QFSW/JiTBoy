@@ -8,10 +8,12 @@ namespace emulation
         , host_instr_count(0)
         , source_instr_count(0)
         , execution_count(0)
+        , exec_mutex(nullptr)
     { }
 
     uint32_t CompiledBlock::operator()() const
     {
+        std::lock_guard lock(*exec_mutex);
         execution_count++;
         return code();
     }

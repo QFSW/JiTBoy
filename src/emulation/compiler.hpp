@@ -33,6 +33,7 @@ namespace emulation
         x86::Assembler _assembler;
         mips::RegisterFile& _regs;
         mips::MemoryMap& _mem;
+        std::mutex _exec_mem_mutex;
 
         static constexpr x86::Register addr_reg = x86::Register::ECX;
         static constexpr x86::Register return_reg = x86::Register::EAX;
