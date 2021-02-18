@@ -5,16 +5,17 @@
 // Try to reduce
 #include <iostream>
 #include <sstream>
-#include <emulation/runtime.hpp>
-#include <utils/benchmark.hpp>
 //
 
 #include <mips/testing/runner_config.hpp>
+#include <emulation/runtime.hpp>
 #include <emulation/emulator.hpp>
 #include <emulation/interpreter.hpp>
+#include <emulation/hybrid_runtime.hpp>
 #include <mips/testing/test.hpp>
 #include <mips/testing/test_result.hpp>
 #include <utils/utils.hpp>
+#include <utils/benchmark.hpp>
 
 namespace mips::testing
 {
@@ -130,4 +131,5 @@ namespace mips::testing
 
     template<> void Runner::get_statistics<emulation::Runtime>(const emulation::Runtime& emulator, TestResult& result) const;
     template<> void Runner::get_statistics<emulation::Interpreter>(const emulation::Interpreter& emulator, TestResult& result) const;
+    template<> void Runner::get_statistics<emulation::HybridRuntime>(const emulation::HybridRuntime& emulator, TestResult& result) const;
 }

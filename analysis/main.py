@@ -87,8 +87,9 @@ def draw_jit_vs_interpreter(data):
 
 def main():
     data = {
-        'JIT': loader.load_data('output/results_jit.csv', jit=True),
-        'Interpreter': loader.load_data('output/results_interpreter.csv')
+        'JIT'           : loader.load_data('output/results_jit.csv', jit=True),
+        'Interpreter'   : loader.load_data('output/results_interpreter.csv'),
+        'Hybrid'        : loader.load_data('output/results_hybrid.csv'),
     }
 
     draw_jit_vs_interpreter(data)

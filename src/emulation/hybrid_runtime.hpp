@@ -20,6 +20,7 @@ namespace emulation
         [[nodiscard]] EmulatorState& get_state() noexcept override { return _state; }
         [[nodiscard]] const EmulatorState& get_state() const noexcept override { return _state; }
         [[nodiscard]] const common::unordered_map<uint32_t, CompiledBlock>& get_blocks() const noexcept { return _blocks; }
+        [[nodiscard]] size_t get_interpreted_instruction_count() const noexcept { return _interpreted_instructions; }
         [[nodiscard]] std::string get_debug() const;
         [[nodiscard]] std::string get_debug_with_dumps() const;
 
@@ -29,6 +30,7 @@ namespace emulation
         threading::ThreadPool<Compiler> _compiler_pool;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
         common::unordered_map<uint32_t, size_t> _block_requests;
+        size_t _interpreted_instructions;
 
         struct Result
         {

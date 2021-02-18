@@ -121,6 +121,7 @@ namespace emulation
 
             jumped = mips::utils::is_branch_instr(_state.source[_state.pc / 4]);
             _interpreter.execute_current();
+            _interpreted_instructions++;
         }
     }
 
