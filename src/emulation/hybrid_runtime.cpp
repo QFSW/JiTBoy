@@ -1,12 +1,13 @@
 #include "hybrid_runtime.hpp"
 
+#include <common/environment.hpp>
 #include <mips/utils.hpp>
 
 namespace emulation
 {
     HybridRuntime::HybridRuntime()
         : _interpreter(_state)
-        , _compiler_pool([&] { return Compiler(_state.regs, _state.mem); })
+        , _worker_pool(&common::Environment::get().thread_pool())
         , _interpreted_instructions(0)
     {
         _state.pc = instruction_mem_addr;
@@ -14,7 +15,7 @@ namespace emulation
 
     HybridRuntime::~HybridRuntime()
     {
-        _compiler_pool.shutdown();
+        _worker_pool.shutdown();
     }
 
     void HybridRuntime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
@@ -58,7 +59,7 @@ namespace emulation
         if (const auto it = _blocks.find(addr); it != _blocks.end())
             return &it->second;
 
-        if (++_block_requests[addr] == 2)
+        if (++_block_requests[addr] == 1)
             compile_block(addr);
 
         return nullptr;
@@ -66,10 +67,16 @@ namespace emulation
 
     void HybridRuntime::compile_block(const uint32_t addr)
     {
-        _compiler_pool.schedule_job(threading::Job<Compiler>([&, addr](Compiler& compiler)
+        _worker_pool.schedule_job(threading::WorkerJob<int>([this, addr](int)
         {
+            std::unique_ptr<Compiler> compiler;
+            if (!_compiler_pool.try_dequeue(compiler))
+                compiler = std::make_unique<Compiler>(_state.regs, _state.mem);
+
             const SourceBlock input = partition_block(addr);
-            const CompiledBlock block = compiler.compile(input, CompilerConfig());
+            const CompiledBlock block = compiler->compile(input, CompilerConfig());
+
+            _compiler_pool.enqueue(std::move(compiler));
 
             /*if constexpr (debug)
             {

@@ -111,6 +111,12 @@
     <ClCompile Include="src\common\environment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\threading\job.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\threading\thread_pool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/label_generator.hpp">
@@ -294,6 +300,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\common\environment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\threading\worker_pool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\threading\worker_job.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

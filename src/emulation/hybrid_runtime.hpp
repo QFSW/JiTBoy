@@ -1,6 +1,6 @@
 #pragma once
 
-#include <threading/thread_pool.hpp>
+#include <threading/worker_pool.hpp>
 #include <emulation/emulator.hpp>
 #include <emulation/compiler.hpp>
 #include <emulation/interpreter_core.hpp>
@@ -27,7 +27,8 @@ namespace emulation
     private:
         EmulatorState _state;
         InterpreterCore _interpreter;
-        threading::ThreadPool<Compiler> _compiler_pool;
+        threading::WorkerPool<int> _worker_pool;
+        common::concurrent_queue<std::unique_ptr<Compiler>> _compiler_pool;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
         common::unordered_map<uint32_t, size_t> _block_requests;
         size_t _interpreted_instructions;

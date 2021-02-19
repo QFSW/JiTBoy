@@ -211,6 +211,8 @@
     <ClCompile Include="src\mips\register_file.cpp" />
     <ClCompile Include="src\emulation\compiler.cpp" />
     <ClCompile Include="src/label_generator.cpp" />
+    <ClCompile Include="src\threading\job.cpp" />
+    <ClCompile Include="src\threading\thread_pool.cpp" />
     <ClCompile Include="src\x86\linker.cpp" />
     <ClCompile Include="src/main.cpp" />
     <ClCompile Include="src/vector_buffer.cpp" />
@@ -247,6 +249,8 @@
     <ClInclude Include="src\threading\concurrent_queue.hpp" />
     <ClInclude Include="src\threading\job.hpp" />
     <ClInclude Include="src\threading\thread_pool.hpp" />
+    <ClInclude Include="src\threading\worker_job.hpp" />
+    <ClInclude Include="src\threading\worker_pool.hpp" />
     <ClInclude Include="src\utils\csv.hpp" />
     <ClInclude Include="src\utils\regex_parser.hpp" />
     <ClInclude Include="src\mips\loader.hpp" />
