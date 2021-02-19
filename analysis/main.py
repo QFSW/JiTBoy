@@ -58,7 +58,7 @@ def draw_testbatches(data):
         plot.bar_categoric(processed, 'name', 'time', '%s/time.png' % base, yscale='log')
         plot.bar_categoric(processed, 'name', 'mips', '%s/mips.png' % base, yscale='linear')
 
-def draw_jit_vs_interpreter(data):
+def draw_x_vs_y(data, xname, yname):
     plots = [
         ('time', 'Execution Time (μs)'),
         ('mips', 'mips')
@@ -66,24 +66,29 @@ def draw_jit_vs_interpreter(data):
 
     for p in plots:
         values = []
-        jit = data['JIT']
-        interpreter = data['Interpreter']
+        x = data[xname]
+        y = data[yname]
 
-        for i in range(len(jit)):
-            name = jit[i]['name']
-            items = list(filter(lambda i: i['name'] == name, interpreter))
+        for i in range(len(x)):
+            name = x[i]['name']
+            items = list(filter(lambda i: i['name'] == name, y))
 
             if len(items) > 0:
                 row = {
-                    'jit'          : jit[i][p[0]],
-                    'interpreter'  : items[0][p[0]]
+                    xname: x[i][p[0]],
+                    yname: items[0][p[0]]
                 }
                 values.append(row)
         
         processed = {p[1]: values}
 
-        base = "%s/scatter" % output_base
-        plot.scatter(processed, 'jit', 'interpreter', '%s/%s.png' % (base, p[0]), xscale='log', yscale='log', line=True)
+        base = "%s/scatter/%s-vs-%s-" % (output_base, xname, yname)
+        plot.scatter(processed, xname, yname, '%s%s.png' % (base, p[0]), xscale='log', yscale='log', line=True)
+
+def draw_vs_scatters(data):
+    draw_x_vs_y(data, 'JIT', 'Interpreter')
+    draw_x_vs_y(data, 'Hybrid', 'Interpreter')
+    draw_x_vs_y(data, 'Hybrid', 'JIT')
 
 def main():
     data = {
@@ -92,7 +97,7 @@ def main():
         'Hybrid'        : loader.load_data('output/results_hybrid.csv'),
     }
 
-    draw_jit_vs_interpreter(data)
+    draw_vs_scatters(data)
     draw_scatters(data)
     draw_histograms(data)
     draw_testbatches(data)

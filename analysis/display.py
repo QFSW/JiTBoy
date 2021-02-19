@@ -2,7 +2,8 @@ def header_case(name):
     mapping = {
         'mips': 'mips',
         'time': 'Execution Time',
-        'jit' : 'JIT'
+        'jit' : 'JIT',
+        'JIT' : 'JIT',
     }
 
     if name in mapping:
@@ -14,7 +15,8 @@ def axis_case(name):
     mapping = {
         'mips': 'mips',
         'time': 'Time (μs)',
-        'jit' : 'JIT'
+        'jit' : 'JIT',
+        'JIT' : 'JIT',
     }
 
     if name in mapping:

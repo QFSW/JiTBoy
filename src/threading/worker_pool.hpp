@@ -29,8 +29,8 @@ namespace threading
         Factory _factory;
         std::atomic<bool> _running;
         std::atomic<size_t> _pending_jobs;
-        std::mutex _mutex;
-        std::condition_variable _shutdown_cond;
+        // std::mutex _mutex;
+        // std::condition_variable _shutdown_cond;
     };
 
     template <typename Worker>
@@ -65,7 +65,9 @@ namespace threading
             }
             
             if (--_pending_jobs == 0 && !_running)
-                _shutdown_cond.notify_one();
+            {
+                // _shutdown_cond.notify_one();
+            }
         }));
     }
 
@@ -74,10 +76,10 @@ namespace threading
     {
         _running = false;
 
-        if (pending_jobs())
+        while (pending_jobs())
         {
-            std::unique_lock<std::mutex> lock(_mutex);
-            _shutdown_cond.wait(lock, [&] { return _pending_jobs == 0; });
+            // std::unique_lock<std::mutex> lock(_mutex);
+            // _shutdown_cond.wait(lock, [&] { return _pending_jobs == 0; });
         }
     }
 }
