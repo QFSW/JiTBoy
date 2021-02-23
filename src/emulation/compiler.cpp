@@ -110,12 +110,12 @@ namespace emulation
                 _assembler.reset();
                 _assembler.jump<x86::JumpAdjust::Always>(offset);
 
+                utils::potentially_lock(_exec_mem_mutex, _locking, [&] 
                 {
-                    std::lock_guard lock(_exec_mem_mutex);
                     _allocator.uncommit(src, _assembler.size());
                     _assembler.copy(src);
                     _allocator.commit(src, _assembler.size());
-                }
+                });
 
                 unresolved_jumps.erase(unresolved_jumps.begin() + i);
             }
