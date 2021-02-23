@@ -19,7 +19,7 @@ namespace emulation
     public:
         using Config = CompilerConfig;
 
-        Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem);
+        Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, bool locking = false);
 
         CompiledBlock compile(const SourceBlock& block, Config config);
         [[nodiscard]] std::string get_debug() const;
@@ -34,6 +34,7 @@ namespace emulation
         mips::RegisterFile& _regs;
         mips::MemoryMap& _mem;
         std::mutex _exec_mem_mutex;
+        const bool _locking;
 
         static constexpr x86::Register addr_reg = x86::Register::ECX;
         static constexpr x86::Register return_reg = x86::Register::EAX;

@@ -71,7 +71,7 @@ namespace emulation
         {
             std::unique_ptr<Compiler> compiler;
             if (!_compiler_pool.try_dequeue(compiler))
-                compiler = std::make_unique<Compiler>(_state.regs, _state.mem);
+                compiler = std::make_unique<Compiler>(_state.regs, _state.mem, true);
 
             const SourceBlock input = partition_block(addr);
             const CompiledBlock block = compiler->compile(input, CompilerConfig());
@@ -121,7 +121,7 @@ namespace emulation
             {
                 if (const CompiledBlock* block = try_get_block(_state.pc))
                 {
-                    _state.pc = (*block)();
+                    _state.pc = (*block)(true);
                     continue;
                 }
             }

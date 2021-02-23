@@ -6,9 +6,10 @@
 
 namespace emulation
 {
-    Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem)
+    Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, bool locking)
         : _regs(regs)
         , _mem(mem)
+        , _locking(locking)
     { }
 
     CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)
@@ -52,13 +53,13 @@ namespace emulation
         }
 
         uint8_t* buffer;
+        utils::potentially_lock(_exec_mem_mutex, _locking, [&]
         {
-            std::lock_guard lock(_exec_mem_mutex);
             buffer = _allocator.alloc(output.size);
             _assembler.copy(buffer);
             _linker.terminate_local(buffer);
             _allocator.commit(buffer, output.size);
-        }
+        });
 
         _assembler.reset();
         output.code = reinterpret_cast<CompiledBlock::func>(buffer);
