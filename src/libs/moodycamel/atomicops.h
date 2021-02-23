@@ -18,6 +18,8 @@
 #include <cstdint>
 #include <ctime>
 
+#pragma warning(disable: 26812)
+
 // Platform detection
 #if defined(__INTEL_COMPILER)
 #define AE_ICC

@@ -31,6 +31,8 @@
 
 #pragma once
 
+#pragma warning(disable: 28182)
+
 #if defined(__GNUC__)
 // Disable -Wconversion warnings (spuriously triggered when Traits::size_t and
 // Traits::index_t are set to < 32 bits, causing integer promotion, causing warnings
