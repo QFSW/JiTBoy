@@ -49,7 +49,11 @@ namespace emulation
     const CompiledBlock& Runtime::get_or_compile_block(const uint32_t addr)
     {
         if (auto it = _blocks.find(addr); it != _blocks.end())
-            return it->second;
+        {
+            CompiledBlock& block = it.value();
+            _compiler.resolve_jumps(block, _blocks);
+            return block;
+        }
 
         const SourceBlock input = partition_block(addr);
         const CompiledBlock block = _compiler.compile(input, CompilerConfig());

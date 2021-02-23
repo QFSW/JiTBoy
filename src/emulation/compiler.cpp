@@ -13,6 +13,8 @@ namespace emulation
 
     CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)
     {
+        reset();
+
         if constexpr (debug)
         {
             std::stringstream().swap(_debug_stream);
@@ -60,8 +62,13 @@ namespace emulation
             _allocator.commit(buffer, output.size);
         }
 
-        _assembler.reset();
         output.code = reinterpret_cast<CompiledBlock::func>(buffer);
+
+        for (const auto& [offset, target] : _unresolved_jumps)
+        {
+            uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
+            output.unresolved_jumps.emplace_back(src, target);
+        }
 
         if constexpr (debug)
         {
@@ -85,6 +92,39 @@ namespace emulation
         }
 
         return output;
+    }
+
+    void Compiler::resolve_jumps(CompiledBlock& block, const common::unordered_map<uint32_t, CompiledBlock>& blocks)
+    {
+        auto& unresolved_jumps = block.unresolved_jumps;
+        for (int i = unresolved_jumps.size() - 1; i >= 0; i--)
+        {
+            const auto [src, target] = unresolved_jumps[i];
+            if (auto it = blocks.find(target); it != blocks.end())
+            {
+                const auto& target_block = it->second;
+                uint8_t* dst = reinterpret_cast<uint8_t*>(target_block.code);
+                int32_t offset = static_cast<int32_t>(dst - src);
+
+                _assembler.reset();
+                _assembler.jump<x86::JumpAdjust::Always>(offset);
+
+                {
+                    std::lock_guard lock(_exec_mem_mutex);
+                    _allocator.uncommit(src, _assembler.size());
+                    _assembler.copy(src);
+                    _allocator.commit(src, _assembler.size());
+                }
+
+                unresolved_jumps.erase(unresolved_jumps.begin() + i);
+            }
+        }
+    }
+
+    void Compiler::reset()
+    {
+        _assembler.reset();
+        _unresolved_jumps.clear();
     }
 
     std::string Compiler::get_debug() const
@@ -440,6 +480,7 @@ namespace emulation
 
     void Compiler::compile_jump(const uint32_t target)
     {
+        _unresolved_jumps.emplace_back(_assembler.size(), target);
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target);
         _assembler.instr<x86::Opcode::RET>();
     }

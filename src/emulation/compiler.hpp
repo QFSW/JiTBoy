@@ -22,6 +22,7 @@ namespace emulation
         Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem);
 
         CompiledBlock compile(const SourceBlock& block, Config config);
+        void resolve_jumps(CompiledBlock& block, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
         [[nodiscard]] std::string get_debug() const;
 
     private:
@@ -35,10 +36,14 @@ namespace emulation
         mips::MemoryMap& _mem;
         std::mutex _exec_mem_mutex;
 
+        std::vector<std::tuple<size_t, uint32_t>> _unresolved_jumps;
+
         static constexpr x86::Register addr_reg = x86::Register::ECX;
         static constexpr x86::Register return_reg = x86::Register::EAX;
         static constexpr x86::Register acc1_reg = x86::Register::EAX;
         static constexpr x86::Register acc2_reg = x86::Register::EDX;
+
+        void reset();
 
         void compile(mips::Instruction instr, uint32_t addr);
         void compile(mips::InstructionR instr, uint32_t addr);
