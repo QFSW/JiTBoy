@@ -1,5 +1,7 @@
 #include "compiled_block.hpp"
 
+#include <utils/utils.hpp>
+
 namespace emulation
 {
     CompiledBlock::CompiledBlock()
@@ -11,10 +13,12 @@ namespace emulation
         , exec_mutex(nullptr)
     { }
 
-    uint32_t CompiledBlock::operator()() const
+    uint32_t CompiledBlock::operator()(bool locking) const
     {
-        std::lock_guard lock(*exec_mutex);
-        execution_count++;
-        return code();
+        return utils::potentially_lock_return<uint32_t>(*exec_mutex, locking, [&]
+        {
+            execution_count++;
+            return code();
+        });
     }
 }

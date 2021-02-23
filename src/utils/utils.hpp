@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <mutex>
 #include <utility>
 #include <utils/detail/final_act.hpp>
 
@@ -80,4 +81,30 @@ namespace utils
     template<> inline int32_t  bswap(const int32_t value) { return _byteswap_ulong(value); }
     template<> inline uint64_t bswap(const uint64_t value) { return _byteswap_uint64(value); }
     template<> inline int64_t  bswap(const int64_t value) { return _byteswap_uint64(value); }
+
+    template <typename F>
+    void potentially_lock(std::mutex& m, const bool should_lock, F&& f)
+    {
+        if (should_lock)
+        {
+            std::lock_guard<std::mutex> lock(m);
+            f();
+        }
+        else
+        {
+            f();
+        }
+    }
+
+    template <typename T, typename F>
+    T potentially_lock_return(std::mutex& m, const bool should_lock, F&& f)
+    {
+        if (should_lock)
+        {
+            std::lock_guard<std::mutex> lock(m);
+            return f();
+        }
+
+        return f();
+    }
 }
