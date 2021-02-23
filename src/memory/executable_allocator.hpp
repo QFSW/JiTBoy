@@ -19,6 +19,7 @@ namespace memory
 
         uint8_t* alloc(size_t size);
         void commit(void* buffer, size_t size);
+        void uncommit(void* buffer, size_t size);
 
         [[nodiscard]] size_t get_used() const noexcept;
         [[nodiscard]] size_t get_free() const noexcept;
@@ -74,13 +75,7 @@ namespace memory
             throw std::runtime_error("Could not allocate executable memory: buffer full");
         }
 
-        DWORD dummy;
-        if (!VirtualProtect(buffer, size, PAGE_READWRITE, &dummy))
-        {
-            const auto error = GetLastError();
-            throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
-        }
-
+        uncommit(buffer, size);
         return buffer;
     }
 
@@ -89,6 +84,17 @@ namespace memory
     {
         DWORD dummy;
         if (!VirtualProtect(buffer, size, PAGE_EXECUTE_READ, &dummy))
+        {
+            const auto error = GetLastError();
+            throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
+        }
+    }
+
+    template <size_t BufferSize>
+    void ExecutableAllocator<BufferSize>::uncommit(void* buffer, const size_t size)
+    {
+        DWORD dummy;
+        if (!VirtualProtect(buffer, size, PAGE_READWRITE, &dummy))
         {
             const auto error = GetLastError();
             throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));

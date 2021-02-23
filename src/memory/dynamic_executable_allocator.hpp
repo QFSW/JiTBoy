@@ -15,6 +15,7 @@ namespace memory
         DynamicExecutableAllocator();
 
         uint8_t* alloc(size_t size);
+        void uncommit(void* buffer, size_t size);
         void commit(void* buffer, size_t size);
 
         [[nodiscard]] size_t get_used() const noexcept;
@@ -71,6 +72,15 @@ namespace memory
             throw std::runtime_error("Cannot commit allocation as no allocations were made");
 
         _allocators[0]->commit(buffer, size);
+    }
+
+    template <size_t PartitionSize, bool StackAlloc>
+    void DynamicExecutableAllocator<PartitionSize, StackAlloc>::uncommit(void* buffer, const size_t size)
+    {
+        if (_allocators.size() == 0) [[unlikely]]
+            throw std::runtime_error("Cannot uncommit allocation as no allocations were made");
+
+        _allocators[0]->uncommit(buffer, size);
     }
 
     template <size_t PartitionSize, bool StackAlloc>
