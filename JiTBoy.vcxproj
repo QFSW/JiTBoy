@@ -273,6 +273,7 @@
     <ClCompile Include="src\emulation\conditional_jump.cpp" />
     <ClCompile Include="src\emulation\hybrid_runtime.cpp" />
     <ClCompile Include="src\emulation\interpreter.cpp" />
+    <ClCompile Include="src\emulation\interpreter_config.cpp" />
     <ClCompile Include="src\emulation\interpreter_core.cpp" />
     <ClCompile Include="src\emulation\runtime_config.cpp" />
     <ClCompile Include="src\emulation\unconditional_jump.cpp" />

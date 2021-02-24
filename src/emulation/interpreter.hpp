@@ -4,6 +4,7 @@
 
 #include <config.hpp>
 #include <mips/instruction.hpp>
+#include <emulation/interpreter_config.hpp>
 #include <emulation/interpreter_core.hpp>
 #include <emulation/emulator_state.hpp>
 #include <emulation/emulator.hpp>
@@ -13,7 +14,9 @@ namespace emulation
     class Interpreter final : public Emulator
     {
     public:
+        using Config = InterpreterConfig;
         Interpreter();
+        Interpreter(Config config);
 
         void execute(std::vector<mips::Instruction>&& code) override;
         void load_source(std::vector<mips::Instruction>&& code, uint32_t addr = instruction_mem_addr);
@@ -26,6 +29,7 @@ namespace emulation
         [[nodiscard]] size_t get_instruction_count() const noexcept { return _executed_instructions; }
 
     private:
+        Config _config;
         EmulatorState _state;
         InterpreterCore _core;
         size_t _executed_instructions;

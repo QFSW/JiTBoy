@@ -7,7 +7,12 @@ namespace emulation
     using namespace mips;
 
     Interpreter::Interpreter()
-        : _core(_state)
+        : Interpreter(Config())
+    { }
+
+    Interpreter::Interpreter(Config config)
+        : _config(config)
+        , _core(_state)
         , _executed_instructions(0)
     {
         _state.pc = instruction_mem_addr;
