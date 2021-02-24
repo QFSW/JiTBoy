@@ -38,6 +38,7 @@ namespace emulation
         const bool _locking;
 
         std::vector<std::tuple<size_t, uint32_t>> _unresolved_jumps;
+        std::vector<std::tuple<size_t, x86::CondCode, uint32_t, uint32_t>> _unresolved_cond_jumps;
 
         static constexpr x86::Register addr_reg = x86::Register::ECX;
         static constexpr x86::Register return_reg = x86::Register::EAX;

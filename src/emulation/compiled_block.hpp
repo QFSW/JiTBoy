@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <config.hpp>
+#include <x86/x86.hpp>
 #include <emulation/compiler_config.hpp>
 
 namespace emulation
@@ -20,6 +21,7 @@ namespace emulation
         size_t source_instr_count;
         CompilerConfig config;
         std::vector<std::tuple<uint8_t*, uint32_t>> unresolved_jumps;
+        std::vector<std::tuple<uint8_t*, x86::CondCode, uint32_t, uint32_t>> unresolved_cond_jumps;
 
         mutable size_t execution_count;
         mutable std::mutex* exec_mutex;

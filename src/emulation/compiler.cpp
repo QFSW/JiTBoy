@@ -71,6 +71,12 @@ namespace emulation
             output.unresolved_jumps.emplace_back(src, target);
         }
 
+        for (const auto& [offset, cond, target_true, target_false] : _unresolved_cond_jumps)
+        {
+            uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
+            output.unresolved_cond_jumps.emplace_back(src, cond, target_true, target_false);
+        }
+
         if constexpr (debug)
         {
             const auto usage = 100 * _allocator.get_used() / static_cast<float>(_allocator.get_total());
@@ -120,12 +126,44 @@ namespace emulation
                 unresolved_jumps.erase(unresolved_jumps.begin() + i);
             }
         }
+
+        auto& unresolved_cond_jumps = block.unresolved_cond_jumps;
+        for (int i = unresolved_cond_jumps.size() - 1; i >= 0; i--)
+        {
+            const auto [src, cond, target_true, target_false] = unresolved_cond_jumps[i];
+            if (auto it = blocks.find(target_true); it != blocks.end())
+            {
+                const auto& target_true_block = it->second;
+                if (it = blocks.find(target_false); it != blocks.end())
+                {
+                    const auto& target_false_block = it->second;
+                    uint8_t* dst_true = reinterpret_cast<uint8_t*>(target_true_block.code);
+                    uint8_t* dst_false = reinterpret_cast<uint8_t*>(target_false_block.code);
+                    int32_t offset_true = static_cast<int32_t>(dst_true - src);
+                    int32_t offset_false = static_cast<int32_t>(dst_false - src);
+
+                    _assembler.reset();
+                    _assembler.jump_cond<x86::JumpAdjust::Always>(cond, offset_true);
+                    _assembler.jump<x86::JumpAdjust::Always>(offset_false - _assembler.size());
+
+                    utils::potentially_lock(_exec_mem_mutex, _locking, [&]
+                    {
+                        _allocator.uncommit(src, _assembler.size());
+                        _assembler.copy(src);
+                        _allocator.commit(src, _assembler.size());
+                    });
+
+                    unresolved_cond_jumps.erase(unresolved_cond_jumps.begin() + i);
+                }
+            }
+        }
     }
 
     void Compiler::reset()
     {
         _assembler.reset();
         _unresolved_jumps.clear();
+        _unresolved_cond_jumps.clear();
     }
 
     std::string Compiler::get_debug() const
@@ -310,6 +348,7 @@ namespace emulation
             compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.rt);
         }
 
+        _unresolved_cond_jumps.emplace_back(_assembler.size(), Cond, target_true, target_false);
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc2_reg, target_true);
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
         _assembler.move_cond<Cond>(return_reg, acc2_reg);

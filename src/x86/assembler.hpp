@@ -71,8 +71,8 @@ namespace x86
         template <JumpAdjust Adjust = JumpAdjust::Auto>
         void jump(int32_t offset);
 
-        template <CondCode Cond, JumpAdjust Adjust = JumpAdjust::Auto>
-        void jump_cond(int32_t offset);
+        template <JumpAdjust Adjust = JumpAdjust::Auto>
+        void jump_cond(CondCode cond, int32_t offset);
 
         template <JumpAdjust Adjust = JumpAdjust::Auto>
         void call(int32_t offset);
@@ -333,8 +333,8 @@ namespace x86
         }
     }
 
-    template <CondCode Cond, JumpAdjust Adjust>
-    void Assembler::jump_cond(int32_t offset)
+    template <JumpAdjust Adjust>
+    void Assembler::jump_cond(CondCode cond, int32_t offset)
     {
         _instr_count++;
 
@@ -345,14 +345,14 @@ namespace x86
 
         if (is_near) [[likely]]
         {
-            constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Opcode::Jcc_8);
+            const uint8_t op = static_cast<uint8_t>(cond) | static_cast<uint8_t>(Opcode::Jcc_8);
             
             _buffer.write(op);
             _buffer.write<int8_t>(offset);
         }
         else
         {
-            constexpr uint8_t op = static_cast<uint8_t>(Cond) | static_cast<uint8_t>(Opcode::Jcc_32);
+            const uint8_t op = static_cast<uint8_t>(cond) | static_cast<uint8_t>(Opcode::Jcc_32);
             
             _buffer.write(OpcodePrefix::Jcc_32);
             _buffer.write(op);
@@ -361,7 +361,7 @@ namespace x86
 
         if constexpr (debug)
         {
-            _debug_stream << strtools::catf("J%s %d\n", cond_to_string(Cond), offset);
+            _debug_stream << strtools::catf("J%s %d\n", cond_to_string(cond), offset);
         }
     }
 
