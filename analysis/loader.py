@@ -32,6 +32,7 @@ statistics = {
     'host instructions'             : (True , '=>'),
     'source instructions'           : (True , '=>'),
     'host instructions executed'    : (True , '=>'),
+    'source instructions emulated'  : (True , '=>'),
 
     'mips'                          : (False, '/' , 'source instructions emulated', 'time'),
     'hotness'                       : (True , '/' , 'blocks executed'             , 'blocks'),

@@ -89,10 +89,14 @@ def draw_vs_scatters(data):
     draw_x_vs_y(data, 'JIT', 'Interpreter')
     draw_x_vs_y(data, 'Hybrid', 'Interpreter')
     draw_x_vs_y(data, 'Hybrid', 'JIT')
+    draw_x_vs_y(data, 'JIT -L', 'JIT')
+    draw_x_vs_y(data, 'JIT -L', 'Interpreter')
+    draw_x_vs_y(data, 'JIT -L', 'Hybrid')
 
 def main():
     data = {
         'JIT'           : loader.load_data('output/results_jit.csv', jit=True),
+        'JIT -L'        : loader.load_data('output/results_jit(-L).csv'),
         'Interpreter'   : loader.load_data('output/results_interpreter.csv'),
         'Hybrid'        : loader.load_data('output/results_hybrid.csv'),
     }
