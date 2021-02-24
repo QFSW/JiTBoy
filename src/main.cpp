@@ -75,15 +75,14 @@ void test_bench(const int argc, char** argv)
     const std::string results_csv_path = "output/results_%s.csv";
 
     Loader loader;
-    Runner runner;
+    Runner runner(parse_config(argc, argv));
 
-    const auto config = parse_config(argc, argv);
     const auto tests = loader.load_tests("tests/mips");
     std::cout << "\n";
 
-    const auto results_jit = runner.run<emulation::Runtime>(tests, config);
-    const auto results_interpreter = runner.run<emulation::Interpreter>(tests, config);
-    const auto results_hybrid = runner.run<emulation::HybridRuntime>(tests, config);
+    const auto results_jit = runner.run<emulation::Runtime>(tests);
+    const auto results_interpreter = runner.run<emulation::Interpreter>(tests);
+    const auto results_hybrid = runner.run<emulation::HybridRuntime>(tests);
 
     std::cout << "\nWriting tests to " + tests_csv_path + "\n";
     csv::write_file(tests_csv_path, tests);

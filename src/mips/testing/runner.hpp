@@ -24,17 +24,19 @@ namespace mips::testing
     public:
         using Config = RunnerConfig;
 
+        Runner(Config config);
+
         template <typename Emulator>
-        std::vector<TestResult> run(const std::vector<Test>& tests, const Config& config);
+        std::vector<TestResult> run(const std::vector<Test>& tests);
 
     private:
-        // add debug_stream
+        Config _config;
 
         void execute_test(emulation::Emulator& emulator, const Test& test) const;
         void log_test_failure(const Test& test, const std::string& error);
 
         template <typename Emulator>
-        std::chrono::duration<double> measure_execution_time(const Test& test, const Config::Timing& config) const;
+        std::chrono::duration<double> measure_execution_time(const Test& test) const;
 
         template <typename Emulator>
         void get_statistics(const Emulator& emulator, TestResult& result) const;
@@ -43,7 +45,7 @@ namespace mips::testing
 
     // Try to move as much of this out to the .cpp as possible
     template <typename Emulator>
-    std::vector<TestResult> Runner::run(const std::vector<Test>& tests, const Config& config)
+    std::vector<TestResult> Runner::run(const std::vector<Test>& tests)
     {
         static_assert(std::is_base_of<emulation::Emulator, Emulator>::value, "Runner::run requires an emulator type");
         std::cout << "Running tests" << "\n";
@@ -90,7 +92,7 @@ namespace mips::testing
                 {
                     pass_count++;
                     result.status = TestResult::Status::Passed;
-                    result.time = measure_execution_time<Emulator>(test, config.timing);
+                    result.time = measure_execution_time<Emulator>(test);
                     get_statistics(emulator, result);
 
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
@@ -117,13 +119,13 @@ namespace mips::testing
     }
 
     template <typename Emulator>
-    std::chrono::duration<double> Runner::measure_execution_time(const Test& test, const Config::Timing& config) const
+    std::chrono::duration<double> Runner::measure_execution_time(const Test& test) const
     {
         return benchmark::measure_auto([&]
         {
             Emulator emulator;
             execute_test(emulator, test);
-        }, config.batch_size, config.precision, config.threshold);
+        }, _config.timing.batch_size, _config.timing.precision, _config.timing.threshold);
     }
 
     template <typename Emulator>

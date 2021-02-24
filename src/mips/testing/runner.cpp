@@ -2,6 +2,10 @@
 
 namespace mips::testing
 {
+    Runner::Runner(Config config)
+        : _config(config)
+    { }
+
     void Runner::execute_test(emulation::Emulator& emulator, const Test& test) const
     {
         for (const auto& initializer : test.initializers)
