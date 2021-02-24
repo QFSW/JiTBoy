@@ -1,5 +1,6 @@
 #include "compiler.hpp"
 
+#include <x86/utils.hpp>
 #include <mips/utils.hpp>
 #include <utils/functional.hpp>
 #include <utils/utils.hpp>
@@ -103,6 +104,11 @@ namespace emulation
 
     void Compiler::resolve_jumps(CompiledBlock& block, const common::unordered_map<uint32_t, CompiledBlock>& blocks)
     {
+        if constexpr (debug)
+        {
+            std::stringstream().swap(_debug_stream);
+        }
+
         auto& unresolved_jumps = block.unresolved_jumps;
         for (int i = unresolved_jumps.size() - 1; i >= 0; i--)
         {
@@ -124,6 +130,11 @@ namespace emulation
                 });
 
                 unresolved_jumps.erase(unresolved_jumps.begin() + i);
+
+                if constexpr (debug)
+                {
+                    _debug_stream << strtools::catf("Directly linked jump to 0x%x (%p -> %p)\n", target, src, dst);
+                }
             }
         }
 
@@ -131,29 +142,89 @@ namespace emulation
         for (int i = unresolved_cond_jumps.size() - 1; i >= 0; i--)
         {
             const auto [src, cond, target_true, target_false] = unresolved_cond_jumps[i];
-            if (auto it = blocks.find(target_true); it != blocks.end())
+            const auto it_true = blocks.find(target_true);
+            const auto it_false = blocks.find(target_false);
+
+            if (it_true != blocks.end() && it_false == blocks.end())
             {
-                const auto& target_true_block = it->second;
-                if (it = blocks.find(target_false); it != blocks.end())
+                const auto& target_true_block = it_true->second;
+                uint8_t* dst_true = reinterpret_cast<uint8_t*>(target_true_block.code);
+                int32_t offset_true = static_cast<int32_t>(dst_true - src);
+
+                _assembler.reset();
+                _assembler.jump_cond<x86::JumpAdjust::Always>(cond, offset_true);
+                _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
+                _assembler.instr<x86::Opcode::RET>();
+
+                utils::potentially_lock(_exec_mem_mutex, _locking, [&]
                 {
-                    const auto& target_false_block = it->second;
-                    uint8_t* dst_true = reinterpret_cast<uint8_t*>(target_true_block.code);
-                    uint8_t* dst_false = reinterpret_cast<uint8_t*>(target_false_block.code);
-                    int32_t offset_true = static_cast<int32_t>(dst_true - src);
-                    int32_t offset_false = static_cast<int32_t>(dst_false - src);
+                    _allocator.uncommit(src, _assembler.size());
+                    _assembler.copy(src);
+                    _allocator.commit(src, _assembler.size());
+                });
 
-                    _assembler.reset();
-                    _assembler.jump_cond<x86::JumpAdjust::Always>(cond, offset_true);
-                    _assembler.jump<x86::JumpAdjust::Always>(offset_false - _assembler.size());
+                // unresolved_cond_jumps.erase(unresolved_cond_jumps.begin() + i);
 
-                    utils::potentially_lock(_exec_mem_mutex, _locking, [&]
+                if constexpr (debug)
+                {
+                    _debug_stream << strtools::catf("Partially linked conditional jump to 0x%x/0x%x (%p -> %p/???)\n"
+                        , target_true, target_false, src, dst_true);
+                }
+            }
+
+            if (it_true == blocks.end() && it_false != blocks.end())
+            {
+                const auto& target_false_block = it_false->second;
+                uint8_t* dst_false = reinterpret_cast<uint8_t*>(target_false_block.code);
+                int32_t offset_false = static_cast<int32_t>(dst_false - src);
+
+                _assembler.reset();
+                _assembler.jump_cond<x86::JumpAdjust::Always>(x86::utils::negate_cond(cond), offset_false);
+                _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_true);
+                _assembler.instr<x86::Opcode::RET>();
+
+                utils::potentially_lock(_exec_mem_mutex, _locking, [&]
                     {
                         _allocator.uncommit(src, _assembler.size());
                         _assembler.copy(src);
                         _allocator.commit(src, _assembler.size());
                     });
 
-                    unresolved_cond_jumps.erase(unresolved_cond_jumps.begin() + i);
+                // unresolved_cond_jumps.erase(unresolved_cond_jumps.begin() + i);
+
+                if constexpr (debug)
+                {
+                    _debug_stream << strtools::catf("Partially linked conditional jump to 0x%x/0x%x (%p -> ???/%p)\n"
+                        , target_true, target_false, src, dst_false);
+                }
+            }
+
+            if (it_true != blocks.end() && it_false != blocks.end())
+            {
+                const auto& target_true_block = it_true->second;
+                const auto& target_false_block = it_false->second;
+                uint8_t* dst_true = reinterpret_cast<uint8_t*>(target_true_block.code);
+                uint8_t* dst_false = reinterpret_cast<uint8_t*>(target_false_block.code);
+                int32_t offset_true = static_cast<int32_t>(dst_true - src);
+                int32_t offset_false = static_cast<int32_t>(dst_false - src);
+
+                _assembler.reset();
+                _assembler.jump_cond<x86::JumpAdjust::Always>(cond, offset_true);
+                _assembler.jump<x86::JumpAdjust::Always>(offset_false - _assembler.size());
+
+                utils::potentially_lock(_exec_mem_mutex, _locking, [&]
+                {
+                    _allocator.uncommit(src, _assembler.size());
+                    _assembler.copy(src);
+                    _allocator.commit(src, _assembler.size());
+                });
+
+                unresolved_cond_jumps.erase(unresolved_cond_jumps.begin() + i);
+
+                if constexpr (debug)
+                {
+                    _debug_stream << strtools::catf("Directly linked conditional jump to 0x%x/0x%x (%p -> %p/%p)\n"
+                        , target_true, target_false, src, dst_true, dst_false);
                 }
             }
         }
@@ -566,9 +637,9 @@ namespace emulation
     void Compiler::compile_mem_write(const mips::InstructionI instr)
     {
         using namespace x86;
-        const static auto name = strtools::catf("mem_write<%s>", utils::nameof<T>());
+        const static auto name = strtools::catf("mem_write<%s>", ::utils::nameof<T>());
         const static auto label = _label_generator.generate(name);
-        const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write<T>>;
+        const static auto func = ::utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write<T>>;
 
         compile_compute_mem_addr(Register::EDX, instr);
 
@@ -589,9 +660,9 @@ namespace emulation
     void Compiler::compile_mem_read(const mips::InstructionI instr)
     {
         using namespace x86;
-        const static auto name = strtools::catf("mem_read<%s>", utils::nameof<T>());
+        const static auto name = strtools::catf("mem_read<%s>", ::utils::nameof<T>());
         const static auto label = _label_generator.generate(name);
-        const static auto func = utils::instance_proxy<uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::read<T>>;
+        const static auto func = ::utils::instance_proxy<uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::read<T>>;
 
         compile_compute_mem_addr(Register::EDX, instr);
 
@@ -616,7 +687,7 @@ namespace emulation
         _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, addr);
 
         const auto label = _label_generator.generate("member_func");
-        _linker.label_global(label, &utils::instance_proxy<>::call<T, void, F>);
+        _linker.label_global(label, &::utils::instance_proxy<>::call<T, void, F>);
         _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
         {
             _assembler.call(offset);

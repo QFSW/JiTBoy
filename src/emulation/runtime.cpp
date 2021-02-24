@@ -50,9 +50,7 @@ namespace emulation
     {
         if (auto it = _blocks.find(addr); it != _blocks.end())
         {
-            CompiledBlock& block = it.value();
-            _compiler.resolve_jumps(block, _blocks);
-            return block;
+            return it->second;
         }
 
         const SourceBlock input = partition_block(addr);
@@ -64,7 +62,15 @@ namespace emulation
                 << strtools::catf("Registering compiled block 0x%p to 0x%x\n", block.code, input.addr);
         }
 
-        return _blocks[input.addr] = block;
+        const auto& ret = _blocks[input.addr] = block;
+
+        for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+        {
+            _compiler.resolve_jumps(it.value(), _blocks);
+            if constexpr (debug) _debug_stream << _compiler.get_debug();
+        }
+
+        return ret;
     }
 
     void Runtime::execute(std::vector<mips::Instruction>&& code)

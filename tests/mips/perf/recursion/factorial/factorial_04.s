@@ -2,10 +2,16 @@
 # desc: recursive factorial using stack, computes 4!
 #
 # init: $sp = 0x20000000
-# init: $6 = 4
+# init: $6 = 7
 # assert: $5 == 24
 
+move $6, 7
+
 setup:
+    jal factorial
+    nop
+
+    move $6, 7
     jal factorial
     nop
 
