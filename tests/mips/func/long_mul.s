@@ -4,9 +4,6 @@
 # init: $2 = 30
 # assert: $3 == 600
 
-move $1, 20
-move $2, 30
-
 setup:
     addi $3, $0, 0
     beq $0, $1, skip

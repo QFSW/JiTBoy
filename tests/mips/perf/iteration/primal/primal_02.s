@@ -1,16 +1,10 @@
 # name: primal(5)
 # desc: simple iterative primal test
 #
-# init: $6 = 11
+# init: $6 = 5
 # assert: $5 == 1
 
-move $6, 524309
-
 setup:
-    jal primal
-    nop
-
-    move $6, 524309
     jal primal
     nop
 
