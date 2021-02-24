@@ -1,6 +1,7 @@
 #pragma once
 
 #include <threading/worker_pool.hpp>
+#include <emulation/hybrid_runtime_config.hpp>
 #include <emulation/emulator.hpp>
 #include <emulation/compiler.hpp>
 #include <emulation/interpreter_core.hpp>
@@ -10,7 +11,9 @@ namespace emulation
     class HybridRuntime final : public Emulator
     {
     public:
+        using Config = HybridRuntimeConfig;
         HybridRuntime();
+        HybridRuntime(Config config);
         ~HybridRuntime();
 
         void execute(std::vector<mips::Instruction>&& code) override;
@@ -25,6 +28,7 @@ namespace emulation
         [[nodiscard]] std::string get_debug_with_dumps() const;
 
     private:
+        Config _config;
         EmulatorState _state;
         InterpreterCore _interpreter;
         threading::WorkerPool<int> _worker_pool;

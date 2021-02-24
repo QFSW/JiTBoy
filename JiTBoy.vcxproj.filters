@@ -135,6 +135,9 @@
     <ClCompile Include="src\emulation\interpreter_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\emulation\hybrid_runtime_config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/label_generator.hpp">
@@ -339,6 +342,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\emulation\unconditional_jump.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulation\hybrid_runtime_config.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

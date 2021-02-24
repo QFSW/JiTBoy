@@ -6,7 +6,12 @@
 namespace emulation
 {
     HybridRuntime::HybridRuntime()
-        : _interpreter(_state)
+        : HybridRuntime(Config())
+    { }
+
+    HybridRuntime::HybridRuntime(Config config)
+        : _config(config)
+        , _interpreter(_state)
         , _worker_pool(&common::Environment::get().thread_pool())
         , _interpreted_instructions(0)
     {
@@ -59,7 +64,7 @@ namespace emulation
         if (const auto it = _blocks.find(addr); it != _blocks.end())
             return &it->second;
 
-        if (++_block_requests[addr] == 1)
+        if (++_block_requests[addr] == _config.compilation_threshold)
             compile_block(addr);
 
         return nullptr;
