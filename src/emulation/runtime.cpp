@@ -64,11 +64,11 @@ namespace emulation
 
         const auto& ret = _blocks[input.addr] = std::move(block);
 
-        /*for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+        for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
         {
             _compiler.resolve_jumps(it.value(), _blocks);
             if constexpr (debug) _debug_stream << _compiler.get_debug();
-        }*/
+        }
 
         return ret;
     }
