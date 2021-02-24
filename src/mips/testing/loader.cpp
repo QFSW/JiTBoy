@@ -56,6 +56,4 @@ namespace mips::testing
 
         return tests;
     }
-
-
 }

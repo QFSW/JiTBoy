@@ -99,7 +99,7 @@ int main(const int argc, char** argv)
 {
     try
     {
-        if (argc == 3 && strcmp(argv[1], "--single"))
+        if (argc == 3 && std::string(argv[1]) == "--single")
             execute_single(argv[2]);
         else
             test_bench(argc, argv);
