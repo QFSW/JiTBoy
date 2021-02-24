@@ -116,29 +116,9 @@ namespace emulation
         auto& unresolved_jumps = block.unresolved_jumps;
         for (int i = unresolved_jumps.size() - 1; i >= 0; i--)
         {
-            const auto [src, target] = unresolved_jumps[i];
-            if (auto it = blocks.find(target); it != blocks.end())
+            if (resolve_jump(unresolved_jumps[i], blocks))
             {
-                const auto& target_block = it->second;
-                uint8_t* dst = reinterpret_cast<uint8_t*>(target_block.code);
-                int32_t offset = static_cast<int32_t>(dst - src);
-
-                _assembler.reset();
-                _assembler.jump<x86::JumpAdjust::Always>(offset);
-
-                utils::potentially_lock(_exec_mem_mutex, _locking, [&] 
-                {
-                    _allocator.uncommit(src, _assembler.size());
-                    _assembler.copy(src);
-                    _allocator.commit(src, _assembler.size());
-                });
-
                 unresolved_jumps.erase(unresolved_jumps.begin() + i);
-
-                if constexpr (debug)
-                {
-                    _debug_stream << strtools::catf("Directly linked jump to 0x%x (%p -> %p)\n", target, src, dst);
-                }
             }
         }
 
@@ -150,6 +130,31 @@ namespace emulation
                 unresolved_cond_jumps.erase(unresolved_cond_jumps.begin() + i);
             }
         }
+    }
+
+    bool Compiler::resolve_jump(UnconditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks)
+    {
+        if (const auto it = blocks.find(jump.dst_mips); it != blocks.end())
+        {
+            const auto& target_block = it->second;
+            uint8_t* dst = reinterpret_cast<uint8_t*>(target_block.code);
+            int32_t offset = static_cast<int32_t>(dst - jump.src_x86);
+
+            _assembler.reset();
+            _assembler.jump<x86::JumpAdjust::Always>(offset);
+
+            commit_jump_resolution(jump.src_x86);
+            jump.dst_x86 = dst;
+
+            if constexpr (debug)
+            {
+                _debug_stream << strtools::catf("Directly linked jump to 0x%x (%p -> %p)\n", jump.dst_mips, jump.src_x86, dst);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     bool Compiler::resolve_jump(ConditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks)
@@ -170,7 +175,7 @@ namespace emulation
                 _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, jump.dst_false_mips);
                 _assembler.instr<x86::Opcode::RET>();
 
-                commit_jump_resolution(jump);
+                commit_jump_resolution(jump.src_x86);
                 jump.dst_true_x86 = dst_true;
 
                 if constexpr (debug)
@@ -190,7 +195,7 @@ namespace emulation
                 _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, jump.dst_true_mips);
                 _assembler.instr<x86::Opcode::RET>();
 
-                commit_jump_resolution(jump);
+                commit_jump_resolution(jump.src_x86);
                 jump.dst_false_x86 = dst_false;
 
                 if constexpr (debug)
@@ -214,7 +219,7 @@ namespace emulation
             _assembler.jump_cond<x86::JumpAdjust::Always>(jump.cond, offset_true);
             _assembler.jump<x86::JumpAdjust::Always>(offset_false - _assembler.size());
 
-            commit_jump_resolution(jump);
+            commit_jump_resolution(jump.src_x86);
             jump.dst_true_x86 = dst_true;
             jump.dst_false_x86 = dst_false;
 
@@ -230,13 +235,13 @@ namespace emulation
         return false;
     }
 
-    void Compiler::commit_jump_resolution(const ConditionalJump& jump)
+    void Compiler::commit_jump_resolution(uint8_t* src_x86)
     {
         utils::potentially_lock(_exec_mem_mutex, _locking, [&]
         {
-            _allocator.uncommit(jump.src_x86, _assembler.size());
-            _assembler.copy(jump.src_x86);
-            _allocator.commit(jump.src_x86, _assembler.size());
+            _allocator.uncommit(src_x86, _assembler.size());
+            _assembler.copy(src_x86);
+            _allocator.commit(src_x86, _assembler.size());
         });
     }
 

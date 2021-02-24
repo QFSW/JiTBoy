@@ -48,8 +48,9 @@ namespace emulation
 
         void reset();
 
+        bool resolve_jump(UnconditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
         bool resolve_jump(ConditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
-        void commit_jump_resolution(const ConditionalJump& jump);
+        void commit_jump_resolution(uint8_t* src_x86);
 
         void compile(mips::Instruction instr, uint32_t addr);
         void compile(mips::InstructionR instr, uint32_t addr);
