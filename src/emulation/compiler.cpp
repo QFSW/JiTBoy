@@ -16,11 +16,12 @@ namespace emulation
     CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)
     {
         reset();
+        _current_config = config;
 
         if constexpr (debug)
         {
             std::stringstream().swap(_debug_stream);
-            _debug_stream << strtools::catf("Compiling block 0x%x with -O%d\n", block.addr, config.o_level);
+            _debug_stream << strtools::catf("Compiling block 0x%x with %s\n", block.addr, strtools::cat(config).c_str());
 
             for (const auto& instr : block.code)
             {
@@ -66,16 +67,19 @@ namespace emulation
 
         output.code = reinterpret_cast<CompiledBlock::func>(buffer);
 
-        for (const auto& [offset, target] : _unresolved_jumps)
+        if (_current_config.direct_linking)
         {
-            uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
-            output.unresolved_jumps.emplace_back(src, target);
-        }
+            for (const auto& [offset, target] : _unresolved_jumps)
+            {
+                uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
+                output.unresolved_jumps.emplace_back(src, target);
+            }
 
-        for (const auto& [offset, cond, target_true, target_false] : _unresolved_cond_jumps)
-        {
-            uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
-            output.unresolved_cond_jumps.emplace_back(src, cond, target_true, target_false);
+            for (const auto& [offset, cond, target_true, target_false] : _unresolved_cond_jumps)
+            {
+                uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
+                output.unresolved_cond_jumps.emplace_back(src, cond, target_true, target_false);
+            }
         }
 
         if constexpr (debug)
@@ -425,7 +429,9 @@ namespace emulation
             compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.rt);
         }
 
-        _unresolved_cond_jumps.emplace_back(_assembler.size(), Cond, target_true, target_false);
+        if (_current_config.direct_linking)
+            _unresolved_cond_jumps.emplace_back(_assembler.size(), Cond, target_true, target_false);
+
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc2_reg, target_true);
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
         _assembler.move_cond<Cond>(return_reg, acc2_reg);
@@ -597,7 +603,9 @@ namespace emulation
 
     void Compiler::compile_jump(const uint32_t target)
     {
-        _unresolved_jumps.emplace_back(_assembler.size(), target);
+        if (_current_config.direct_linking)
+            _unresolved_jumps.emplace_back(_assembler.size(), target);
+
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target);
         _assembler.instr<x86::Opcode::RET>();
     }

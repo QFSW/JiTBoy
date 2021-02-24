@@ -6,7 +6,12 @@
 namespace emulation
 {
     Runtime::Runtime()
-        : _compiler(_state.regs, _state.mem)
+        : Runtime(Config())
+    { }
+
+    Runtime::Runtime(Config config)
+        : _config(config)
+        , _compiler(_state.regs, _state.mem)
     {
         _state.pc = instruction_mem_addr;
     }
@@ -54,7 +59,9 @@ namespace emulation
         }
 
         const SourceBlock input = partition_block(addr);
-        CompiledBlock block = _compiler.compile(input, CompilerConfig());
+        CompiledBlock block = _compiler.compile(input, CompilerConfig{
+            .direct_linking = _config.direct_linking
+        });
 
         if constexpr (debug)
         {
@@ -64,10 +71,13 @@ namespace emulation
 
         const auto& ret = _blocks[input.addr] = std::move(block);
 
-        for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+        if (_config.direct_linking)
         {
-            _compiler.resolve_jumps(it.value(), _blocks);
-            if constexpr (debug) _debug_stream << _compiler.get_debug();
+            for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+            {
+                _compiler.resolve_jumps(it.value(), _blocks);
+                if constexpr (debug) _debug_stream << _compiler.get_debug();
+            }
         }
 
         return ret;

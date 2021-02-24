@@ -1,8 +1,7 @@
 #pragma once
 
-#include <unordered_map>
-
 #include <config.hpp>
+#include <emulation/runtime_config.hpp>
 #include <emulation/emulator_state.hpp>
 #include <emulation/compiler.hpp>
 #include <emulation/emulator.hpp>
@@ -12,7 +11,9 @@ namespace emulation
     class Runtime final : public Emulator
     {
     public:
+        using Config = RuntimeConfig;
         Runtime();
+        Runtime(Config config);
 
         void execute(std::vector<mips::Instruction>&& code) override;
         void load_source(std::vector<mips::Instruction>&& code, uint32_t addr = instruction_mem_addr);
@@ -25,6 +26,7 @@ namespace emulation
         [[nodiscard]] std::string get_debug_with_dumps() const;
 
     private:
+        Config _config;
         EmulatorState _state;
         Compiler _compiler;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;

@@ -37,6 +37,7 @@ namespace emulation
         std::mutex _exec_mem_mutex;
         const bool _locking;
 
+        Config _current_config;
         std::vector<std::tuple<size_t, uint32_t>> _unresolved_jumps;
         std::vector<std::tuple<size_t, x86::CondCode, uint32_t, uint32_t>> _unresolved_cond_jumps;
 
