@@ -29,6 +29,9 @@ namespace mips::testing
         template <typename Emulator>
         std::vector<TestResult> run(const std::vector<Test>& tests);
 
+        template <typename Emulator>
+        std::vector<TestResult> run(const std::vector<Test>& tests, const typename Emulator::Config& emulator_config);
+
     private:
         Config _config;
 
@@ -36,16 +39,20 @@ namespace mips::testing
         void log_test_failure(const Test& test, const std::string& error);
 
         template <typename Emulator>
-        std::chrono::duration<double> measure_execution_time(const Test& test) const;
+        std::chrono::duration<double> measure_execution_time(const Test& test, const typename Emulator::Config& emulator_config) const;
 
         template <typename Emulator>
         void get_statistics(const Emulator& emulator, TestResult& result) const;
     };
 
-
-    // Try to move as much of this out to the .cpp as possible
     template <typename Emulator>
     std::vector<TestResult> Runner::run(const std::vector<Test>& tests)
+    {
+        return run<Emulator>(tests, typename Emulator::Config());
+    }
+
+    template <typename Emulator>
+    std::vector<TestResult> Runner::run(const std::vector<Test>& tests, const typename Emulator::Config& emulator_config)
     {
         static_assert(std::is_base_of<emulation::Emulator, Emulator>::value, "Runner::run requires an emulator type");
         std::cout << "Running tests" << "\n";
@@ -56,7 +63,7 @@ namespace mips::testing
 
         for (const auto& test : tests)
         {
-            Emulator emulator;
+            Emulator emulator(emulator_config);
             TestResult result;
             result.name = test.name;
 
@@ -92,7 +99,7 @@ namespace mips::testing
                 {
                     pass_count++;
                     result.status = TestResult::Status::Passed;
-                    result.time = measure_execution_time<Emulator>(test);
+                    result.time = measure_execution_time<Emulator>(test, emulator_config);
                     get_statistics(emulator, result);
 
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
@@ -119,11 +126,11 @@ namespace mips::testing
     }
 
     template <typename Emulator>
-    std::chrono::duration<double> Runner::measure_execution_time(const Test& test) const
+    std::chrono::duration<double> Runner::measure_execution_time(const Test& test, const typename Emulator::Config& emulator_config) const
     {
         return benchmark::measure_auto([&]
         {
-            Emulator emulator;
+            Emulator emulator(emulator_config);
             execute_test(emulator, test);
         }, _config.timing.batch_size, _config.timing.precision, _config.timing.threshold);
     }

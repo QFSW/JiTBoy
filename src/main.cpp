@@ -81,6 +81,7 @@ void test_bench(const int argc, char** argv)
     std::cout << "\n";
 
     const auto results_jit = runner.run<emulation::Runtime>(tests);
+    const auto results_jit_l = runner.run<emulation::Runtime>(tests, emulation::Runtime::Config{.direct_linking = true});
     const auto results_interpreter = runner.run<emulation::Interpreter>(tests);
     const auto results_hybrid = runner.run<emulation::HybridRuntime>(tests);
 
@@ -88,6 +89,7 @@ void test_bench(const int argc, char** argv)
     csv::write_file(tests_csv_path, tests);
 
     write_test_results(results_jit, "jit");
+    write_test_results(results_jit_l, "jit(-L)");
     write_test_results(results_interpreter, "interpreter");
     write_test_results(results_hybrid, "hybrid");
 
