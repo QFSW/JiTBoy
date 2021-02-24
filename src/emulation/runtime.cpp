@@ -54,7 +54,7 @@ namespace emulation
         }
 
         const SourceBlock input = partition_block(addr);
-        const CompiledBlock block = _compiler.compile(input, CompilerConfig());
+        CompiledBlock block = _compiler.compile(input, CompilerConfig());
 
         if constexpr (debug)
         {
@@ -62,13 +62,13 @@ namespace emulation
                 << strtools::catf("Registering compiled block 0x%p to 0x%x\n", block.code, input.addr);
         }
 
-        const auto& ret = _blocks[input.addr] = block;
+        const auto& ret = _blocks[input.addr] = std::move(block);
 
-        for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+        /*for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
         {
             _compiler.resolve_jumps(it.value(), _blocks);
             if constexpr (debug) _debug_stream << _compiler.get_debug();
-        }
+        }*/
 
         return ret;
     }

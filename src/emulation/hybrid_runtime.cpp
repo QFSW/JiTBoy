@@ -74,7 +74,7 @@ namespace emulation
                 compiler = std::make_unique<Compiler>(_state.regs, _state.mem, true);
 
             const SourceBlock input = partition_block(addr);
-            const CompiledBlock block = compiler->compile(input, CompilerConfig());
+            CompiledBlock block = compiler->compile(input, CompilerConfig());
 
             _compiler_pool.enqueue(std::move(compiler));
 
@@ -85,7 +85,7 @@ namespace emulation
 
             _result_queue.enqueue(Result{
                 .addr = addr,
-                .block = block,
+                .block = std::move(block),
             });
         }));
     }

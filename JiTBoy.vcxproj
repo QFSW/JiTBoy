@@ -269,6 +269,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\common\environment.cpp" />
+    <ClCompile Include="src\emulation\conditional_jump.cpp" />
     <ClCompile Include="src\emulation\hybrid_runtime.cpp" />
     <ClCompile Include="src\emulation\interpreter.cpp" />
     <ClCompile Include="src\emulation\interpreter_core.cpp" />
@@ -306,6 +307,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\environment.hpp" />
+    <ClInclude Include="src\emulation\conditional_jump.hpp" />
     <ClInclude Include="src\memory\pool_handle.hpp" />
     <ClInclude Include="src\emulation\hybrid_runtime.hpp" />
     <ClInclude Include="src\common\common.hpp" />
