@@ -25,8 +25,7 @@ namespace emulation
         std::vector<ConditionalJump> unresolved_cond_jumps;
 
         mutable size_t execution_count;
-        mutable std::mutex* exec_mutex;
 
-        uint32_t operator()(bool locking = false) const;
+        uint32_t operator()() const;
     };
 }

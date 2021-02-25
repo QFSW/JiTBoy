@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <string>
 #include <stdexcept>
-#include <unordered_map>
 
 namespace memory
 {
@@ -18,8 +17,6 @@ namespace memory
         ~ExecutableAllocator();
 
         uint8_t* alloc(size_t size);
-        void commit(void* buffer, size_t size);
-        void uncommit(void* buffer, size_t size);
 
         [[nodiscard]] size_t get_used() const noexcept;
         [[nodiscard]] size_t get_free() const noexcept;
@@ -43,7 +40,6 @@ namespace memory
     class ExecutableAllocator<0>
     {
         uint8_t* alloc(size_t) { throw std::logic_error("Empty allocator cannot allocate"); }
-        void commit(void*, size_t) { }
 
         [[nodiscard]] size_t get_used() const noexcept { return 0; }
         [[nodiscard]] size_t get_free() const noexcept { return 0; }
@@ -55,7 +51,10 @@ namespace memory
         : _page_size(get_page_size())
         , _consumed(0)
         , _dead_space(get_dead_space())
-    { }
+    {
+        DWORD dummy;
+        VirtualProtect(_buffer + _dead_space, BufferSize - _dead_space, PAGE_EXECUTE_READWRITE, &dummy);
+    }
 
     template <size_t BufferSize>
     ExecutableAllocator<BufferSize>::~ExecutableAllocator()
@@ -75,30 +74,7 @@ namespace memory
             throw std::runtime_error("Could not allocate executable memory: buffer full");
         }
 
-        uncommit(buffer, size);
         return buffer;
-    }
-
-    template <size_t BufferSize>
-    void ExecutableAllocator<BufferSize>::commit(void* buffer, const size_t size)
-    {
-        DWORD dummy;
-        if (!VirtualProtect(buffer, size, PAGE_EXECUTE_READ, &dummy))
-        {
-            const auto error = GetLastError();
-            throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
-        }
-    }
-
-    template <size_t BufferSize>
-    void ExecutableAllocator<BufferSize>::uncommit(void* buffer, const size_t size)
-    {
-        DWORD dummy;
-        if (!VirtualProtect(buffer, size, PAGE_READWRITE, &dummy))
-        {
-            const auto error = GetLastError();
-            throw std::runtime_error("VirtualProtect failed with " + std::to_string(error));
-        }
     }
 
     template <size_t BufferSize>
@@ -154,7 +130,7 @@ namespace memory
             throw std::runtime_error("VirtualQuery failed with " + std::to_string(error));
         }
 
-        auto page_start = reinterpret_cast<uint8_t*>(page_info.BaseAddress) + _page_size;
+        auto* page_start = static_cast<uint8_t*>(page_info.BaseAddress) + _page_size;
         return cache[buffer_ptr] = (page_start - _buffer) % _page_size;
     }
 }

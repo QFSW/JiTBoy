@@ -19,7 +19,7 @@ namespace emulation
     public:
         using Config = CompilerConfig;
 
-        Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, bool locking = false);
+        Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem);
 
         CompiledBlock compile(const SourceBlock& block, Config config);
         void resolve_jumps(CompiledBlock& block, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
@@ -34,8 +34,6 @@ namespace emulation
         x86::Assembler _assembler;
         mips::RegisterFile& _regs;
         mips::MemoryMap& _mem;
-        std::mutex _exec_mem_mutex;
-        const bool _locking;
 
         Config _current_config;
         std::vector<std::tuple<size_t, uint32_t>> _unresolved_jumps;
@@ -50,7 +48,6 @@ namespace emulation
 
         bool resolve_jump(UnconditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
         bool resolve_jump(ConditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
-        void commit_jump_resolution(uint8_t* src_x86);
 
         void compile(mips::Instruction instr, uint32_t addr);
         void compile(mips::InstructionR instr, uint32_t addr);

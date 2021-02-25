@@ -7,10 +7,9 @@
 
 namespace emulation
 {
-    Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem, bool locking)
+    Compiler::Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem)
         : _regs(regs)
         , _mem(mem)
-        , _locking(locking)
     { }
 
     CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)
@@ -49,22 +48,15 @@ namespace emulation
         output.host_instr_count = _assembler.instr_count();
         output.source_instr_count = block.code.size();
         output.config = config;
-        output.exec_mutex = &_exec_mem_mutex;
 
         if constexpr (debug)
         {
             _debug_stream << "Generated " << output.host_instr_count << " x86 instructions\n" << _assembler.get_debug();
         }
 
-        uint8_t* buffer;
-        utils::potentially_lock(_exec_mem_mutex, _locking, [&]
-        {
-            buffer = _allocator.alloc(output.size);
-            _assembler.copy(buffer);
-            _linker.terminate_local(buffer);
-            _allocator.commit(buffer, output.size);
-        });
-
+        uint8_t* buffer = _allocator.alloc(output.size);
+        _assembler.copy(buffer);
+        _linker.terminate_local(buffer);
         output.code = reinterpret_cast<CompiledBlock::func>(buffer);
 
         if (_current_config.direct_linking)
@@ -142,8 +134,8 @@ namespace emulation
 
             _assembler.reset();
             _assembler.jump<x86::JumpAdjust::Always>(offset);
+            _assembler.copy(jump.src_x86);
 
-            commit_jump_resolution(jump.src_x86);
             jump.dst_x86 = dst;
 
             if constexpr (debug)
@@ -174,8 +166,8 @@ namespace emulation
                 _assembler.jump_cond<x86::JumpAdjust::Always>(jump.cond, offset_true);
                 _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, jump.dst_false_mips);
                 _assembler.instr<x86::Opcode::RET>();
+                _assembler.copy(jump.src_x86);
 
-                commit_jump_resolution(jump.src_x86);
                 jump.dst_true_x86 = dst_true;
 
                 if constexpr (debug)
@@ -194,8 +186,8 @@ namespace emulation
                 _assembler.jump_cond<x86::JumpAdjust::Always>(x86::utils::negate_cond(jump.cond), offset_false);
                 _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, jump.dst_true_mips);
                 _assembler.instr<x86::Opcode::RET>();
+                _assembler.copy(jump.src_x86);
 
-                commit_jump_resolution(jump.src_x86);
                 jump.dst_false_x86 = dst_false;
 
                 if constexpr (debug)
@@ -218,8 +210,8 @@ namespace emulation
             _assembler.reset();
             _assembler.jump_cond<x86::JumpAdjust::Always>(jump.cond, offset_true);
             _assembler.jump<x86::JumpAdjust::Always>(offset_false - _assembler.size());
+            _assembler.copy(jump.src_x86);
 
-            commit_jump_resolution(jump.src_x86);
             jump.dst_true_x86 = dst_true;
             jump.dst_false_x86 = dst_false;
 
@@ -233,16 +225,6 @@ namespace emulation
         }
 
         return false;
-    }
-
-    void Compiler::commit_jump_resolution(uint8_t* src_x86)
-    {
-        utils::potentially_lock(_exec_mem_mutex, _locking, [&]
-        {
-            _allocator.uncommit(src_x86, _assembler.size());
-            _assembler.copy(src_x86);
-            _allocator.commit(src_x86, _assembler.size());
-        });
     }
 
     void Compiler::reset()
