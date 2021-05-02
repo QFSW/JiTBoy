@@ -49,7 +49,7 @@ namespace mips
 
     void Parser::extract_labels(std::string& raw)
     {
-        const static auto parser = generate_parser<std::string, std::string>(R"(([A-Za-z0-9_\.]+):(.*))");
+        static thread_local const auto parser = generate_parser<std::string, std::string>(R"(([A-Za-z0-9_\.]+):(.*))");
 
         std::string label;
         while (parser.try_evaluate(raw, label, raw))
@@ -74,7 +74,7 @@ namespace mips
 
     uint32_t Parser::parse_target_abs(const std::string& raw, const uint32_t pc, const bool can_defer)
     {
-        const static auto parser = generate_parser<uint32_t>("??");
+        static thread_local const auto parser = generate_parser<uint32_t>("??");
 
         uint32_t target = 0;
         if (!parser.try_evaluate(raw, target))
@@ -96,7 +96,7 @@ namespace mips
 
     int16_t Parser::parse_target_rel(const std::string& raw, const uint32_t pc, const bool can_defer)
     {
-        const static auto parser = generate_parser<int32_t>("??");
+        static thread_local const auto parser = generate_parser<int32_t>("??");
 
         int32_t offset = 0;
         if (!parser.try_evaluate(raw, offset))
