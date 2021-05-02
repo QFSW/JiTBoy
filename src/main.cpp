@@ -21,10 +21,10 @@ void execute_single(const std::string& path)
     std::cout << "Loading " << path << "\n";
 
     mips::Loader loader;
-    auto code = loader.load_auto(path);
+    auto program = loader.load_auto(path);
 
     std::cout << "Loaded assembly\n";
-    for (const auto& instr : code)
+    for (const auto& instr : program.source)
     {
         std::cout << instr << "\n";
     }
@@ -35,7 +35,7 @@ void execute_single(const std::string& path)
         emulation::Runtime runtime;
 
         auto _ = utils::finally([&] { std::cout << runtime.get_debug_with_dumps(); });
-        runtime.execute(utils::copy(code));
+        runtime.execute(utils::copy(program));
     });
 
     std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <mips/instruction.hpp>
+#include <mips/program.hpp>
 #include <mips/testing/assertion.hpp>
 #include <mips/testing/initializer.hpp>
 
@@ -13,7 +13,7 @@ namespace mips::testing
         std::string name;
         std::string description;
         std::string src;
-        std::vector<Instruction> code;
+        Program program;
         std::vector<Assertion> assertions;
         std::vector<Initializer> initializers;
     };

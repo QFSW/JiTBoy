@@ -14,7 +14,7 @@ namespace emulation
 
     void InterpreterCore::execute_current()
     {
-        execute(_state.source[_state.pc / 4]);
+        execute(_state.program.source[_state.pc / 4]);
         _state.pc += 4;
     }
 

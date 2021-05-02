@@ -14,34 +14,23 @@ namespace emulation
         : _config(config)
         , _core(_state)
         , _executed_instructions(0)
+    { }
+
+    void Interpreter::load_source(Program&& program)
     {
-        _state.pc = instruction_mem_addr;
+        _state.program = std::move(program);
     }
 
-    void Interpreter::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
+    void Interpreter::execute(Program&& program)
     {
-        _state.source = std::move(code);
-    }
-
-    bool Interpreter::valid_pc(const uint32_t addr) const noexcept
-    {
-        if (addr < instruction_mem_addr)
-            return false;
-        if (addr >= instruction_mem_addr + _state.source.size() * 4)
-            return false;
-        return true;
-    }
-
-    void Interpreter::execute(std::vector<mips::Instruction>&& code)
-    {
-        load_source(std::move(code));
-        execute(instruction_mem_addr);
+        load_source(std::move(program));
+        execute(_state.program.start_addr);
     }
 
     void Interpreter::execute(const uint32_t addr)
     {
         _state.pc = addr;
-        while (valid_pc(_state.pc))
+        while (_state.valid_pc())
         {
             _core.execute_current();
             _executed_instructions++;

@@ -1,13 +1,12 @@
 #include "parser.hpp"
 
-#include <unordered_map>
 #include <stdexcept>
 #include <utils/functional.hpp>
 #include <iostream>
 
 namespace mips
 {
-    std::vector<Instruction> Parser::parse_instructions(const std::string& assembly)
+    Program Parser::parse_program(const std::string& assembly)
     {
         reset();
         const auto lines = strtools::split(assembly, '\n');
@@ -37,7 +36,11 @@ namespace mips
             }, instr);
         }
 
-        return instrs;
+        return Program
+        {
+            .start_addr = 0,
+            .source = instrs,
+        };
     }
 
     void Parser::reset()

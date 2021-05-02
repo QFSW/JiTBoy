@@ -271,6 +271,7 @@
     <ClCompile Include="src\common\environment.cpp" />
     <ClCompile Include="src\emulation\compiler_config.cpp" />
     <ClCompile Include="src\emulation\conditional_jump.cpp" />
+    <ClCompile Include="src\emulation\emulator_state.cpp" />
     <ClCompile Include="src\emulation\hybrid_runtime.cpp" />
     <ClCompile Include="src\emulation\hybrid_runtime_config.cpp" />
     <ClCompile Include="src\emulation\interpreter.cpp" />
@@ -285,6 +286,7 @@
     <ClCompile Include="src\emulation\compiled_block.cpp" />
     <ClCompile Include="src\mips\encoding.cpp" />
     <ClCompile Include="src\mips\instruction.cpp" />
+    <ClCompile Include="src\mips\program.cpp" />
     <ClCompile Include="src\mips\testing\assertion.cpp" />
     <ClCompile Include="src\mips\testing\runner_config.cpp" />
     <ClCompile Include="src\mips\testing\test.cpp" />
@@ -339,6 +341,7 @@
     <ClInclude Include="src\memory\fixed_pool.hpp" />
     <ClInclude Include="src\mips\memory_map.hpp" />
     <ClInclude Include="src\error\parse_error.hpp" />
+    <ClInclude Include="src\mips\program.hpp" />
     <ClInclude Include="src\mips\testing\runner_config.hpp" />
     <ClInclude Include="src\mips\testing\test_result.hpp" />
     <ClInclude Include="src\threading\concurrent_queue.hpp" />

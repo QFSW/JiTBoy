@@ -17,8 +17,8 @@ namespace emulation
         HybridRuntime(Config config);
         ~HybridRuntime();
 
-        void execute(std::vector<mips::Instruction>&& code) override;
-        void load_source(std::vector<mips::Instruction>&& code, uint32_t addr = instruction_mem_addr);
+        void execute(mips::Program&& program) override;
+        void load_source(mips::Program&& program);
         void execute(uint32_t addr);
 
         [[nodiscard]] EmulatorState& get_state() noexcept override { return _state; }
@@ -47,11 +47,9 @@ namespace emulation
 
         common::concurrent_queue<Result> _result_queue;
 
-        static constexpr uint32_t instruction_mem_addr = 0x0;
         static constexpr bool debug = config::debug;
         std::stringstream _debug_stream;
 
-        [[nodiscard]] bool valid_pc(uint32_t addr) const noexcept;
         [[nodiscard]] SourceBlock partition_block(uint32_t addr) const;
         [[nodiscard]] const CompiledBlock* try_get_block(uint32_t addr);
         void compile_block(uint32_t addr);

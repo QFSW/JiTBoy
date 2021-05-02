@@ -12,34 +12,23 @@ namespace emulation
     Runtime::Runtime(Config config)
         : _config(config)
         , _compiler(_state.regs, _state.mem)
-    {
-        _state.pc = instruction_mem_addr;
-    }
+    { }
 
-    void Runtime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
+    void Runtime::load_source(mips::Program&& program)
     {
-        _state.source = std::move(code);
-    }
-
-    bool Runtime::valid_pc(const uint32_t addr) const noexcept
-    {
-        if (addr < instruction_mem_addr)
-            return false;
-        if (addr >= instruction_mem_addr + _state.source.size() * 4)
-            return false;
-        return true;
+        _state.program = std::move(program);
     }
 
     SourceBlock Runtime::partition_block(const uint32_t addr) const
     {
-        if (!valid_pc(addr)) [[unlikely]]
+        if (!_state.program.valid_addr(addr)) [[unlikely]]
             throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
 
-        const size_t start_index = (addr - instruction_mem_addr) / 4;
+        const size_t start_index = (addr - _state.program.start_addr) / 4;
         uint32_t end_index = start_index;
-        for (; end_index < _state.source.size(); end_index++)
+        for (; end_index < _state.program.source.size(); end_index++)
         {
-            const auto& instr = _state.source[end_index];
+            const auto& instr = _state.program.source[end_index];
             if (mips::utils::is_branch_instr(instr))
             {
                 end_index++;
@@ -47,7 +36,7 @@ namespace emulation
             }
         }
 
-        const auto code = std::span<const mips::Instruction>(_state.source.data() + start_index, end_index - start_index);
+        const auto code = std::span<const mips::Instruction>(_state.program.source.data() + start_index, end_index - start_index);
         return SourceBlock(code, addr);
     }
 
@@ -83,16 +72,16 @@ namespace emulation
         return ret;
     }
 
-    void Runtime::execute(std::vector<mips::Instruction>&& code)
+    void Runtime::execute(mips::Program&& program)
     {
-        load_source(std::move(code));
-        execute(instruction_mem_addr);
+        load_source(std::move(program));
+        execute(_state.program.start_addr);
     }
 
     void Runtime::execute(const uint32_t addr)
     {
         _state.pc = addr;
-        while (valid_pc(_state.pc))
+        while (_state.valid_pc())
         {
             const CompiledBlock& block = get_or_compile_block(_state.pc);
 

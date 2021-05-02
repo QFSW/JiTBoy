@@ -11,7 +11,7 @@ namespace mips::testing
         for (const auto& initializer : test.initializers)
             initializer.invoke(emulator.get_state().regs);
 
-        emulator.execute(utils::copy(test.code));
+        emulator.execute(utils::copy(test.program));
     }
 
     void Runner::log_test_failure(const Test& test, const std::string& error)

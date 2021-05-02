@@ -50,7 +50,7 @@ namespace mips::testing
                 test.initializers.push_back(parse_initializer(matches[1]));
         }
 
-        test.code = _mips_parser.parse_instructions(raw);
+        test.program = _mips_parser.parse_program(raw);
         return test;
     }
 

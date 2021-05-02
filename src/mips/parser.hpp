@@ -4,6 +4,7 @@
 #include <vector>
 #include <regex>
 
+#include <mips/program.hpp>
 #include <mips/instruction.hpp>
 #include <utils/strtools.hpp>
 #include <utils/regex_parser.hpp>
@@ -15,7 +16,7 @@ namespace mips
     class Parser
     {
     public:
-        [[nodiscard]] std::vector<Instruction> parse_instructions(const std::string& assembly);
+        [[nodiscard]] Program parse_program(const std::string& assembly);
 
         static [[nodiscard]] Register parse_register(const std::string& reg);
         static [[nodiscard]] uint32_t parse_constant_32(const std::string& value);

@@ -14,39 +14,28 @@ namespace emulation
         , _interpreter(_state)
         , _worker_pool(&common::Environment::get().thread_pool())
         , _interpreted_instructions(0)
-    {
-        _state.pc = instruction_mem_addr;
-    }
+    { }
 
     HybridRuntime::~HybridRuntime()
     {
         _worker_pool.shutdown();
     }
 
-    void HybridRuntime::load_source(std::vector<mips::Instruction>&& code, const uint32_t addr)
+    void HybridRuntime::load_source(mips::Program&& program)
     {
-        _state.source = std::move(code);
-    }
-
-    bool HybridRuntime::valid_pc(const uint32_t addr) const noexcept
-    {
-        if (addr < instruction_mem_addr)
-            return false;
-        if (addr >= instruction_mem_addr + _state.source.size() * 4)
-            return false;
-        return true;
+        _state.program = std::move(program);
     }
 
     SourceBlock HybridRuntime::partition_block(const uint32_t addr) const
     {
-        if (!valid_pc(addr)) [[unlikely]]
+        if (!_state.program.valid_addr(addr)) [[unlikely]]
             throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
 
-        const size_t start_index = (addr - instruction_mem_addr) / 4;
+        const size_t start_index = (addr - _state.program.start_addr) / 4;
         uint32_t end_index = start_index;
-        for (; end_index < _state.source.size(); end_index++)
+        for (; end_index < _state.program.source.size(); end_index++)
         {
-            const auto& instr = _state.source[end_index];
+            const auto& instr = _state.program.source[end_index];
             if (mips::utils::is_branch_instr(instr))
             {
                 end_index++;
@@ -54,7 +43,7 @@ namespace emulation
             }
         }
 
-        const auto code = std::span<const mips::Instruction>(_state.source.data() + start_index, end_index - start_index);
+        const auto code = std::span<const mips::Instruction>(_state.program.source.data() + start_index, end_index - start_index);
         return SourceBlock(code, addr);
     }
 
@@ -123,10 +112,10 @@ namespace emulation
         }
     }
 
-    void HybridRuntime::execute(std::vector<mips::Instruction>&& code)
+    void HybridRuntime::execute(mips::Program&& program)
     {
-        load_source(std::move(code));
-        execute(instruction_mem_addr);
+        load_source(std::move(program));
+        execute(_state.program.start_addr);
     }
 
     void HybridRuntime::execute(const uint32_t addr)
@@ -134,7 +123,7 @@ namespace emulation
         _state.pc = addr;
         bool jumped = true;
 
-        while (valid_pc(_state.pc))
+        while (_state.valid_pc())
         {
             if (jumped)
             {
@@ -145,7 +134,7 @@ namespace emulation
                 }
             }
 
-            jumped = mips::utils::is_branch_instr(_state.source[_state.pc / 4]);
+            jumped = mips::utils::is_branch_instr(_state.program.source[_state.pc / 4]);
             _interpreter.execute_current();
             _interpreted_instructions++;
         }
