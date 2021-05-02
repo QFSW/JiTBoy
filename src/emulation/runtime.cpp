@@ -76,7 +76,7 @@ namespace emulation
             for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
             {
                 _jump_resolver.resolve_jumps(it.value(), _blocks);
-                if constexpr (debug) _debug_stream << _compiler.get_debug();
+                if constexpr (debug) _debug_stream << _jump_resolver.get_debug();
             }
         }
 

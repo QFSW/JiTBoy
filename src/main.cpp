@@ -71,6 +71,8 @@ mips::testing::Runner::Config parse_config(const int argc, char** argv)
 void test_bench(const int argc, char** argv)
 {
     using namespace mips::testing;
+    using namespace emulation;
+
     const std::string tests_csv_path = "output/tests.csv";
     const std::string results_csv_path = "output/results_%s.csv";
 
@@ -80,10 +82,11 @@ void test_bench(const int argc, char** argv)
     const auto tests = loader.load_tests("tests/mips");
     std::cout << "\n";
 
-    const auto results_jit = runner.run<emulation::Runtime>(tests);
-    const auto results_jit_l = runner.run<emulation::Runtime>(tests, emulation::Runtime::Config{.direct_linking = true});
-    const auto results_interpreter = runner.run<emulation::Interpreter>(tests);
-    const auto results_hybrid = runner.run<emulation::HybridRuntime>(tests);
+    const auto results_jit = runner.run<Runtime>(tests);
+    const auto results_jit_l = runner.run<Runtime>(tests, Runtime::Config{ .direct_linking = true });
+    const auto results_interpreter = runner.run<Interpreter>(tests);
+    const auto results_hybrid = runner.run<HybridRuntime>(tests);
+    const auto results_hybrid_l = runner.run<HybridRuntime>(tests, HybridRuntime::Config{ .direct_linking = true });
 
     std::cout << "\nWriting tests to " + tests_csv_path + "\n";
     csv::write_file(tests_csv_path, tests);
@@ -92,6 +95,7 @@ void test_bench(const int argc, char** argv)
     write_test_results(results_jit_l, "jit(-L)");
     write_test_results(results_interpreter, "interpreter");
     write_test_results(results_hybrid, "hybrid");
+    write_test_results(results_hybrid_l, "hybrid(-L)");
 
     std::cout << "\n";
 }

@@ -99,6 +99,7 @@ def main():
         'JIT -L'        : loader.load_data('output/results_jit(-L).csv'),
         'Interpreter'   : loader.load_data('output/results_interpreter.csv'),
         'Hybrid'        : loader.load_data('output/results_hybrid.csv'),
+        'Hybrid -L'        : loader.load_data('output/results_hybrid(-L).csv'),
     }
 
     draw_vs_scatters(data)

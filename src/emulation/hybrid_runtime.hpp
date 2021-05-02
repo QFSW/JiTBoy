@@ -5,6 +5,7 @@
 #include <emulation/emulator.hpp>
 #include <emulation/compiler.hpp>
 #include <emulation/interpreter_core.hpp>
+#include <emulation/jump_resolver.hpp>
 
 namespace emulation
 {
@@ -31,6 +32,7 @@ namespace emulation
         Config _config;
         EmulatorState _state;
         InterpreterCore _interpreter;
+        JumpResolver _jump_resolver;
         threading::WorkerPool<int> _worker_pool;
         common::concurrent_queue<std::unique_ptr<Compiler>> _compiler_pool;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;

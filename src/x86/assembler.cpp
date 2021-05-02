@@ -4,7 +4,7 @@ namespace x86
 {
     Assembler::Assembler()
         : _buffer()
-        , _instr_count()
+        , _instr_count(0)
         , _debug_stream()
     { }
 

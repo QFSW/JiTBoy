@@ -79,7 +79,9 @@ namespace emulation
                 compiler = std::make_unique<Compiler>(_state.regs, _state.mem);
 
             const SourceBlock input = partition_block(addr);
-            CompiledBlock block = compiler->compile(input, CompilerConfig());
+            CompiledBlock block = compiler->compile(input, CompilerConfig{
+                .direct_linking = _config.direct_linking
+            });
 
             _compiler_pool.enqueue(std::move(compiler));
 
@@ -97,14 +99,26 @@ namespace emulation
 
     void HybridRuntime::consume_results()
     {
+        size_t consumed = 0;
         Result result;
+
         while (_result_queue.try_dequeue(result))
         {
             _blocks[result.addr] = result.block;
+            consumed++;
 
             if constexpr (debug)
             {
                 _debug_stream << strtools::catf("Registering compiled block 0x%p to 0x%x\n", result.block.code, result.addr);
+            }
+        }
+
+        if (_config.direct_linking && consumed > 0)
+        {
+            for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+            {
+                _jump_resolver.resolve_jumps(it.value(), _blocks);
+                if constexpr (debug) _debug_stream << _jump_resolver.get_debug();
             }
         }
     }
