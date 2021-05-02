@@ -7,7 +7,7 @@
 #include <common/common.hpp>
 #include <error/parse_error.hpp>
 
-namespace mips
+namespace utils
 {
     template <typename Inner, typename...Ts>
     class regex_parser

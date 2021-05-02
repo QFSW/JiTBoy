@@ -68,11 +68,11 @@ namespace mips
         };
 
         template <typename...Ts>
-        static [[nodiscard]] regex_parser<Inner, Ts...> generate_parser(const std::string& pattern, std::string&& err_string = default_parser_err);
+        static [[nodiscard]] utils::regex_parser<Inner, Ts...> generate_parser(const std::string& pattern, std::string&& err_string = default_parser_err);
     };
 
     template <typename...Ts>
-    regex_parser<Parser::Inner, Ts...> Parser::generate_parser(const std::string& pattern, std::string&& err_string)
+    utils::regex_parser<Parser::Inner, Ts...> Parser::generate_parser(const std::string& pattern, std::string&& err_string)
     {
         static const std::vector<std::string> substitutions =
         {
@@ -109,6 +109,6 @@ namespace mips
 
         gen = strtools::catf(R"(^\s*%s\s*$)", gen.c_str());
         std::regex reg(gen, std::regex_constants::optimize);
-        return regex_parser<Inner, Ts...>(std::move(reg), std::move(err_string));
+        return utils::regex_parser<Inner, Ts...>(std::move(reg), std::move(err_string));
     }
 }
