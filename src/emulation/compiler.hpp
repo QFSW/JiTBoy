@@ -22,8 +22,9 @@ namespace emulation
         Compiler(mips::RegisterFile& regs, mips::MemoryMap& mem);
 
         CompiledBlock compile(const SourceBlock& block, Config config);
-        void resolve_jumps(CompiledBlock& block, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
         [[nodiscard]] std::string get_debug() const;
+
+        static constexpr x86::Register return_reg = x86::Register::EAX;
 
     private:
         using Allocator = memory::DynamicExecutableAllocator<4096>;
@@ -40,14 +41,10 @@ namespace emulation
         std::vector<std::tuple<size_t, x86::CondCode, uint32_t, uint32_t>> _unresolved_cond_jumps;
 
         static constexpr x86::Register addr_reg = x86::Register::ECX;
-        static constexpr x86::Register return_reg = x86::Register::EAX;
         static constexpr x86::Register acc1_reg = x86::Register::EAX;
         static constexpr x86::Register acc2_reg = x86::Register::EDX;
 
         void reset();
-
-        bool resolve_jump(UnconditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
-        bool resolve_jump(ConditionalJump& jump, const common::unordered_map<uint32_t, CompiledBlock>& blocks);
 
         void compile(mips::Instruction instr, uint32_t addr);
         void compile(mips::InstructionR instr, uint32_t addr);

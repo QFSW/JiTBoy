@@ -4,6 +4,7 @@
 #include <emulation/runtime_config.hpp>
 #include <emulation/emulator_state.hpp>
 #include <emulation/compiler.hpp>
+#include <emulation/jump_resolver.hpp>
 #include <emulation/emulator.hpp>
 
 namespace emulation
@@ -29,6 +30,7 @@ namespace emulation
         Config _config;
         EmulatorState _state;
         Compiler _compiler;
+        JumpResolver _jump_resolver;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
 
         static constexpr uint32_t instruction_mem_addr = 0x0;

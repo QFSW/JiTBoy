@@ -276,6 +276,7 @@
     <ClCompile Include="src\emulation\interpreter.cpp" />
     <ClCompile Include="src\emulation\interpreter_config.cpp" />
     <ClCompile Include="src\emulation\interpreter_core.cpp" />
+    <ClCompile Include="src\emulation\jump_resolver.cpp" />
     <ClCompile Include="src\emulation\runtime_config.cpp" />
     <ClCompile Include="src\emulation\unconditional_jump.cpp" />
     <ClCompile Include="src\mips\memory_map.cpp" />
@@ -314,6 +315,7 @@
     <ClInclude Include="src\common\environment.hpp" />
     <ClInclude Include="src\emulation\conditional_jump.hpp" />
     <ClInclude Include="src\emulation\interpreter_config.hpp" />
+    <ClInclude Include="src\emulation\jump_resolver.hpp" />
     <ClInclude Include="src\emulation\runtime_config.hpp" />
     <ClInclude Include="src\emulation\unconditional_jump.hpp" />
     <ClInclude Include="src\emulation\hybrid_runtime_config.hpp" />
