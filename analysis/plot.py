@@ -101,6 +101,38 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
     plt.legend(loc='upper left')
     savefig(path)
 
+def line_categoric(datasets, x, y, title, path, yscale='linear'):
+    print("Drawing line chart %s" % title)
+
+    xdatas = []
+    for name in datasets:
+        xdata = list(map(lambda i: i[x], datasets[name]))
+        xdatas.append(xdata)
+
+    xdata = utils.union(*xdatas)
+    ypos = np.arange(len(xdata))
+
+    for i, name in enumerate(datasets):
+        data = datasets[name]
+
+        ydata = []
+        for j in range(len(xdata)):
+            xitem = xdata[j]
+            items = list(filter(lambda i: i[x] == xitem, data))
+            if len(items) > 0:
+                ydata.append(items[0][y])
+            else:
+                ydata.append(0)
+
+        plt.plot(xdata, ydata, '-o', label=name)
+
+    plt.ylabel(display.axis_case(y))
+    plt.yscale(yscale)
+    plt.xticks(ypos, xdata, rotation=90)
+    plt.title(title)
+    plt.legend(loc='upper left')
+    savefig(path)
+
 def histogram(datasets, x, path, bins=30, yscale='linear'):
     title = display.header_case(x)
     print("Drawing histogram %s" % title)

@@ -55,8 +55,8 @@ def draw_testbatches(data):
         r = re.compile(pattern)
         processed = data_proc.filter_rows(data, lambda x: r.match(x['name']))
 
-        plot.bar_categoric(processed, 'name', 'time', '%s/time.png' % base, yscale='log')
-        plot.bar_categoric(processed, 'name', 'mips', '%s/mips.png' % base, yscale='linear')
+        plot.line_categoric(processed, 'name', 'time', '%s: Execution Time' % name, '%s/time.png' % base, yscale='log')
+        plot.line_categoric(processed, 'name', 'mips', '%s: Performance' % name, '%s/mips.png' % base, yscale='linear')
 
 def draw_x_vs_y(data, xname, yname):
     plots = [
