@@ -28,9 +28,10 @@ namespace threading
         ThreadPool* _thread_pool;
         Factory _factory;
         std::atomic<bool> _running;
+        std::atomic<bool> _shutdown_done;
         std::atomic<size_t> _pending_jobs;
-        // std::mutex _mutex;
-        // std::condition_variable _shutdown_cond;
+        std::mutex _mutex;
+        std::condition_variable _shutdown_cond;
     };
 
     template <typename Worker>
@@ -43,6 +44,7 @@ namespace threading
         : _thread_pool(thread_pool)
         , _factory(factory)
         , _running(true)
+        , _shutdown_done(false)
         , _pending_jobs(0)
     { }
 
@@ -66,7 +68,11 @@ namespace threading
             
             if (--_pending_jobs == 0 && !_running)
             {
-                // _shutdown_cond.notify_one();
+                {
+                    std::lock_guard<std::mutex> lock(_mutex);
+                    _shutdown_done = true;
+                }
+                _shutdown_cond.notify_one();
             }
         }));
     }
@@ -78,8 +84,8 @@ namespace threading
 
         while (pending_jobs())
         {
-            // std::unique_lock<std::mutex> lock(_mutex);
-            // _shutdown_cond.wait(lock, [&] { return _pending_jobs == 0; });
+            std::unique_lock<std::mutex> lock(_mutex);
+            _shutdown_cond.wait(lock, [&] { return _shutdown_done.load(); });
         }
     }
 }
