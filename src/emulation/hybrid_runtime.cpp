@@ -26,27 +26,6 @@ namespace emulation
         _state.program = std::move(program);
     }
 
-    SourceBlock HybridRuntime::partition_block(const uint32_t addr) const
-    {
-        if (!_state.program.valid_addr(addr)) [[unlikely]]
-            throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
-
-        const size_t start_index = (addr - _state.program.start_addr) / 4;
-        uint32_t end_index = start_index;
-        for (; end_index < _state.program.source.size(); end_index++)
-        {
-            const auto& instr = _state.program.source[end_index];
-            if (mips::utils::is_branch_instr(instr))
-            {
-                end_index++;
-                break;
-            }
-        }
-
-        const auto code = std::span<const mips::Instruction>(_state.program.source.data() + start_index, end_index - start_index);
-        return SourceBlock(code, addr);
-    }
-
     const CompiledBlock* HybridRuntime::try_get_block(const uint32_t addr)
     {
         consume_results();
@@ -67,7 +46,7 @@ namespace emulation
             if (!_compiler_pool.try_dequeue(compiler))
                 compiler = std::make_unique<Compiler>(_state.regs, _state.mem);
 
-            const SourceBlock input = partition_block(addr);
+            const SourceBlock input = _block_partitioner.partition_block(_state.program, addr);
             CompiledBlock block = compiler->compile(input, CompilerConfig{
                 .direct_linking = _config.direct_linking
             });

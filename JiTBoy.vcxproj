@@ -269,6 +269,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\common\environment.cpp" />
+    <ClCompile Include="src\emulation\block_partitioner.cpp" />
     <ClCompile Include="src\emulation\compiler_config.cpp" />
     <ClCompile Include="src\emulation\conditional_jump.cpp" />
     <ClCompile Include="src\emulation\emulator_state.cpp" />
@@ -315,6 +316,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common\environment.hpp" />
+    <ClInclude Include="src\emulation\block_partitioner.hpp" />
     <ClInclude Include="src\emulation\conditional_jump.hpp" />
     <ClInclude Include="src\emulation\interpreter_config.hpp" />
     <ClInclude Include="src\emulation\jump_resolver.hpp" />
