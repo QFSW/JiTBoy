@@ -14,8 +14,13 @@ namespace emulation
 
     void InterpreterCore::execute_current()
     {
-        execute(_state.program.source[_state.pc / 4]);
+        execute(_state.pc);
         _state.pc += 4;
+    }
+
+    void InterpreterCore::execute(const uint32_t pc)
+    {
+        execute(_state.program.source[pc / 4]);
     }
 
     void InterpreterCore::execute(const Instruction instr)
@@ -117,6 +122,10 @@ namespace emulation
 
     void InterpreterCore::jump(const uint32_t target)
     {
+        const uint32_t delay_slot = _state.pc + 4;
+        if (_state.program.valid_addr(delay_slot))
+            execute(delay_slot);
+
         _state.pc = target - 4;
     }
 

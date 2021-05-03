@@ -15,6 +15,7 @@ namespace emulation
     private:
         EmulatorState& _state;
 
+        void execute(uint32_t addr);
         void execute(mips::Instruction instr);
         void execute(mips::InstructionR instr);
         void execute(mips::InstructionI instr);
