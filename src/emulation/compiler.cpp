@@ -434,17 +434,17 @@ namespace emulation
 
     void Compiler::compile_mthi(const mips::InstructionR instr)
     {
-        if (instr.rd == mips::Register::$zero) return;
+        if (instr.rs == mips::Register::$zero) return;
 
-        compile_reg_load(acc1_reg, instr.rd);
+        compile_reg_load(acc1_reg, instr.rs);
         compile_reg_write(mips::RegisterFile::hi_reg, acc1_reg);
     }
 
     void Compiler::compile_mtlo(const mips::InstructionR instr)
     {
-        if (instr.rd == mips::Register::$zero) return;
+        if (instr.rs == mips::Register::$zero) return;
 
-        compile_reg_load(acc1_reg, instr.rd);
+        compile_reg_load(acc1_reg, instr.rs);
         compile_reg_write(mips::RegisterFile::lo_reg, acc1_reg);
     }
 

@@ -233,12 +233,12 @@ namespace emulation
 
     void InterpreterCore::execute_mthi(const InstructionR instr)
     {
-        _state.regs.hi() = _state.regs[instr.rd];
+        _state.regs.hi() = _state.regs[instr.rs];
     }
 
     void InterpreterCore::execute_mtlo(const InstructionR instr)
     {
-        _state.regs.lo() = _state.regs[instr.rd];
+        _state.regs.lo() = _state.regs[instr.rs];
     }
 
     void InterpreterCore::execute_slt(const InstructionR instr)

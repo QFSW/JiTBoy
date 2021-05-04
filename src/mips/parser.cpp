@@ -334,14 +334,33 @@ namespace mips
         static thread_local const auto parser = generate_parser<Register>(R"(\w+ ??)");
         const auto [src] = parser.evaluate(instr);
 
-        return InstructionR
+        switch (opcode)
         {
-            .op = opcode,
-            .rd = src,
-            .rs = Register::$zero,
-            .rt = Register::$zero,
-            .sa = 0
-        };
+            case OpcodeR::MFHI:
+            case OpcodeR::MFLO:
+                return InstructionR
+                {
+                    .op = opcode,
+                    .rd = src,
+                    .rs = Register::$zero,
+                    .rt = Register::$zero,
+                    .sa = 0
+                };
+
+            case OpcodeR::MTHI:
+            case OpcodeR::MTLO:
+                return InstructionR
+                {
+                    .op = opcode,
+                    .rd = Register::$zero,
+                    .rs = src,
+                    .rt = Register::$zero,
+                    .sa = 0
+                };
+
+            default:
+                throw parse_error("Invalid opcode for HI/LO instruction");
+        }
     }
 
     InstructionR Parser::parse_sxxv(OpcodeR opcode, const std::string& instr) const
