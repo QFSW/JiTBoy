@@ -230,6 +230,9 @@ namespace mips
             link = Register::$ra;
         }
 
+        if (dst == link)
+            throw parse_error("jalr cannot use the link and destination register");
+
         return InstructionR
         {
             .op = OpcodeR::JALR,
