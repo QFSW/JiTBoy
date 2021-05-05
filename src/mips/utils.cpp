@@ -35,6 +35,11 @@ namespace mips::utils
         }, instr);
     }
 
+    bool is_nop(const Instruction& instr)
+    {
+        return writes_reg(instr, Register::$zero);
+    }
+
     bool writes_reg(const Instruction& instr, Register reg)
     {
         return std::visit(functional::overload{
