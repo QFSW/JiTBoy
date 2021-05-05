@@ -24,7 +24,7 @@ namespace emulation
         }
 
         // Include delay slot instruction
-        end_index = std::min(end_index + 4, program.source.size());
+        end_index = std::min(end_index + 1, program.source.size());
 
         const auto code = std::span<const mips::Instruction>(program.source.data() + start_index, end_index - start_index);
         return SourceBlock(code, addr);
