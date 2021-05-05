@@ -22,6 +22,8 @@ namespace x86
             case Opcode::RET:   return "RET";
             case Opcode::ENTER: return "ENTER";
             case Opcode::LEAVE: return "LEAVE";
+            case Opcode::PUSHF: return "PUSHF";
+            case Opcode::POPF:  return "POPF";
             case Opcode::CALL:  return "CALL";
             default:            return "???";
         }

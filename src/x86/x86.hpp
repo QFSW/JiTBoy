@@ -56,6 +56,8 @@ namespace x86
         RET   = 0xC3,
         ENTER = 0xC8,
         LEAVE = 0xC9,
+        PUSHF = 0x9C,
+        POPF  = 0x9D,
 
         JMP_8  = 0xEB,
         JMP_32 = 0xE9,
