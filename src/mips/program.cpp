@@ -8,6 +8,7 @@ namespace mips
             return false;
         if (addr >= start_addr + source.size() * 4)
             return false;
+
         return true;
     }
 }

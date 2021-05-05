@@ -15,7 +15,9 @@ namespace emulation
     CompiledBlock Compiler::compile(const SourceBlock& block, const CompilerConfig config)
     {
         reset();
-        _current_config = config;
+
+        _state.source = &block;
+        _state.config = config;
 
         if constexpr (debug)
         {
@@ -38,10 +40,13 @@ namespace emulation
         {
             compile(block.code[i], pc);
             pc += 4;
+
+            if (_state.terminated)
+                break;
         }
 
-        if (!mips::utils::is_branch_instr(block.code.back()))
-            compile_jump(pc);
+        if (!_state.terminated)
+            compile_jump(pc, pc);
 
         CompiledBlock output;
         output.size = _assembler.size();
@@ -59,15 +64,15 @@ namespace emulation
         _linker.terminate_local(buffer);
         output.code = reinterpret_cast<CompiledBlock::func>(buffer);
 
-        if (_current_config.direct_linking)
+        if (_state.config.direct_linking)
         {
-            for (const auto& [offset, target] : _unresolved_jumps)
+            for (const auto& [offset, target] : _state.unresolved_jumps)
             {
                 uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
                 output.unresolved_jumps.emplace_back(src, target);
             }
 
-            for (const auto& [offset, cond, target_true, target_false] : _unresolved_cond_jumps)
+            for (const auto& [offset, cond, target_true, target_false] : _state.unresolved_cond_jumps)
             {
                 uint8_t* src = reinterpret_cast<uint8_t*>(output.code) + offset;
                 output.unresolved_cond_jumps.emplace_back(src, cond, target_true, target_false);
@@ -98,16 +103,29 @@ namespace emulation
         return output;
     }
 
+    Compiler::State::State()
+        : source(nullptr)
+        , terminated(false)
+    { }
+
     void Compiler::reset()
     {
         _assembler.reset();
-        _unresolved_jumps.clear();
-        _unresolved_cond_jumps.clear();
+        _state = State();
     }
 
     std::string Compiler::get_debug() const
     {
         return _debug_stream.str();
+    }
+
+    std::optional<mips::Instruction> Compiler::get_instr_at_addr(const uint32_t addr)
+    {
+        const size_t index = (addr - _state.source->addr) / 4;
+        if (index >= 0 && index < _state.source->code.size())
+            return _state.source->code[index];
+
+        return std::nullopt;
     }
 
     void Compiler::compile(const mips::Instruction instr, const uint32_t addr)
@@ -130,7 +148,7 @@ namespace emulation
             case mips::OpcodeR::OR:    compile<Opcode::OR>(instr); break;
             case mips::OpcodeR::XOR:   compile<Opcode::XOR>(instr); break;
             case mips::OpcodeR::NOR:   compile_nor(instr); break;
-            case mips::OpcodeR::JR:    compile_jump(instr.rs); break;
+            case mips::OpcodeR::JR:    compile_jump(instr.rs, addr); break;
             case mips::OpcodeR::JALR:  compile_jump_and_link(instr.rs, instr.rd, addr); break;
             case mips::OpcodeR::SLT:   compile_compare<CondCode::L>(instr); break;
             case mips::OpcodeR::SLTU:  compile_compare<CondCode::B>(instr); break;
@@ -215,14 +233,14 @@ namespace emulation
         {
             case mips::OpcodeJ::JAL:
             {
-                const uint32_t link = addr + 4;
+                const uint32_t link = addr + 8;
                 compile_reg_write(mips::Register::$ra, link);
                 [[fallthrough]];
             }
             case mips::OpcodeJ::J:
             {
                 const uint32_t target = (0xF0000000 & addr) | (instr.target << 2);
-                compile_jump(target);
+                compile_jump(target, addr);
                 break;
             }
             default: throw_invalid_instr(instr);
@@ -270,8 +288,13 @@ namespace emulation
     template <x86::CondCode Cond>
     void Compiler::compile_branch(const mips::InstructionI instr, const uint32_t addr)
     {
+        std::optional<mips::Instruction> delay_slot = get_instr_at_addr(addr + 4);
+        const bool delay_slot_exists = delay_slot && !mips::utils::is_nop(delay_slot.value());
+
         const uint32_t target_true = addr + (instr.constant << 2);
-        const uint32_t target_false = addr + 4;
+        const uint32_t target_false = delay_slot_exists
+            ? addr + 8
+            : addr + 4;
 
         if (instr.rs == mips::Register::$zero)
         {
@@ -287,19 +310,27 @@ namespace emulation
             compile_reg_load<x86::Opcode::CMP>(acc2_reg, instr.rt);
         }
 
-        if (_current_config.direct_linking)
-            _unresolved_cond_jumps.emplace_back(_assembler.size(), Cond, target_true, target_false);
+        if (delay_slot_exists)
+        {
+            _assembler.instr<x86::Opcode::PUSHF>();
+            compile_delay_slot(delay_slot.value(), addr + 4);
+            _assembler.instr<x86::Opcode::POPF>();
+        }
+
+        if (_state.config.direct_linking)
+            _state.unresolved_cond_jumps.emplace_back(_assembler.size(), Cond, target_true, target_false);
 
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(acc2_reg, target_true);
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target_false);
         _assembler.move_cond<Cond>(return_reg, acc2_reg);
         _assembler.instr<x86::Opcode::RET>();
+        _state.terminated = true;
     }
 
     template <x86::CondCode Cond>
     void Compiler::compile_branch_and_link(const mips::InstructionI instr, const uint32_t addr)
     {
-        const uint32_t link = addr + 4;
+        const uint32_t link = addr + 8;
         compile_reg_write(mips::Register::$ra, link);
         compile_branch<Cond>(instr, addr);
     }
@@ -363,6 +394,14 @@ namespace emulation
     {
         compile_reg_write(mips::RegisterFile::hi_reg, x86::Register::EDX);
         compile_reg_write(mips::RegisterFile::lo_reg, x86::Register::EAX);
+    }
+
+    void Compiler::compile_delay_slot(mips::Instruction delay_instr, uint32_t delay_addr)
+    {
+        if (mips::utils::is_branch_instr(delay_instr))
+            throw std::runtime_error("Cannot compile a branch instruction inside of a branch delay slot");
+
+        compile(delay_instr, delay_addr);
     }
 
     void Compiler::throw_invalid_instr(mips::Instruction instr)
@@ -459,26 +498,52 @@ namespace emulation
         });
     }
 
-    void Compiler::compile_jump(const uint32_t target)
+    void Compiler::compile_jump(const uint32_t target, const uint32_t addr)
     {
-        if (_current_config.direct_linking)
-            _unresolved_jumps.emplace_back(_assembler.size(), target);
+        if (_state.config.direct_linking)
+            _state.unresolved_jumps.emplace_back(_assembler.size(), target);
+
+        if (auto delay_slot = get_instr_at_addr(addr + 4))
+        {
+            compile_delay_slot(delay_slot.value(), addr + 4);
+        }
 
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(return_reg, target);
         _assembler.instr<x86::Opcode::RET>();
+        _state.terminated = true;
     }
 
-    void Compiler::compile_jump(const mips::Register target)
+    void Compiler::compile_jump(const mips::Register target, const uint32_t addr)
     {
-        compile_reg_load(return_reg, target);
+        bool use_stack = false;
+
+        if (auto delay_slot = get_instr_at_addr(addr + 4))
+        {
+            use_stack = mips::utils::writes_reg(delay_slot.value(), target);
+
+            if (use_stack)
+            {
+                compile_reg_load(return_reg, target);
+                _assembler.instr<x86::Opcode::PUSH, x86::OpcodeExt::PUSH>(return_reg);
+            }
+
+            compile_delay_slot(delay_slot.value(), addr + 4);
+        }
+
+        if (use_stack)
+            _assembler.instr<x86::Opcode::POP, x86::OpcodeExt::POP>(return_reg);
+        else
+            compile_reg_load(return_reg, target);
+
         _assembler.instr<x86::Opcode::RET>();
+        _state.terminated = true;
     }
 
     void Compiler::compile_jump_and_link(const mips::Register target, const mips::Register link_reg, const uint32_t addr)
     {
-        const uint32_t link = addr + 4;
+        const uint32_t link = addr + 8;
         compile_reg_write(link_reg, link);
-        compile_jump(target);
+        compile_jump(target, addr);
     }
 
     void Compiler::compile_compute_mem_addr(const x86::Register dst, const mips::InstructionI instr)

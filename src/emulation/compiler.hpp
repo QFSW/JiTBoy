@@ -36,9 +36,19 @@ namespace emulation
         mips::RegisterFile& _regs;
         mips::MemoryMap& _mem;
 
-        Config _current_config;
-        std::vector<std::tuple<size_t, uint32_t>> _unresolved_jumps;
-        std::vector<std::tuple<size_t, x86::CondCode, uint32_t, uint32_t>> _unresolved_cond_jumps;
+        struct State
+        {
+            State();
+
+            Config config;
+            const SourceBlock* source;
+
+            bool terminated = false;
+            std::vector<std::tuple<size_t, uint32_t>> unresolved_jumps;
+            std::vector<std::tuple<size_t, x86::CondCode, uint32_t, uint32_t>> unresolved_cond_jumps;
+        };
+
+        State _state;
 
         static constexpr x86::Register addr_reg = x86::Register::ECX;
         static constexpr x86::Register acc1_reg = x86::Register::EAX;
@@ -46,10 +56,14 @@ namespace emulation
 
         void reset();
 
+        std::optional<mips::Instruction> get_instr_at_addr(uint32_t addr);
+
         void compile(mips::Instruction instr, uint32_t addr);
         void compile(mips::InstructionR instr, uint32_t addr);
         void compile(mips::InstructionI instr, uint32_t addr);
         void compile(mips::InstructionJ instr, uint32_t addr);
+
+        void compile_delay_slot(mips::Instruction delay_instr, uint32_t delay_addr);
 
         void throw_invalid_instr(mips::Instruction instr);
 
@@ -107,8 +121,8 @@ namespace emulation
         void compile_mthi(mips::InstructionR instr);
         void compile_mtlo(mips::InstructionR instr);
         void compile_call(void (*f)());
-        void compile_jump(uint32_t target);
-        void compile_jump(mips::Register target);
+        void compile_jump(uint32_t target, uint32_t addr);
+        void compile_jump(mips::Register target, uint32_t addr);
         void compile_jump_and_link(mips::Register target, mips::Register link_reg, uint32_t addr);
         void compile_compute_mem_addr(x86::Register dst, mips::InstructionI instr);
 
