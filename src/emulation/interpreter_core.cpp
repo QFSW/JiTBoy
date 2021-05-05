@@ -117,7 +117,7 @@ namespace emulation
 
     void InterpreterCore::link(const Register reg)
     {
-        _state.regs.write(reg, _state.pc + 4);
+        _state.regs.write(reg, _state.pc + 8);
     }
 
     void InterpreterCore::jump(const uint32_t target)
