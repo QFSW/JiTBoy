@@ -7,6 +7,8 @@
 setup:
     addi $3, $0, 0
     beq $0, $1, skip
+    nop
+
     beq $0, $2, skip
     nop
 
