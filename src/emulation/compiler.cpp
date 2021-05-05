@@ -398,7 +398,7 @@ namespace emulation
 
     void Compiler::compile_delay_slot(mips::Instruction delay_instr, uint32_t delay_addr)
     {
-        if (mips::utils::is_branch_instr(delay_instr))
+        if (mips::utils::is_branch_instr(delay_instr)) [[unlikely]]
             throw std::runtime_error("Cannot compile a branch instruction inside of a branch delay slot");
 
         compile(delay_instr, delay_addr);
