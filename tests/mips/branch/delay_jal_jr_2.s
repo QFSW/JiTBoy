@@ -14,7 +14,7 @@
 
 start:
     jal func
-    addi $5, $0, $ra
+    add $5, $0, $ra
     j end
     addi $7, $7, 1
 
