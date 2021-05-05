@@ -10,7 +10,7 @@ start:
     jal func
     nop
 
-    add $4, $4, $1
+    addi $4, $4, 1
     jr $1
     nop
 
