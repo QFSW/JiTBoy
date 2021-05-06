@@ -70,6 +70,8 @@ namespace emulation
         size_t consumed = 0;
         Result result;
 
+        _worker_pool.handle_exceptions(std::rethrow_exception);
+
         while (_result_queue.try_dequeue(result))
         {
             _blocks[result.addr] = result.block;

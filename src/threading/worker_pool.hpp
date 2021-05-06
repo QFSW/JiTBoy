@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex>
+#include <exception>
 
 #include <common/common.hpp>
 #include <threading/thread_pool.hpp>
@@ -19,6 +20,7 @@ namespace threading
         ~WorkerPool();
 
         void schedule_job(WorkerJob<Worker>&& job);
+        void handle_exceptions(const std::function<void(std::exception_ptr)>& handler);
         void shutdown();
 
         [[nodiscard]] bool running() const noexcept { return _running; }
@@ -32,6 +34,9 @@ namespace threading
         std::atomic<size_t> _pending_jobs;
         std::mutex _mutex;
         std::condition_variable _shutdown_cond;
+        common::concurrent_queue<std::exception_ptr> _exceptions;
+
+        void invoke_job(const WorkerJob<Worker>& job);
     };
 
     template <typename Worker>
@@ -60,11 +65,7 @@ namespace threading
         ++_pending_jobs;
         _thread_pool->schedule_job(Job([this, job=std::move(job)]
         {
-            if (_running)
-            {
-                Worker worker = _factory();
-                if (_running) job.execute(worker);
-            }
+            invoke_job(job);
             
             if (--_pending_jobs == 0 && !_running)
             {
@@ -75,6 +76,36 @@ namespace threading
                 _shutdown_cond.notify_one();
             }
         }));
+    }
+
+    template <typename Worker>
+    void WorkerPool<Worker>::invoke_job(const WorkerJob<Worker>& job)
+    {
+        if (_running)
+        {
+            Worker worker = _factory();
+            if (_running)
+            {
+                try
+                {
+                    job.execute(worker);
+                }
+                catch (...)
+                {
+                    _exceptions.enqueue(std::current_exception());
+                }
+            }
+        }
+    }
+
+    template <typename Worker>
+    void WorkerPool<Worker>::handle_exceptions(const std::function<void(std::exception_ptr)>& handler)
+    {
+        std::exception_ptr eptr;
+        while (_exceptions.try_dequeue(eptr))
+        {
+            handler(eptr);
+        }
     }
 
     template <typename Worker>
