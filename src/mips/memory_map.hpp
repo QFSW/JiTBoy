@@ -22,12 +22,12 @@ namespace mips
         common::unordered_map<uint32_t, uint32_t> _map;
     };
 
+    template<> uint32_t MemoryMap::read<uint32_t>(uint32_t addr);
+    template<> uint32_t MemoryMap::read<int32_t>(uint32_t addr);
+
     template <typename T>
     uint32_t MemoryMap::read(const uint32_t addr)
     {
-        if constexpr (std::is_same_v<T, uint32_t>) return read_word(addr);
-        if constexpr (std::is_same_v<T, int32_t>)  return read_word(addr);
-
         const uint32_t offset = addr % sizeof(uint32_t);
         const uint32_t word = _map[addr - offset];
         const int shamt = 8 * (sizeof(uint32_t) - offset - sizeof(T));
@@ -36,21 +36,19 @@ namespace mips
         return static_cast<uint32_t>(data);
     }
 
+    template<> void MemoryMap::write<uint32_t>(uint32_t addr, uint32_t value);
+    template<> void MemoryMap::write<int32_t>(uint32_t addr, uint32_t value);
+
     template <typename T>
     void MemoryMap::write(const uint32_t addr, const uint32_t value)
     {
-        if constexpr (std::is_same_v<T, uint32_t>)     write_word(addr, value);
-        else if constexpr (std::is_same_v<T, int32_t>) write_word(addr, value);
-        else
-        {
-            const uint32_t offset = addr % sizeof(uint32_t);
-            uint32_t& word = _map[addr - offset];
+        const uint32_t offset = addr % sizeof(uint32_t);
+        uint32_t& word = _map[addr - offset];
 
-            const int shamt = 8 * (sizeof(uint32_t) - offset - sizeof(T));
-            const uint32_t mask = ~0 ^ (static_cast<uint32_t>(T(~0)) << shamt);
+        const int shamt = 8 * (sizeof(uint32_t) - offset - sizeof(T));
+        const uint32_t mask = ~0 ^ (static_cast<uint32_t>(T(~0)) << shamt);
 
-            word &= mask;
-            word |= value << shamt;
-        }
+        word &= mask;
+        word |= value << shamt;
     }
 }
