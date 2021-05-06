@@ -1,7 +1,7 @@
-# desc: lwl to zero initialized register
+# desc: lwl to non-zero initialized register
 #
 # init: $sp = 0x20000000
-# init: $1 = 0x00000000
+# init: $1 = 0xFFFFFFFF
 # init: $2 = 0x01234567
 # init: $3 = 0x89ABCDEF
 #

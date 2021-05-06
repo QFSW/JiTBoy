@@ -5,12 +5,12 @@
 # init: $2 = 0x01234567
 # init: $3 = 0x89ABCDEF
 #
-# assert: $1 == 0x01234567
+# assert: $1 == 0x45670000
 
 setup:
     sw $2, 0($sp)
     sw $3, 4($sp)    
 
 test:
-    lwl $1, 0($sp)
+    lwl $1, 2($sp)
     nop
