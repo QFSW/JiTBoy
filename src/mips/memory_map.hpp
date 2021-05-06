@@ -11,6 +11,7 @@ namespace mips
         void write_word(uint32_t addr, uint32_t word);
 
         [[nodiscard]] uint32_t load_word_left(uint32_t addr, uint32_t in);
+        [[nodiscard]] uint32_t load_word_right(uint32_t addr, uint32_t in);
 
         template <typename T>
         [[nodiscard]] uint32_t read(uint32_t addr);

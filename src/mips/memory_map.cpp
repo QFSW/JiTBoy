@@ -20,10 +20,26 @@ namespace mips
         const uint32_t word_addr = addr - offset;
         const uint32_t raw_word = read_word(word_addr);
 
-        const uint32_t old_mask = utils::create_low_bitmask<uint32_t>(offset * 8);
+        const uint8_t new_bytes = sizeof(uint32_t) - offset;
+        const uint32_t new_mask = utils::create_high_bitmask<uint32_t>(new_bytes * 8);
 
-        const uint32_t new_word = ~old_mask & (raw_word << offset * 8);
-        const uint32_t old_word = old_mask & in;
+        const uint32_t new_word = new_mask & (raw_word << offset * 8);
+        const uint32_t old_word = ~new_mask & in;
+
+        return new_word | old_word;
+    }
+
+    uint32_t MemoryMap::load_word_right(const uint32_t addr, const uint32_t in)
+    {
+        const uint8_t offset = addr % sizeof(uint32_t);
+        const uint32_t word_addr = addr - offset;
+        const uint32_t raw_word = read_word(word_addr);
+
+        const uint8_t new_bytes = 1 + offset;
+        const uint32_t new_mask = utils::create_low_bitmask<uint32_t>(new_bytes * 8);
+
+        const uint32_t new_word = new_mask & (raw_word >> (sizeof(uint32_t) - new_bytes) * 8);
+        const uint32_t old_word = ~new_mask & in;
 
         return new_word | old_word;
     }
