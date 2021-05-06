@@ -111,12 +111,18 @@ namespace utils
     template <typename T>
     constexpr T create_low_bitmask(const uint8_t bits)
     {
+        if (bits == sizeof(T) * 8)
+            return ~0;
+
         return ~0 ^ (T(~0) << bits);
     }
 
     template <typename T>
     constexpr T create_high_bitmask(const uint8_t bits)
     {
+        if (bits == 0)
+            return 0;
+
         uint8_t shamt = 8 * sizeof(T) - bits;
         return T(~0) << shamt;
     }
