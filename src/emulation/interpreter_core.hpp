@@ -75,6 +75,7 @@ namespace emulation
         void execute_bgtz(mips::InstructionI instr);
         void execute_blez(mips::InstructionI instr);
         void execute_bne(mips::InstructionI instr);
+        void execute_lwl(mips::InstructionI instr);
         void execute_bgez(mips::InstructionI instr);
         void execute_bgezal(mips::InstructionI instr);
         void execute_bltz(mips::InstructionI instr);

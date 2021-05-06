@@ -107,4 +107,17 @@ namespace utils
 
         return f();
     }
+
+    template <typename T>
+    constexpr T create_low_bitmask(const uint8_t bits)
+    {
+        return ~0 ^ (T(~0) << bits);
+    }
+
+    template <typename T>
+    constexpr T create_high_bitmask(const uint8_t bits)
+    {
+        uint8_t shamt = 8 * sizeof(T) - bits;
+        return T(~0) << shamt;
+    }
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include <common/common.hpp>
 
 namespace mips
@@ -11,6 +9,8 @@ namespace mips
     public:
         [[nodiscard]] uint32_t read_word(uint32_t addr);
         void write_word(uint32_t addr, uint32_t word);
+
+        [[nodiscard]] uint32_t load_word_left(uint32_t addr, uint32_t in);
 
         template <typename T>
         [[nodiscard]] uint32_t read(uint32_t addr);

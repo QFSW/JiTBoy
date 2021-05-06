@@ -88,7 +88,7 @@ namespace emulation
             case OpcodeI::BGTZ:   execute_bgtz(instr); break;
             case OpcodeI::BLEZ:   execute_blez(instr); break;
             case OpcodeI::BNE:    execute_bne(instr); break;
-            // case OpcodeI::LWL:
+            case OpcodeI::LWL:    execute_lwl(instr); break;
             // case OpcodeI::LWR:
             case OpcodeI::BGEZ:   execute_bgez(instr); break;
             case OpcodeI::BGEZAL: execute_bgezal(instr); break;
@@ -406,6 +406,13 @@ namespace emulation
     {
         if (_state.regs[instr.rs] != _state.regs[instr.rt])
             branch(instr);
+    }
+
+    void InterpreterCore::execute_lwl(const InstructionI instr)
+    {
+        const uint32_t addr = calc_mem_target(instr);
+        const uint32_t result = _state.mem.load_word_left(addr, _state.regs[instr.rt]);
+        _state.regs.write(instr.rt, result);
     }
 
     void InterpreterCore::execute_bgez(const InstructionI instr)
