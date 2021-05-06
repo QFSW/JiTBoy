@@ -22,7 +22,7 @@ namespace mips
 
         const uint32_t mask = utils::create_high_bitmask<uint32_t>(offset * 8);
 
-        const uint32_t new_word = mask & (raw_word << offset);
+        const uint32_t new_word = mask & (raw_word << offset * 8);
         const uint32_t old_word = ~mask & in;
 
         return new_word | old_word;
