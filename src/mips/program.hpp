@@ -11,5 +11,6 @@ namespace mips
         std::vector<Instruction> source;
 
         [[nodiscard]] bool valid_addr(uint32_t addr) const noexcept;
+        [[nodiscard]] Instruction& at(uint32_t addr);
     };
 }

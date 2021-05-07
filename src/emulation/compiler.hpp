@@ -38,10 +38,8 @@ namespace emulation
 
         struct State
         {
-            State();
-
             Config config;
-            const SourceBlock* source;
+            const SourceBlock* source = nullptr;
 
             bool terminated = false;
             std::vector<std::tuple<size_t, uint32_t>> unresolved_jumps;

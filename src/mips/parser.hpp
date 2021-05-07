@@ -24,9 +24,16 @@ namespace mips
         static [[nodiscard]] uint8_t parse_constant_8(const std::string& value);
 
     private:
-        uint32_t _pc = 0;
-        common::unordered_map<std::string, uint32_t> _labels;
-        common::unordered_map<uint32_t, std::string> _unresolved_locals;
+        struct State
+        {
+            uint32_t start_addr = 0;
+            uint32_t pc = 0;
+
+            common::unordered_map<std::string, uint32_t> labels;
+            common::unordered_map<uint32_t, std::string> unresolved_locals;
+        };
+
+        State _state;
 
         void reset();
         void extract_labels(std::string& raw);

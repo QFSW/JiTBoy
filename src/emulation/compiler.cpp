@@ -103,11 +103,6 @@ namespace emulation
         return output;
     }
 
-    Compiler::State::State()
-        : source(nullptr)
-        , terminated(false)
-    { }
-
     void Compiler::reset()
     {
         _assembler.reset();

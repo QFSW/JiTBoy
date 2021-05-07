@@ -11,4 +11,9 @@ namespace mips
 
         return true;
     }
+
+    [[nodiscard]] Instruction& Program::at(const uint32_t addr)
+    {
+        return source[(addr - start_addr) / 4];
+    }
 }

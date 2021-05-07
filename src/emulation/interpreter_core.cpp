@@ -20,7 +20,7 @@ namespace emulation
 
     void InterpreterCore::execute(const uint32_t pc)
     {
-        execute(_state.program.source[pc / 4]);
+        execute(_state.program.at(pc));
     }
 
     void InterpreterCore::execute(const Instruction instr)

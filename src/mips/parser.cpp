@@ -9,6 +9,10 @@ namespace mips
     Program Parser::parse_program(const std::string& assembly)
     {
         reset();
+
+        _state.start_addr = 0x100;
+        _state.pc = _state.start_addr;
+
         const auto lines = strtools::split(assembly, '\n');
 
         std::vector<Instruction> instrs;
@@ -22,13 +26,13 @@ namespace mips
             if (!strtools::isspace(preprocessed))
             {
                 instrs.push_back(parse_instruction(preprocessed));
-                _pc += 4;
+                _state.pc += 4;
             }
         }
 
-        for (const auto& [pc, label] : _unresolved_locals)
+        for (const auto& [pc, label] : _state.unresolved_locals)
         {
-            auto& instr = instrs[pc / 4];
+            auto& instr = instrs[(pc - _state.start_addr) / 4];
             std::visit(functional::overload{
                 [&](InstructionI& x) { x.constant = parse_target_rel(label, pc, false); },
                 [&](InstructionJ& x) { x.target = parse_target_abs(label, pc, false); },
@@ -38,16 +42,14 @@ namespace mips
 
         return Program
         {
-            .start_addr = 0,
+            .start_addr = _state.start_addr,
             .source = instrs,
         };
     }
 
     void Parser::reset()
     {
-        _pc = 0;
-        _labels.clear();
-        _unresolved_locals.clear();
+        _state = State();
     }
 
     void Parser::extract_labels(std::string& raw)
@@ -57,16 +59,16 @@ namespace mips
         std::string label;
         while (parser.try_evaluate(raw, label, raw))
         {
-            if (_labels.find(label) != _labels.end())
-                throw std::runtime_error(strtools::catf("Label %s was registered twice (0x%x and 0x%x)", label.c_str(), _labels[label], _pc));
+            if (_state.labels.find(label) != _state.labels.end())
+                throw std::runtime_error(strtools::catf("Label %s was registered twice (0x%x and 0x%x)", label.c_str(), _state.labels[label], _state.pc));
 
-            _labels[label] = _pc;
+            _state.labels[label] = _state.pc;
         }
     }
 
     bool Parser::try_resolve_label(const std::string& label, uint32_t& addr) const
     {
-        if (auto it = _labels.find(label); it != _labels.end())
+        if (auto it = _state.labels.find(label); it != _state.labels.end())
         {
             addr = it->second;
             return true;
@@ -85,7 +87,7 @@ namespace mips
             if (!try_resolve_label(raw, target))
             {
                 if (can_defer)
-                    _unresolved_locals[pc] = raw;
+                    _state.unresolved_locals[pc] = raw;
                 else
                     throw std::runtime_error("Could not parse or resolve target " + raw);
             }
@@ -108,7 +110,7 @@ namespace mips
             if (!try_resolve_label(raw, target))
             {
                 if (can_defer)
-                    _unresolved_locals[pc] = raw;
+                    _state.unresolved_locals[pc] = raw;
                 else
                     throw std::runtime_error("Could not parse or resolve target " + raw);
             }
@@ -267,7 +269,7 @@ namespace mips
             .op = OpcodeI::BEQ,
             .rt = Register::$zero,
             .rs = Register::$zero,
-            .constant = parse_target_rel(target, _pc)
+            .constant = parse_target_rel(target, _state.pc)
         };
     }
 
@@ -281,7 +283,7 @@ namespace mips
             .op = OpcodeI::BGEZAL,
             .rt = Register::$zero,
             .rs = Register::$zero,
-            .constant = parse_target_rel(target, _pc)
+            .constant = parse_target_rel(target, _state.pc)
         };
     }
 
@@ -467,7 +469,7 @@ namespace mips
             .op = opcode,
             .rt = dst,
             .rs = src,
-            .constant = parse_target_rel(target, _pc)
+            .constant = parse_target_rel(target, _state.pc)
         };
     }
 
@@ -481,7 +483,7 @@ namespace mips
             .op = opcode,
             .rt = Register::$zero,
             .rs = src,
-            .constant = parse_target_rel(target, _pc)
+            .constant = parse_target_rel(target, _state.pc)
         };
     }
 
@@ -507,7 +509,7 @@ namespace mips
         return InstructionJ
         {
             .op = opcode,
-            .target = parse_target_abs(target, _pc)
+            .target = parse_target_abs(target, _state.pc)
         };
     }
 
