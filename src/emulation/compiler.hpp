@@ -132,6 +132,21 @@ namespace emulation
         template <typename T = uint32_t>
         void compile_mem_read(mips::InstructionI instr);
 
+        void compile_lwl(mips::InstructionI instr);
+        void compile_lwr(mips::InstructionI instr);
+
+        template <typename F>
+        void compile_mem_instr(mips::InstructionI instr, F func, const std::string& name, bool has_arg, bool has_return);
+
+        template <typename F, typename T, typename Pre>
+        void compile_call_instance(F func, const std::string& label, T& instance, Pre pre_call);
+
+        template <typename F, typename T>
+        void compile_call_instance(F func, const std::string& label, T& instance);
+
+        template <typename F>
+        void compile_call(F func, const std::string& label);
+
         template <typename T, void(T::* F)()>
         void compile_call(T& obj);
 

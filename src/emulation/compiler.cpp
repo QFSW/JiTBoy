@@ -216,6 +216,8 @@ namespace emulation
             case mips::OpcodeI::SW:     compile_mem_write<uint32_t>(instr); break;
             case mips::OpcodeI::SB:     compile_mem_write<uint8_t>(instr); break;
             case mips::OpcodeI::SH:     compile_mem_write<uint16_t>(instr); break;
+            case mips::OpcodeI::LWL:    compile_lwl(instr); break;
+            case mips::OpcodeI::LWR:    compile_lwr(instr); break;
             case mips::OpcodeI::LUI:    compile_reg_write(instr.rt, instr.constant << 16); break;
             default: throw_invalid_instr(instr);
         }
@@ -573,47 +575,79 @@ namespace emulation
     template <typename T>
     void Compiler::compile_mem_write(const mips::InstructionI instr)
     {
-        using namespace x86;
-        const static auto name = strtools::catf("mem_write<%s>", ::utils::nameof<T>());
-        const static auto label = _label_generator.generate(name);
-        const static auto func = ::utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write<T>>;
-
-        compile_compute_mem_addr(Register::EDX, instr);
-
-        _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
-        _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
-        _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
-
-        _linker.label_global(label, func);
-        _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
-        {
-            _assembler.call(offset);
-        });
-
-        _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
+        const static auto name = strtools::catf("__mem_write<%s>", utils::nameof<T>());
+        const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, void, &mips::MemoryMap::write<T>>;
+        compile_mem_instr(instr, func, name, true, false);
     }
 
     template <typename T>
     void Compiler::compile_mem_read(const mips::InstructionI instr)
     {
-        using namespace x86;
-        const static auto name = strtools::catf("mem_read<%s>", ::utils::nameof<T>());
-        const static auto label = _label_generator.generate(name);
+        const static auto name = strtools::catf("__mem_read<%s>", utils::nameof<T>());
         const static auto func = ::utils::instance_proxy<uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::read<T>>;
+        compile_mem_instr(instr, func, name, false, true);
+    }
+
+    void Compiler::compile_lwl(const mips::InstructionI instr)
+    {
+        const static auto name = "__mem_lwl";
+        const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::load_word_left>;
+        compile_mem_instr(instr, func, name, true, true);
+    }
+
+    void Compiler::compile_lwr(const mips::InstructionI instr)
+    {
+        const static auto name = "__mem_lwr";
+        const static auto func = utils::instance_proxy<uint32_t, uint32_t>::call<mips::MemoryMap, uint32_t, &mips::MemoryMap::load_word_right>;
+        compile_mem_instr(instr, func, name, true, true);
+    }
+
+    template <typename F>
+    void Compiler::compile_mem_instr(mips::InstructionI instr, F func, const std::string& name, bool has_arg, bool has_return)
+    {
+        using namespace x86;
 
         compile_compute_mem_addr(Register::EDX, instr);
+        compile_call_instance(func, name, _mem, [&]
+        {
+            if (has_arg)
+            {
+                _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH, InstrMode::RM>(addr_reg, calc_reg_offset(instr.rt));
+            }
+        });
+
+        if (has_return && instr.rt != mips::Register::$zero)
+            compile_reg_write(instr.rt, Register::EAX);
+    }
+
+    template <typename F, typename T, typename Pre>
+    void Compiler::compile_call_instance(F func, const std::string& label, T& instance, Pre pre_call)
+    {
+        using namespace x86;
 
         _assembler.instr<Opcode::PUSH, OpcodeExt::PUSH>(addr_reg);
-        _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&_mem));
+        pre_call();
+        _assembler.instr_imm<Opcode::MOV_I, OpcodeExt::MOV_I>(Register::ECX, reinterpret_cast<uint32_t>(&instance));
 
+        compile_call(func, label);
+
+        _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
+    }
+
+    template <typename F, typename T>
+    void Compiler::compile_call_instance(F func, const std::string& label, T& instance)
+    {
+        compile_call_instance(func, label, instance, []{});
+    }
+
+    template <typename F>
+    void Compiler::compile_call(F func, const std::string& label)
+    {
         _linker.label_global(label, func);
         _linker.resolve(label, [&] { return _assembler.size(); }, [&](const int32_t offset)
         {
             _assembler.call(offset);
         });
-
-        _assembler.instr<Opcode::POP, OpcodeExt::POP>(addr_reg);
-        compile_reg_write(instr.rt, Register::EAX);
     }
 
     template <typename T, void(T::* F)()>
