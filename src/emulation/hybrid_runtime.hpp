@@ -1,6 +1,7 @@
 #pragma once
 
 #include <threading/worker_pool.hpp>
+#include <threading/result_queue.hpp>
 #include <emulation/hybrid_runtime_config.hpp>
 #include <emulation/emulator.hpp>
 #include <emulation/compiler.hpp>
@@ -47,7 +48,7 @@ namespace emulation
             CompiledBlock block;
         };
 
-        common::concurrent_queue<Result> _result_queue;
+        threading::ResultQueue<Result> _result_queue;
 
         static constexpr bool debug = config::debug;
         std::stringstream _debug_stream;

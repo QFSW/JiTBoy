@@ -64,6 +64,9 @@ namespace emulation
 
     void HybridRuntime::consume_results()
     {
+        if (!_result_queue.expecting_results())
+            return;
+
         size_t consumed = 0;
         Result result;
 

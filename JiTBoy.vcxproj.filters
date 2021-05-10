@@ -299,9 +299,6 @@
     <ClInclude Include="src\emulation\interpreter_core.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\threading\concurrent_queue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\threading\thread_pool.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -366,6 +363,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\emulation\block_partitioner.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\threading\result_queue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
