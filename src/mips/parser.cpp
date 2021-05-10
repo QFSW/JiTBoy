@@ -135,6 +135,7 @@ namespace mips
         if (op == "b")      return parse_b(instr);
         if (op == "bal")    return parse_bal(instr);
         if (op == "move")   return parse_move(instr);
+        if (op == "li")     return parse_li(instr);
 
         if (op == "add")    return parse_instruction_r(OpcodeR::ADD, instr);
         if (op == "addu")   return parse_instruction_r(OpcodeR::ADDU, instr);
@@ -316,6 +317,40 @@ namespace mips
             .rs = src,
             .rt = Register::$zero,
             .sa = 0
+        };
+    }
+
+    Instruction Parser::parse_li(const std::string& instr) const
+    {
+        static thread_local const auto parser = generate_parser<Register, int32_t>(R"(\w+ ??, ??)");
+        const auto [dst, constant] = parser.evaluate(instr);
+
+        uint32_t mask = 0x0000FFFF;
+        int16_t low  = static_cast<int16_t>((static_cast<uint32_t>(constant) &  mask) >> 0);
+        int16_t high = static_cast<int16_t>((static_cast<uint32_t>(constant) & ~mask) >> 16);
+
+        if (high != 0)
+        {
+            if (low != 0)
+            {
+                throw parse_error("li does not currently support using the entire 32bit constant");
+            }
+
+            return InstructionI
+            {
+                .op = OpcodeI::LUI,
+                .rt = dst,
+                .rs = Register::$zero,
+                .constant = high
+            };
+        }
+
+        return InstructionI
+        {
+            .op = OpcodeI::ORI,
+            .rt = dst,
+            .rs = Register::$zero,
+            .constant = low
         };
     }
 
