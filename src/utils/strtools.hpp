@@ -7,12 +7,12 @@
 
 namespace strtools
 {
-	template <int BufSize = 1024, typename ...Args>
+	template <size_t BufSize = 1024, typename ...Args>
 	std::string catf(const char* format, Args...args)
 	{
 		static_assert(traits::for_none<std::is_class, Args...>(), "strtools::catf does not work with classes");
 
-		static thread_local char buf[BufSize];
+		char buf[BufSize];
 		snprintf(buf, BufSize, format, args...);
 		return std::string(buf);
 	}
@@ -23,6 +23,18 @@ namespace strtools
 		std::stringstream ss;
 		ss << t;
 		return ss.str();
+	}
+
+	template <typename T>
+	std::string fixed_digits(T num, int digits, const char* delim = "0")
+	{
+		static_assert(std::is_integral<T>::value, "strtools::fixed_digits requires an integral value");
+
+		constexpr size_t buf_size = 8;
+		char fmt_buf[buf_size];
+
+		snprintf(fmt_buf, buf_size, "%%%s%dd", delim, digits);
+		return catf(fmt_buf, num);
 	}
 
 	template <typename Out>

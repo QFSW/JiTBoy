@@ -126,4 +126,19 @@ namespace utils
         uint8_t shamt = 8 * sizeof(T) - bits;
         return T(~0) << shamt;
     }
+
+    template <typename T>
+    constexpr int count_digits(T num)
+    {
+        static_assert(std::is_integral<T>::value, "utils::count_digits requires an integral value");
+
+        int digits = 0;
+        while (num != 0)
+        {
+            num /= 10;
+            digits++;
+        }
+
+        return (std::max)(digits, 1);
+    }
 }

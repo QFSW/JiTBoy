@@ -60,6 +60,9 @@ namespace mips::testing
         static_assert(std::is_base_of<emulation::Emulator, Emulator>::value, "Runner::run requires an emulator type");
         std::cout << "Running tests" << "\n";
 
+        size_t executed_count = 0;
+        size_t executed_digits = utils::count_digits(tests.size());
+
         size_t pass_count = 0;
         size_t fail_count = 0;
         size_t fault_count = 0;
@@ -75,11 +78,20 @@ namespace mips::testing
 
         for (const auto& test : tests)
         {
+            executed_count++;
             Emulator emulator(emulator_config);
             TestResult result;
             result.name = test.name;
 
-            std::cout << "   - " << std::left << std::setw(name_width) << test.name << std::right;
+            constexpr auto counter_col = strtools::AnsiColor::Blue;
+            constexpr auto counter_delim = "0";
+
+            std::cout << strtools::catf("[%s/%s] ",
+                strtools::colorize(strtools::fixed_digits(executed_count, executed_digits, counter_delim), counter_col).c_str(),
+                strtools::colorize(strtools::fixed_digits(tests.size(), executed_digits, counter_delim), counter_col).c_str()
+            );
+
+            std::cout << std::left << std::setw(name_width) << test.name << std::right;
 
             try
             {
