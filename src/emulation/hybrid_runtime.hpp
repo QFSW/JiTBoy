@@ -35,7 +35,7 @@ namespace emulation
         InterpreterCore _interpreter;
         JumpResolver _jump_resolver;
         BlockPartitioner _block_partitioner;
-        threading::WorkerPool<int> _worker_pool;
+        threading::WorkerPool<Compiler> _worker_pool;
         common::concurrent_queue<std::unique_ptr<Compiler>> _compiler_pool;
         common::unordered_map<uint32_t, CompiledBlock> _blocks;
         common::unordered_map<uint32_t, size_t> _block_requests;
@@ -55,6 +55,7 @@ namespace emulation
         [[nodiscard]] const CompiledBlock* try_get_block(uint32_t addr);
         void compile_block(uint32_t addr);
         void consume_results();
+        std::unique_ptr<Compiler> make_compiler();
     };
 }
 

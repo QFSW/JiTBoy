@@ -61,6 +61,9 @@ namespace mips::testing
         std::cout << "Running tests" << "\n";
 
         size_t pass_count = 0;
+        size_t fail_count = 0;
+        size_t fault_count = 0;
+
         std::vector<std::tuple<Test, std::string>> failures;
         std::vector<TestResult> results;
 
@@ -101,6 +104,7 @@ namespace mips::testing
 
                 if (failed)
                 {
+                    fail_count++;
                     ss << emulator.get_debug_with_dumps();
                     failures.push_back(std::tuple(test, ss.str()));
                 }
@@ -116,6 +120,7 @@ namespace mips::testing
             }
             catch (const std::exception& e)
             {
+                fault_count++;
                 result.status = TestResult::Status::Faulted;
                 std::cout << colorize(" faulted\n", strtools::AnsiColor::Red);
 
@@ -130,7 +135,22 @@ namespace mips::testing
         for (const auto& [test, err] : failures)
             log_test_failure(test, err);
 
-        std::cout << strtools::catf("\n%d/%d tests passed\n", pass_count, tests.size());
+        std::string pass_ctr = strtools::colorize(
+            strtools::catf("%d/%d", pass_count, tests.size()),
+            pass_count == tests.size() ? strtools::AnsiColor::Green : strtools::AnsiColor::Red
+        );
+
+        std::string fail_ctr = strtools::colorize(
+            strtools::catf("%d", fail_count),
+            fail_count == 0 ? strtools::AnsiColor::Green : strtools::AnsiColor::Red
+        );
+
+        std::string fault_ctr = strtools::colorize(
+            strtools::catf("%d", fault_count),
+            fault_count == 0 ? strtools::AnsiColor::Green : strtools::AnsiColor::Red
+        );
+
+        std::cout << strtools::catf("\n%s tests passed, %s failed, %s faulted\n", pass_ctr.c_str(), fail_ctr.c_str(), fault_ctr.c_str());
         return results;
     }
 

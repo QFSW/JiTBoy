@@ -12,7 +12,10 @@ namespace emulation
     HybridRuntime::HybridRuntime(Config config)
         : _config(config)
         , _interpreter(_state)
-        , _worker_pool(&common::Environment::get().thread_pool())
+        , _worker_pool(
+              &common::Environment::get().thread_pool()
+            , [this] { return make_compiler(); }
+        )
         , _interpreted_instructions(0)
     { }
 
@@ -40,18 +43,12 @@ namespace emulation
 
     void HybridRuntime::compile_block(const uint32_t addr)
     {
-        _worker_pool.schedule_job(threading::WorkerJob<int>([this, addr](int)
+        _worker_pool.schedule_job(threading::WorkerJob<Compiler>([this, addr](Compiler& compiler)
         {
-            std::unique_ptr<Compiler> compiler;
-            if (!_compiler_pool.try_dequeue(compiler))
-                compiler = std::make_unique<Compiler>(_state.regs, _state.mem);
-
             const SourceBlock input = _block_partitioner.partition_block(_state.program, addr);
-            CompiledBlock block = compiler->compile(input, CompilerConfig{
+            CompiledBlock block = compiler.compile(input, CompilerConfig{
                 .direct_linking = _config.direct_linking
             });
-
-            _compiler_pool.enqueue(std::move(compiler));
 
             /*if constexpr (debug)
             {
@@ -91,6 +88,11 @@ namespace emulation
                 if constexpr (debug) _debug_stream << _jump_resolver.get_debug();
             }
         }
+    }
+
+    std::unique_ptr<Compiler> HybridRuntime::make_compiler()
+    {
+        return std::make_unique<Compiler>(_state.regs, _state.mem);
     }
 
     void HybridRuntime::execute(mips::Program&& program)

@@ -6,6 +6,7 @@
 #include <common/common.hpp>
 #include <threading/thread_pool.hpp>
 #include <threading/worker_job.hpp>
+#include <utils/utils.hpp>
 
 namespace threading
 {
@@ -13,7 +14,7 @@ namespace threading
     class WorkerPool
     {
     public:
-        using Factory = std::function<Worker()>;
+        using Factory = std::function<std::unique_ptr<Worker>()>;
 
         explicit WorkerPool(ThreadPool* thread_pool);
         explicit WorkerPool(ThreadPool* thread_pool, Factory factory);
@@ -35,7 +36,10 @@ namespace threading
         std::mutex _mutex;
         std::condition_variable _shutdown_cond;
         common::concurrent_queue<std::exception_ptr> _exceptions;
+        common::concurrent_queue<std::unique_ptr<Worker>> _workers;
 
+        std::unique_ptr<Worker> borrow_worker();
+        void release_worker(std::unique_ptr<Worker>&& worker);
         void invoke_job(const WorkerJob<Worker>& job);
     };
 
@@ -57,6 +61,22 @@ namespace threading
     WorkerPool<Worker>::~WorkerPool()
     {
         shutdown();
+    }
+
+    template <typename Worker>
+    std::unique_ptr<Worker> WorkerPool<Worker>::borrow_worker()
+    {
+        std::unique_ptr<Worker> worker;
+        if (!_workers.try_dequeue(worker))
+            worker = _factory();
+
+        return worker;
+    }
+
+    template <typename Worker>
+    void WorkerPool<Worker>::release_worker(std::unique_ptr<Worker>&& worker)
+    {
+        _workers.enqueue(std::move(worker));
     }
 
     template <typename Worker>
@@ -83,12 +103,14 @@ namespace threading
     {
         if (_running)
         {
-            Worker worker = _factory();
+            std::unique_ptr<Worker> worker = borrow_worker();
+            auto _ = utils::finally([&] { release_worker(std::move(worker)); });
+
             if (_running)
             {
                 try
                 {
-                    job.execute(worker);
+                    job.execute(*worker);
                 }
                 catch (...)
                 {
