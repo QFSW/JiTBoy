@@ -28,10 +28,16 @@ namespace mips::testing
         std::vector<fs::path> files = io::get_files_recursive(dir_path);
         std::vector<std::tuple<fs::path, std::string>> failures;
 
+        size_t file_width = 0;
+        for (const auto& file : files)
+        {
+            file_width = std::max(file_width, file.generic_string().length());
+        }
+
         tests.reserve(files.size());
         for (const auto& file : files)
         {
-            std::cout << "   - " << file.generic_string();
+            std::cout << "   - " << std::left << std::setw(file_width) << file.generic_string() << std::right;
             try
             {
                 tests.push_back(load_test(file));

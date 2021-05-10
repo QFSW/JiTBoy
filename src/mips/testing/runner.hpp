@@ -1,10 +1,13 @@
 #pragma once
 
+#define NOMINMAX
+
 #include <type_traits>
 
 // Try to reduce
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 //
 
 #include <mips/testing/runner_config.hpp>
@@ -61,13 +64,19 @@ namespace mips::testing
         std::vector<std::tuple<Test, std::string>> failures;
         std::vector<TestResult> results;
 
+        size_t name_width = 0;
+        for (const auto& test : tests)
+        {
+            name_width = (std::max)(name_width, test.name.length());
+        }
+
         for (const auto& test : tests)
         {
             Emulator emulator(emulator_config);
             TestResult result;
             result.name = test.name;
 
-            std::cout << "   - " << test.name;
+            std::cout << "   - " << std::left << std::setw(name_width) << test.name << std::right;
 
             try
             {
