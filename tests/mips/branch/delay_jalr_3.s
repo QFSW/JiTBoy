@@ -31,7 +31,7 @@ junk:
 func:
     addi $4, $4, 10
     jalr $1, $ra
-    addi $7, $0, $1
+    add $7, $0, $1
 
     addi $4, $4, 7
     j end
