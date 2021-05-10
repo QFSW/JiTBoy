@@ -306,17 +306,17 @@ namespace emulation
 
     void InterpreterCore::execute_andi(const InstructionI instr)
     {
-        _state.regs.write(instr.rt, _state.regs[instr.rs] & instr.constant);
+        _state.regs.write(instr.rt, _state.regs[instr.rs] & static_cast<uint16_t>(instr.constant));
     }
 
     void InterpreterCore::execute_ori(const InstructionI instr)
     {
-        _state.regs.write(instr.rt, _state.regs[instr.rs] | instr.constant);
+        _state.regs.write(instr.rt, _state.regs[instr.rs] | static_cast<uint16_t>(instr.constant));
     }
 
     void InterpreterCore::execute_xori(const InstructionI instr)
     {
-        _state.regs.write(instr.rt, _state.regs[instr.rs] ^ instr.constant);
+        _state.regs.write(instr.rt, _state.regs[instr.rs] ^ static_cast<uint16_t>(instr.constant));
     }
 
     void InterpreterCore::execute_slti(const InstructionI instr)

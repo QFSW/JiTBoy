@@ -215,4 +215,18 @@ namespace mips::utils
             [](const InstructionJ&) { return false; }
         }, instr);
     }
+
+    bool sign_extends_imm(const OpcodeI op)
+    {
+        switch (op)
+        {
+            case OpcodeI::ANDI:
+            case OpcodeI::ORI:
+            case OpcodeI::XORI:
+                return false;
+
+            default:
+                return true;
+        }
+    }
 }

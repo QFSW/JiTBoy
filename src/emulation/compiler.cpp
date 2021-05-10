@@ -214,14 +214,19 @@ namespace emulation
             case mips::OpcodeI::LWL:    compile_lwl(instr); break;
             case mips::OpcodeI::LWR:    compile_lwr(instr); break;
             case mips::OpcodeI::LUI:    compile_reg_write(instr.rt, instr.constant << 16); break;
-            default: throw_invalid_instr(instr);
+            default:                    throw_invalid_instr(instr);
         }
     }
 
     template <x86::Opcode Op, x86::OpcodeExt Ext>
     void Compiler::compile(const mips::InstructionI instr)
     {
-        compile_imm<Op, Ext>(instr.rt, instr.rs, instr.constant);
+        const uint32_t constant =
+            mips::utils::sign_extends_imm(instr.op)
+                ? instr.constant
+                : static_cast<uint16_t>(instr.constant);
+
+        compile_imm<Op, Ext>(instr.rt, instr.rs, constant);
     }
 
     void Compiler::compile(const mips::InstructionJ instr, const uint32_t addr)
