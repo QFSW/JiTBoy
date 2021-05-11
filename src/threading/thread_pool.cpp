@@ -22,7 +22,9 @@ namespace threading
         if (_running
             && _busy_workers == _workers.size()
             && _workers.size() < _max_workers)
+        {
             create_worker();
+        }
     }
 
     void ThreadPool::shutdown()

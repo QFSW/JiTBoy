@@ -40,7 +40,7 @@ def draw_histograms(data):
         plot.histogram(processed, name, '%s/%s.png' % (base_hist, name))
         plot.boxplot(processed, name, '%s/%s.png' % (base_box, name))
 
-def draw_testbatches(data):
+def draw_testbatches(group_name, data, col_map=None):
     plots = [
         ('unroll'   , 'unroll\([0-9]+\/[0-9]+\)'),
         ('fibonacci', 'fibonacci\([0-9]+\)'),
@@ -51,12 +51,12 @@ def draw_testbatches(data):
     ]
 
     for (name, pattern) in plots:
-        base = "%s/tests/%s" % (output_base, name)
+        base = "%s/tests/%s/%s" % (output_base, group_name, name)
         r = re.compile(pattern)
         processed = data_proc.filter_rows(data, lambda x: r.match(x['name']))
 
-        plot.line_categoric(processed, 'name', 'time', '%s: Execution Time' % name, '%s/time.png' % base, yscale='log')
-        plot.line_categoric(processed, 'name', 'mips', '%s: Performance' % name, '%s/mips.png' % base, yscale='linear')
+        plot.line_categoric(processed, 'name', 'time', '%s: Execution Time' % name, '%s/time.png' % base, yscale='log', col_map=col_map)
+        plot.line_categoric(processed, 'name', 'mips', '%s: Performance' % name, '%s/mips.png' % base, yscale='linear', col_map=col_map)
 
 def draw_x_vs_y(data, xname, yname):
     plots = [
@@ -105,7 +105,12 @@ def main():
     draw_vs_scatters(data)
     draw_scatters(data)
     draw_histograms(data)
-    draw_testbatches(data)
+
+    col_map = plot.make_col_map(data)
+    draw_testbatches('all', data, col_map)
+    draw_testbatches('emulators', data_proc.select(data, ['JIT -L', 'Interpreter', 'Hybrid -L']), col_map)
+    draw_testbatches('jit', data_proc.select(data, ['JIT', 'JIT -L']), col_map)
+    draw_testbatches('hybrid', data_proc.select(data, ['Hybrid', 'Hybrid -L']), col_map)
 
 if __name__ == "__main__":
     main()

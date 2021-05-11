@@ -101,8 +101,11 @@ def bar_categoric(datasets, x, y, path, yscale='linear'):
     plt.legend(loc='upper left')
     savefig(path)
 
-def line_categoric(datasets, x, y, title, path, yscale='linear'):
+def line_categoric(datasets, x, y, title, path, yscale='linear', col_map=None):
     print("Drawing line chart %s" % title)
+
+    if col_map is None:
+        col_map = make_col_map(datasets)
 
     xdatas = []
     for name in datasets:
@@ -124,7 +127,7 @@ def line_categoric(datasets, x, y, title, path, yscale='linear'):
             else:
                 ydata.append(0)
 
-        plt.plot(xdata, ydata, '-o', label=name)
+        plt.plot(xdata, ydata, '-o', label=name, color=col_map[name])
 
     plt.ylabel(display.axis_case(y))
     plt.yscale(yscale)
@@ -172,3 +175,14 @@ def boxplot(datasets, x, path, yscale='linear'):
     plt.ylabel(display.axis_case(x))
     plt.title(title)
     savefig(path)
+
+def make_col_map(data):
+    i = 0
+    col_map = {}
+    cols = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+    for name in data:
+        col_map[name] = cols[i]
+        i += 1
+
+    return col_map
