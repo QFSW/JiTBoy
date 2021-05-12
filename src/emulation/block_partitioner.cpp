@@ -10,23 +10,24 @@ namespace emulation
         if (!program.valid_addr(addr)) [[unlikely]]
             throw std::logic_error(strtools::catf("Address 0x%x is out of bounds", addr));
 
-        size_t start_index = (addr - program.start_addr) / 4;
-        size_t end_index = start_index;
+        uint32_t start_addr = addr;
+        uint32_t end_addr = start_addr;
 
-        for (; end_index < program.source.size(); end_index++)
+        while (program.valid_addr(end_addr))
         {
-            const auto& instr = program.source[end_index];
-            if (mips::utils::is_branch_instr(instr))
+            if (mips::utils::is_branch_instr(program.at(end_addr)))
             {
-                end_index++;
+                end_addr += 4;
                 break;
             }
+
+            end_addr += 4;
         }
 
         // Include delay slot instruction
-        end_index = std::min(end_index + 1, program.source.size());
+        if (program.valid_addr(end_addr))
+            end_addr += 4;
 
-        const auto code = std::span<const mips::Instruction>(program.source.data() + start_index, end_index - start_index);
-        return SourceBlock(code, addr);
+        return SourceBlock(program, start_addr, end_addr);
     }
 }

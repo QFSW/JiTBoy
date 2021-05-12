@@ -54,7 +54,7 @@ namespace emulation
 
         void reset();
 
-        std::optional<mips::Instruction> get_instr_at_addr(uint32_t addr);
+        std::optional<mips::Instruction> get_instr_at_addr(uint32_t addr) const;
 
         void compile(mips::Instruction instr, uint32_t addr);
         void compile(mips::InstructionR instr, uint32_t addr);

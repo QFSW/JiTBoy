@@ -101,7 +101,7 @@ namespace emulation
     void HybridRuntime::execute(mips::Program&& program)
     {
         load_source(std::move(program));
-        execute(_state.program.start_addr);
+        execute(_state.program.entry_point());
     }
 
     void HybridRuntime::execute(const uint32_t addr)

@@ -15,17 +15,18 @@ namespace mips
     {
         const std::vector<uint32_t> raw = io::read_binary_file<uint32_t, io::Endianness::Big>(filepath);
 
-        std::vector<Instruction> result;
-        result.reserve(raw.size());
+        const uint32_t start_addr = 0;
+        uint32_t addr = start_addr;
+        common::unordered_map<uint32_t, Instruction> source;
+
 
         for (const auto word : raw)
-            result.push_back(decode_instruction(word));
-
-        return Program
         {
-            .start_addr = 0,
-            .source = result,
-        };
+            source[addr] = decode_instruction(word);
+            addr += 4;
+        }
+
+        return Program(std::move(source), start_addr);
     }
 
     Program Loader::load_auto(const std::string& filepath)

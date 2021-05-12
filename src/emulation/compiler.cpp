@@ -22,23 +22,17 @@ namespace emulation
         if constexpr (debug)
         {
             std::stringstream().swap(_debug_stream);
-            _debug_stream << strtools::catf("Compiling block 0x%x with %s\n", block.addr, strtools::cat(config).c_str());
-
-            for (const auto& instr : block.code)
-            {
-                _debug_stream << instr << "\n";
-            }
-
-            _debug_stream << "\n";
+            _debug_stream << strtools::catf("Compiling block 0x%x with %s\n", block.start_addr(), strtools::cat(config).c_str());
+            _debug_stream << block << "\n";
         }
 
         const auto reg_file = reinterpret_cast<uint32_t>(_regs.data());
         _assembler.instr_imm<x86::Opcode::MOV_I, x86::OpcodeExt::MOV_I>(addr_reg, reg_file);
 
-        uint32_t pc = block.addr;
-        for (uint32_t i = 0; i < block.code.size(); i++)
+        uint32_t pc = block.start_addr();
+        while (pc < block.end_addr())
         {
-            compile(block.code[i], pc);
+            compile(block.at(pc), pc);
             pc += 4;
 
             if (_state.terminated)
@@ -51,7 +45,7 @@ namespace emulation
         CompiledBlock output;
         output.size = _assembler.size();
         output.host_instr_count = _assembler.instr_count();
-        output.source_instr_count = block.code.size();
+        output.source_instr_count = block.size();
         output.config = config;
 
         if constexpr (debug)
@@ -114,11 +108,10 @@ namespace emulation
         return _debug_stream.str();
     }
 
-    std::optional<mips::Instruction> Compiler::get_instr_at_addr(const uint32_t addr)
+    std::optional<mips::Instruction> Compiler::get_instr_at_addr(const uint32_t addr) const
     {
-        const size_t index = (addr - _state.source->addr) / 4;
-        if (index >= 0 && index < _state.source->code.size())
-            return _state.source->code[index];
+        if (_state.source->valid_addr(addr))
+            return _state.source->at(addr);
 
         return std::nullopt;
     }
@@ -294,9 +287,7 @@ namespace emulation
         const bool delay_slot_exists = delay_slot && !mips::utils::is_nop(delay_slot.value());
 
         const uint32_t target_true = addr + (instr.constant << 2);
-        const uint32_t target_false = delay_slot_exists
-            ? addr + 8
-            : addr + 4;
+        const uint32_t target_false = addr + 8;
 
         if (instr.rs == mips::Register::$zero)
         {

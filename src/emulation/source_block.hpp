@@ -1,15 +1,26 @@
 #pragma once
 
-#include <span>
-#include <mips/instruction.hpp>
+#include <mips/program.hpp>
 
 namespace emulation
 {
-    struct SourceBlock
+    class SourceBlock
     {
-        SourceBlock(std::span<const mips::Instruction> code, uint32_t addr);
+    public:
+        SourceBlock(const mips::Program& program, uint32_t start_addr, uint32_t end_addr);
 
-        std::span<const mips::Instruction> code;
-        uint32_t addr;
+        [[nodiscard]] uint32_t start_addr() const noexcept;
+        [[nodiscard]] uint32_t end_addr() const noexcept;
+        [[nodiscard]] uint32_t size() const noexcept;
+        [[nodiscard]] bool valid_addr(uint32_t addr) const noexcept;
+
+        const mips::Instruction& at(uint32_t addr) const;
+
+        friend std::ostream& operator<<(std::ostream& os, const SourceBlock& b);
+
+    private:
+        const mips::Program& _program;
+        uint32_t _start_addr;
+        uint32_t _end_addr;
     };
 }

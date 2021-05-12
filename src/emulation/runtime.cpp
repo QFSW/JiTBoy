@@ -34,10 +34,10 @@ namespace emulation
         if constexpr (debug)
         {
             _debug_stream << _compiler.get_debug() << "\n"
-                << strtools::catf("Registering compiled block 0x%p to 0x%x\n", block.code, input.addr);
+                << strtools::catf("Registering compiled block 0x%p to 0x%x\n", block.code, input.start_addr());
         }
 
-        const auto& ret = _blocks[input.addr] = std::move(block);
+        const auto& ret = _blocks[input.start_addr()] = std::move(block);
 
         if (_config.direct_linking)
         {
@@ -54,7 +54,7 @@ namespace emulation
     void Runtime::execute(mips::Program&& program)
     {
         load_source(std::move(program));
-        execute(_state.program.start_addr);
+        execute(_state.program.entry_point());
     }
 
     void Runtime::execute(const uint32_t addr)

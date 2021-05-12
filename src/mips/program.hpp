@@ -1,16 +1,27 @@
 #pragma once
 
-#include <vector>
+#include <common/common.hpp>
 #include <mips/instruction.hpp>
+#include <map>
 
 namespace mips
 {
-    struct Program
+    class Program
     {
-        uint32_t start_addr;
-        std::vector<Instruction> source;
+    public:
+        Program();
+        Program(common::unordered_map<uint32_t, Instruction>&& source, uint32_t entry_point);
 
+        [[nodiscard]] uint32_t entry_point() const noexcept { return _entry_point; }
         [[nodiscard]] bool valid_addr(uint32_t addr) const noexcept;
-        [[nodiscard]] Instruction& at(uint32_t addr);
+        [[nodiscard]] const Instruction& at(uint32_t addr) const;
+
+        friend std::ostream& operator<<(std::ostream& os, const Program& p);
+
+    private:
+        common::unordered_map<uint32_t, Instruction> _source;
+        uint32_t _entry_point;
+
+        mutable std::map<uint32_t, Instruction> _ordered_cache;
     };
 }

@@ -24,7 +24,7 @@ namespace emulation
     void Interpreter::execute(Program&& program)
     {
         load_source(std::move(program));
-        execute(_state.program.start_addr);
+        execute(_state.program.entry_point());
     }
 
     void Interpreter::execute(const uint32_t addr)

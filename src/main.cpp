@@ -24,11 +24,7 @@ void execute_single(const std::string& path)
     auto program = loader.load_auto(path);
 
     std::cout << "Loaded assembly\n";
-    for (const auto& instr : program.source)
-    {
-        std::cout << instr << "\n";
-    }
-    std::cout << "\n";
+    std::cout << program << "\n";
 
     auto time = benchmark::measure([&]
     {
@@ -102,18 +98,10 @@ void test_bench(const int argc, char** argv)
 
 int main(const int argc, char** argv)
 {
-    try
-    {
-        if (argc == 3 && std::string(argv[1]) == "--single")
-            execute_single(argv[2]);
-        else
-            test_bench(argc, argv);
+    if (argc == 3 && std::string(argv[1]) == "--single")
+        execute_single(argv[2]);
+    else
+        test_bench(argc, argv);
 
-        return 0;
-    }
-    catch (std::exception &e)
-    {
-        std::cerr << "JiTBoy failed!\n" << e.what();
-        std::exit(-1);
-    }
+    return 0;
 }

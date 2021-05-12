@@ -15,8 +15,7 @@ namespace mips
 
         const auto lines = strtools::split(assembly, '\n');
 
-        std::vector<Instruction> instrs;
-        instrs.reserve(lines.size());
+        common::unordered_map<uint32_t, Instruction> source;
 
         for (const auto& line : lines)
         {
@@ -25,14 +24,14 @@ namespace mips
 
             if (!strtools::isspace(preprocessed))
             {
-                instrs.push_back(parse_instruction(preprocessed));
+                source[_state.pc] = parse_instruction(preprocessed);
                 _state.pc += 4;
             }
         }
 
         for (const auto& [pc, label] : _state.unresolved_locals)
         {
-            auto& instr = instrs[(pc - _state.start_addr) / 4];
+            auto& instr = source[pc];
             std::visit(functional::overload{
                 [&](InstructionI& x) { x.constant = parse_target_rel(label, pc, false); },
                 [&](InstructionJ& x) { x.target = parse_target_abs(label, pc, false); },
@@ -40,11 +39,7 @@ namespace mips
             }, instr);
         }
 
-        return Program
-        {
-            .start_addr = _state.start_addr,
-            .source = instrs,
-        };
+        return Program(std::move(source), _state.start_addr);
     }
 
     void Parser::reset()
