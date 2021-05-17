@@ -1,7 +1,5 @@
 #include "interpreter.hpp"
 
-#include <mips/utils.hpp>
-
 namespace emulation
 {
     using namespace mips;

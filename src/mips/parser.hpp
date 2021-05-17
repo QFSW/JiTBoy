@@ -18,10 +18,10 @@ namespace mips
     public:
         [[nodiscard]] Program parse_program(const std::string& assembly);
 
-        static [[nodiscard]] Register parse_register(const std::string& reg);
-        static [[nodiscard]] uint32_t parse_constant_32(const std::string& value);
-        static [[nodiscard]] uint16_t parse_constant_16(const std::string& value);
-        static [[nodiscard]] uint8_t parse_constant_8(const std::string& value);
+        [[nodiscard]] static Register parse_register(const std::string& reg);
+        [[nodiscard]] static uint32_t parse_constant_32(const std::string& value);
+        [[nodiscard]] static uint16_t parse_constant_16(const std::string& value);
+        [[nodiscard]] static uint8_t parse_constant_8(const std::string& value);
 
     private:
         struct State
@@ -77,7 +77,7 @@ namespace mips
         };
 
         template <typename...Ts>
-        static [[nodiscard]] utils::regex_parser<Inner, Ts...> generate_parser(const std::string& pattern, std::string&& err_string = default_parser_err);
+        [[nodiscard]] static utils::regex_parser<Inner, Ts...> generate_parser(const std::string& pattern, std::string&& err_string = default_parser_err);
     };
 
     template <typename...Ts>

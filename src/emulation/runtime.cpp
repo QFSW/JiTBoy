@@ -1,6 +1,5 @@
 #include "runtime.hpp"
 
-#include <stdexcept>
 #include <mips/utils.hpp>
 
 namespace emulation
