@@ -103,6 +103,9 @@ namespace emulation
     {
         const auto try_compile = [this](const uint32_t addr)
         {
+            if (!_state.program.valid_addr(addr))
+                return;
+
             auto& requests = _block_requests[addr];
 
             if (requests < _config.compilation_threshold)
@@ -112,7 +115,7 @@ namespace emulation
             }
         };
 
-        for (auto& [_, block] : _blocks)
+        for (const auto& [_, block] : _blocks)
         {
             for (const auto& jump : block.unresolved_jumps)
             {
