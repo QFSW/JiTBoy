@@ -100,6 +100,7 @@ def main():
         'Interpreter'   : loader.load_data('output/results_interpreter.csv'),
         'Hybrid'        : loader.load_data('output/results_hybrid.csv'),
         'Hybrid -L'     : loader.load_data('output/results_hybrid(-L).csv'),
+        'Hybrid -LS'    : loader.load_data('output/results_hybrid(-LS).csv'),
     }
 
     draw_vs_scatters(data)
@@ -110,7 +111,7 @@ def main():
     draw_testbatches('all', data, col_map)
     draw_testbatches('emulators', data_proc.select(data, ['JIT -L', 'Interpreter', 'Hybrid -L']), col_map)
     draw_testbatches('jit', data_proc.select(data, ['JIT', 'JIT -L']), col_map)
-    draw_testbatches('hybrid', data_proc.select(data, ['Hybrid', 'Hybrid -L']), col_map)
+    draw_testbatches('hybrid', data_proc.select(data, ['Hybrid', 'Hybrid -L', 'Hybrid -LS']), col_map)
 
 if __name__ == "__main__":
     main()

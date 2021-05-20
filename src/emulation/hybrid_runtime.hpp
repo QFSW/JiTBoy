@@ -56,6 +56,8 @@ namespace emulation
         [[nodiscard]] const CompiledBlock* try_get_block(uint32_t addr);
         void compile_block(uint32_t addr);
         void consume_results();
+        void relink_blocks();
+        void speculatively_compile();
         std::unique_ptr<Compiler> make_compiler();
     };
 }

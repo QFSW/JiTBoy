@@ -83,6 +83,7 @@ void test_bench(const int argc, char** argv)
     const auto results_interpreter = runner.run<Interpreter>(tests);
     const auto results_hybrid = runner.run<HybridRuntime>(tests);
     const auto results_hybrid_l = runner.run<HybridRuntime>(tests, HybridRuntime::Config{ .direct_linking = true });
+    const auto results_hybrid_ls = runner.run<HybridRuntime>(tests, HybridRuntime::Config{ .direct_linking = true, .speculative_compilation = true });
 
     std::cout << "\nWriting tests to " + tests_csv_path + "\n";
     csv::write_file(tests_csv_path, tests);
@@ -92,6 +93,7 @@ void test_bench(const int argc, char** argv)
     write_test_results(results_interpreter, "interpreter");
     write_test_results(results_hybrid, "hybrid");
     write_test_results(results_hybrid_l, "hybrid(-L)");
+    write_test_results(results_hybrid_ls, "hybrid(-LS)");
 
     std::cout << "\n";
 }

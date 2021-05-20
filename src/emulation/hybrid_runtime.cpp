@@ -47,7 +47,7 @@ namespace emulation
         {
             const SourceBlock input = _block_partitioner.partition_block(_state.program, addr);
             CompiledBlock block = compiler.compile(input, CompilerConfig{
-                .direct_linking = _config.direct_linking
+                .direct_linking = _config.direct_linking || _config.speculative_compilation
             });
 
             /*if constexpr (debug)
@@ -83,12 +83,47 @@ namespace emulation
             }
         }
 
-        if (_config.direct_linking && consumed > 0)
+        if (consumed > 0)
         {
-            for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+            if (_config.direct_linking)          relink_blocks();
+            if (_config.speculative_compilation) speculatively_compile();
+        }
+    }
+
+    void HybridRuntime::relink_blocks()
+    {
+        for (auto it = _blocks.begin(); it != _blocks.end(); ++it)
+        {
+            _jump_resolver.resolve_jumps(it.value(), _blocks);
+            if constexpr (debug) _debug_stream << _jump_resolver.get_debug();
+        }
+    }
+
+    void HybridRuntime::speculatively_compile()
+    {
+        auto try_compile = [this](const uint32_t addr)
+        {
+            auto& requests = _block_requests[addr];
+
+            if (requests < _config.compilation_threshold)
             {
-                _jump_resolver.resolve_jumps(it.value(), _blocks);
-                if constexpr (debug) _debug_stream << _jump_resolver.get_debug();
+                requests = _config.compilation_threshold;
+                compile_block(addr);
+            }
+        };
+
+        for (auto& [_, block] : _blocks)
+        {
+            for (const auto& jump : block.unresolved_jumps)
+            {
+                if (!jump.dst_x86)
+                    try_compile(jump.dst_mips);
+            }
+
+            for (const auto& jump : block.unresolved_cond_jumps)
+            {
+                if (!jump.dst_false_x86) try_compile(jump.dst_false_mips);
+                if (!jump.dst_true_x86)  try_compile(jump.dst_true_mips);
             }
         }
     }
