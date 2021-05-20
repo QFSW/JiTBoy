@@ -101,7 +101,7 @@ namespace emulation
 
     void HybridRuntime::speculatively_compile()
     {
-        auto try_compile = [this](const uint32_t addr)
+        const auto try_compile = [this](const uint32_t addr)
         {
             auto& requests = _block_requests[addr];
 
