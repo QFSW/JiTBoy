@@ -42,12 +42,14 @@ def draw_histograms(data):
 
 def draw_testbatches(group_name, data, col_map=None):
     plots = [
-        ('unroll'   , 'unroll\([0-9]+\/[0-9]+\)'),
-        ('fibonacci', 'fibonacci\([0-9]+\)'),
-        ('factorial', 'factorial\([0-9]+\)'),
-        ('primal'   , 'primal\([0-9]+\)'),
-        ('memcpy'   , 'memcpy\([0-9]+\)'),
-        ('memcpyw'  , 'memcpyw\([0-9]+\)')
+        ('unroll'             , 'unroll\([0-9]+\/[0-9]+\)'),
+        ('fibonacci'          , 'fibonacci\([0-9]+\)'),
+        ('fibonacci_rep[10]'  , 'fibonacci_rep\[10\]\([0-9]+\)'),
+        ('fibonacci_rep[100]' , 'fibonacci_rep\[100\]\([0-9]+\)'),
+        ('factorial'          , 'factorial\([0-9]+\)'),
+        ('primal'             , 'primal\([0-9]+\)'),
+        ('memcpy'             , 'memcpy\([0-9]+\)'),
+        ('memcpyw'            , 'memcpyw\([0-9]+\)')
     ]
 
     for (name, pattern) in plots:
