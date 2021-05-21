@@ -58,10 +58,11 @@ namespace threading
     void ThreadPool::worker_routine()
     {
         Job job = Job::empty();
+        decltype(_job_queue)::consumer_token_t dequeue_token(_job_queue);
 
         while (_running)
         {
-            _job_queue.wait_dequeue(job);
+            _job_queue.wait_dequeue(dequeue_token, job);
             if (!_running) return;
 
             ++_busy_workers;
