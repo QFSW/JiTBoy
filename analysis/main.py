@@ -8,9 +8,13 @@ output_base = "output/graphs"
 
 def draw_scatters(data):
     base = "%s/scatter" % output_base
-    plot.scatter(data, 'hotness', 'mips', '%s/hotness.png' % base, xscale='log', yscale='log')
-    plot.scatter(data, 'source block size', 'compilation inefficiency', '%s/c-efficiency.png' % base, xscale='log', yscale='linear')
-    plot.scatter(data, 'source block size', 'execution inefficiency', '%s/e-efficiency.png' % base, xscale='log', yscale='linear')
+
+    data_emulators = data_proc.select(data, ['JIT -L', 'Interpreter', 'Hybrid -L'])
+    plot.scatter(data_emulators, 'hotness', 'mips', '%s/hotness.png' % base, xscale='log', yscale='log')
+
+    data_jit = data_proc.select(data, ['JIT'])
+    plot.scatter(data_jit, 'source block size', 'compilation inefficiency', '%s/c-efficiency.png' % base, xscale='log', yscale='linear')
+    plot.scatter(data_jit, 'source block size', 'execution inefficiency', '%s/e-efficiency.png' % base, xscale='log', yscale='linear')
 
 def draw_histograms(data):
     base_hist = "%s/histogram" % output_base
@@ -105,15 +109,19 @@ def main():
         'Hybrid -LS'    : loader.load_data('output/results_hybrid(-LS).csv'),
     }
 
+    col_map = plot.make_col_map(data)
+    data_emulators = data_proc.select(data, ['JIT -L', 'Interpreter', 'Hybrid -L'])
+    data_jit       = data_proc.select(data, ['JIT', 'JIT -L'])
+    data_hybrid    = data_proc.select(data, ['Hybrid', 'Hybrid -L', 'Hybrid -LS'])
+
     draw_vs_scatters(data)
     draw_scatters(data)
     draw_histograms(data)
 
-    col_map = plot.make_col_map(data)
     draw_testbatches('all', data, col_map)
-    draw_testbatches('emulators', data_proc.select(data, ['JIT -L', 'Interpreter', 'Hybrid -L']), col_map)
-    draw_testbatches('jit', data_proc.select(data, ['JIT', 'JIT -L']), col_map)
-    draw_testbatches('hybrid', data_proc.select(data, ['Hybrid', 'Hybrid -L', 'Hybrid -LS']), col_map)
+    draw_testbatches('emulators', data_emulators, col_map)
+    draw_testbatches('jit', data_jit, col_map)
+    draw_testbatches('hybrid', data_hybrid, col_map)
 
 if __name__ == "__main__":
     main()
