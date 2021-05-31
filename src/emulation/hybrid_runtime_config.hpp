@@ -6,7 +6,7 @@ namespace emulation
 {
     struct HybridRuntimeConfig
     {
-        size_t compilation_threshold = 1;
+        size_t compilation_threshold = 10;
         bool direct_linking = false;
         bool speculative_compilation = false;
     };

@@ -105,7 +105,7 @@ def main():
         'JIT -L'        : loader.load_data('output/results_jit(-L).csv'),
         'Interpreter'   : loader.load_data('output/results_interpreter.csv'),
         'Hybrid'        : loader.load_data('output/results_hybrid.csv'),
-        'Hybrid -L'     : loader.load_data('output/results_hybrid(-L -T10).csv'),
+        'Hybrid -L'     : loader.load_data('output/results_hybrid(-L).csv'),
         'Hybrid -LS'    : loader.load_data('output/results_hybrid(-LS).csv'),
     }
 
