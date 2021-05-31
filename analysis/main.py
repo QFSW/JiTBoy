@@ -105,8 +105,13 @@ def main():
         'JIT -L'        : loader.load_data('output/results_jit(-L).csv'),
         'Interpreter'   : loader.load_data('output/results_interpreter.csv'),
         'Hybrid'        : loader.load_data('output/results_hybrid.csv'),
-        'Hybrid -L'     : loader.load_data('output/results_hybrid(-L).csv'),
+        'Hybrid -L'     : loader.load_data('output/results_hybrid(-L -T10).csv'),
         'Hybrid -LS'    : loader.load_data('output/results_hybrid(-LS).csv'),
+    }
+
+    t_vals = [1, 10, 100, 1000, 10000]
+    data_hybrid_t = {
+        'Hybrid -L -T%d' % t: loader.load_data('output/results_hybrid(-L-T%d).csv' % t) for t in t_vals
     }
 
     col_map = plot.make_col_map(data)
@@ -122,6 +127,9 @@ def main():
     draw_testbatches('emulators', data_emulators, col_map)
     draw_testbatches('jit', data_jit, col_map)
     draw_testbatches('hybrid', data_hybrid, col_map)
+
+    draw_testbatches('hybrid_t', data_hybrid_t)
+
 
 if __name__ == "__main__":
     main()

@@ -64,6 +64,25 @@ mips::testing::Runner::Config parse_config(const int argc, char** argv)
     };
 }
 
+void investigate_hybrid(mips::testing::Runner& runner, const std::vector<mips::testing::Test>& tests)
+{
+    using namespace emulation;
+
+    std::array<size_t, 5> t_vals = { 1, 10, 100, 1000, 10000 };
+
+    for (const auto t : t_vals)
+    {
+        HybridRuntime::Config config = {
+            .compilation_threshold = t,
+            .direct_linking = true,
+            .speculative_compilation = false,
+        };
+
+        const auto results = runner.run<HybridRuntime>(tests, config);
+        write_test_results(results, strtools::catf("hybrid(-L-T%d)", t));
+    }
+}
+
 void test_bench(const int argc, char** argv)
 {
     using namespace mips::testing;
@@ -96,6 +115,8 @@ void test_bench(const int argc, char** argv)
     write_test_results(results_hybrid_ls, "hybrid(-LS)");
 
     std::cout << "\n";
+
+    investigate_hybrid(runner, tests);
 }
 
 int main(const int argc, char** argv)
