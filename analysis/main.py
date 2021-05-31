@@ -98,6 +98,8 @@ def draw_vs_scatters(data):
     draw_x_vs_y(data, 'JIT -L', 'JIT')
     draw_x_vs_y(data, 'JIT -L', 'Interpreter')
     draw_x_vs_y(data, 'JIT -L', 'Hybrid')
+    draw_x_vs_y(data, 'JIT -L', 'Hybrid -L')
+    draw_x_vs_y(data, 'Hybrid -L', 'Hybrid -LS')
 
 def main():
     data = {
