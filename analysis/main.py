@@ -6,14 +6,14 @@ import re
 data_path = "output/results.csv"
 output_base = "output/graphs"
 
-def draw_scatters(group_name, data, col_map=None):
+def draw_scatters(group_name, data, col_map=None, sym_map=None):
     base = "%s/scatter/%s" % (output_base, group_name)
 
-    plot.scatter(data, 'hotness', 'mips', '%s/hotness.png' % base, xscale='log', yscale='log', col_map=col_map)
-    plot.scatter(data, 'compilation inefficiency', 'mips', '%s/c-efficiency-vs-mips.png' % base, xscale='linear', yscale='log', col_map=col_map)
-    plot.scatter(data, 'execution inefficiency', 'mips', '%s/e-efficiency-vs-mips.png' % base, xscale='linear', yscale='log', col_map=col_map)
-    plot.scatter(data, 'source block size', 'compilation inefficiency', '%s/c-efficiency-vs-hotness.png' % base, xscale='log', yscale='linear', col_map=col_map)
-    plot.scatter(data, 'source block size', 'execution inefficiency', '%s/e-efficiency-vs-hotness.png' % base, xscale='log', yscale='linear', col_map=col_map)
+    plot.scatter(data, 'hotness', 'mips', '%s/hotness.png' % base, xscale='log', yscale='log', col_map=col_map, sym_map=sym_map)
+    plot.scatter(data, 'compilation inefficiency', 'mips', '%s/c-efficiency-vs-mips.png' % base, xscale='linear', yscale='log', col_map=col_map, sym_map=sym_map)
+    plot.scatter(data, 'execution inefficiency', 'mips', '%s/e-efficiency-vs-mips.png' % base, xscale='linear', yscale='log', col_map=col_map, sym_map=sym_map)
+    plot.scatter(data, 'source block size', 'compilation inefficiency', '%s/c-efficiency-vs-hotness.png' % base, xscale='log', yscale='linear', col_map=col_map, sym_map=sym_map)
+    plot.scatter(data, 'source block size', 'execution inefficiency', '%s/e-efficiency-vs-hotness.png' % base, xscale='log', yscale='linear', col_map=col_map, sym_map=sym_map)
 
 def draw_histograms(data):
     base_hist = "%s/histogram" % output_base
@@ -116,12 +116,14 @@ def main():
     }
 
     col_map = plot.make_col_map(data)
+    sym_map = plot.make_sym_map(data)
     data_sets = {
-        'all'        : data,
-        'emulators'  : data_proc.select(data, ['JIT -L', 'Interpreter', 'Hybrid -L']),
-        'jit'        : data_proc.select(data, ['JIT', 'JIT -L']),
-        'hybrid'     : data_proc.select(data, ['Hybrid', 'Hybrid -L', 'Hybrid -LS']),
-        'single/jit' : data_proc.select(data, ['JIT']),
+        'all'                : data,
+        'emulators'          : data_proc.select(data, ['JIT -L', 'Interpreter', 'Hybrid -L']),
+        'jit'                : data_proc.select(data, ['JIT', 'JIT -L']),
+        'hybrid'             : data_proc.select(data, ['Hybrid', 'Hybrid -L', 'Hybrid -LS']),
+        'single/jit'         : data_proc.select(data, ['JIT']),
+        'single/interpreter' : data_proc.select(data, ['Interpreter']),
     }
 
     draw_vs_scatters(data)
@@ -129,7 +131,7 @@ def main():
 
     for (name, data) in data_sets.items():
         draw_testbatches(name, data, col_map)
-        draw_scatters(name, data)
+        draw_scatters(name, data, col_map, sym_map)
 
     draw_testbatches('hybrid_t', data_hybrid_t)
 

@@ -33,19 +33,22 @@ def savefig(path):
     plt.savefig(path)
     plt.clf()
 
-def scatter(datasets, x, y, path, xscale='linear', yscale='linear', line=False, col_map=None):
+def scatter(datasets, x, y, path, xscale='linear', yscale='linear', line=False, col_map=None, sym_map=None):
     title = "%s vs %s" % (display.header_case(y), display.header_case(x))
     print("Drawing scatterplot %s" % title)
 
     if col_map is None:
         col_map = make_col_map(datasets)
 
+    if sym_map is None:
+        sym_map = make_sym_map(datasets)
+
     for name in datasets:
         data = datasets[name]
         xdata = list(map(lambda i: i[x], data))
         ydata = list(map(lambda i: i[y], data))
 
-        plt.plot(xdata, ydata, 'x', alpha=0.8, label=name, color=col_map[name])
+        plt.plot(xdata, ydata, sym_map[name], alpha=0.75, label=name, color=col_map[name])
 
     plt.xlabel(display.axis_case(x))
     plt.ylabel(display.axis_case(y))
@@ -189,3 +192,14 @@ def make_col_map(data):
         i += 1
 
     return col_map
+
+def make_sym_map(data):
+    i = 0
+    sym_map = {}
+    syms = ['x', 'o', '^', 's', 'P', 'X']
+
+    for name in data:
+        sym_map[name] = syms[i % len(syms)]
+        i += 1
+
+    return sym_map
