@@ -20,10 +20,18 @@ void execute_single(const int argc, const char** argv)
     using namespace mips::testing;
     using namespace emulation;
 
+    if (argc < 1)
+        throw std::runtime_error("Please provide a test file");
+
+    if (argc < 2)
+        throw std::runtime_error("Please provide an emulator config");
+
     Loader loader;
     Runner runner;
 
     const std::string path = argv[0];
+    const std::string emu_str = argv[1];
+
     std::cout << "Loading " << path << "\n";
 
     const auto test = loader.load_test(path);
@@ -36,7 +44,7 @@ void execute_single(const int argc, const char** argv)
 
     auto time = benchmark::measure([&]
     {
-        Emulator* emulator = EmulatorFactory::create_from_str("");
+        Emulator* emulator = EmulatorFactory::create_from_str(emu_str);
         result = runner.execute_test(*emulator, test);
         dump = emulator->get_debug_with_dumps();
     });
