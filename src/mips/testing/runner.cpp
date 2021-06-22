@@ -10,23 +10,72 @@ namespace mips::testing
         : _config(config)
     { }
 
-    void Runner::execute_test(emulation::Emulator& emulator, const Test& test) const
+    void Runner::initialize_test(emulation::Emulator& emulator, const Test& test) const
     {
         for (const auto& initializer : test.initializers)
             initializer.invoke(emulator.get_state().regs);
-
-        emulator.execute(utils::copy(test.program));
     }
 
-    void Runner::log_test_failure(const Test& test, const std::string& error)
+    void Runner::evaluate_test(emulation::Emulator& emulator, const Test& test, TestResult& result) const
     {
+        result.status = TestResult::Status::Passed;
+        std::stringstream errors;
+
+        for (const auto& assertion : test.assertions)
+        {
+            if (!assertion.evaluate(emulator.get_state().regs))
+            {
+                result.status = TestResult::Status::Failed;
+                errors << "Assertion failed: " << assertion << "\n";
+            }
+        }
+
+        if (result.status == TestResult::Status::Failed)
+        {
+            errors << emulator.get_debug_with_dumps();
+            result.errors = errors.str();
+        }
+        else
+        {
+            get_statistics(emulator, result);
+        }
+    }
+
+    TestResult Runner::execute_test(emulation::Emulator& emulator, const Test& test) const
+    {
+        TestResult result;
+        result.name = test.name;
+
+        initialize_test(emulator, test);
+
+        try
+        {
+            emulator.execute(utils::copy(test.program));
+        }
+        catch (const std::exception& e)
+        {
+            result.status = TestResult::Status::Faulted;
+            result.errors = strtools::catf("%s\n", e.what());
+        }
+
+        if (result.status != TestResult::Status::Faulted)
+            evaluate_test(emulator, test, result);
+
+        return result;
+    }
+
+    void Runner::log_test_failure(const Test& test, const TestResult& result) const
+    {
+        if (result.status == TestResult::Status::Passed)
+            return;
+
         std::cout << "\n";
         std::cout << colorize(test.name, strtools::AnsiColor::Red) << "\n";
 
         if (!test.description.empty())
             std::cout << test.description << "\n";
 
-        std::cout << error;
+        std::cout << result.errors;
     }
 
     template<> void Runner::get_statistics<emulation::Runtime>(const emulation::Runtime& emulator, TestResult& result) const
