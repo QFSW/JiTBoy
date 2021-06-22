@@ -16,8 +16,9 @@ uint32_t return_8()
     return 8;
 }
 
-void execute_single(const std::string& path)
+void execute_single(const int argc, const char** argv)
 {
+    const std::string path = argv[0];
     std::cout << "Loading " << path << "\n";
 
     mips::Loader loader;
@@ -45,7 +46,7 @@ void write_test_results(const std::vector<mips::testing::TestResult>& results, c
     csv::write_file(path, results);
 }
 
-mips::testing::Runner::Config parse_config(const int argc, char** argv)
+mips::testing::Runner::Config parse_config(const int argc, const char** argv)
 {
     using namespace mips::testing;
     Runner::Config::Timing timing = Runner::Config::Timing::none();
@@ -83,7 +84,7 @@ void investigate_hybrid(mips::testing::Runner& runner, const std::vector<mips::t
     }
 }
 
-void test_bench(const int argc, char** argv)
+void test_bench(const int argc, const char** argv)
 {
     using namespace mips::testing;
     using namespace emulation;
@@ -119,12 +120,20 @@ void test_bench(const int argc, char** argv)
     investigate_hybrid(runner, tests);
 }
 
-int main(const int argc, char** argv)
+int main(const int argc, const char** argv)
 {
-    if (argc == 3 && std::string(argv[1]) == "--single")
-        execute_single(argv[2]);
-    else
-        test_bench(argc, argv);
+    try
+    {
+        if (argc >= 3 && std::string(argv[1]) == "--single")
+            execute_single(argc - 2, argv + 2);
+        else
+            test_bench(argc, argv);
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "JiTBoy Failed!\n" << e.what() << std::endl;
+        std::exit(-1);
+    }
 
     return 0;
 }
