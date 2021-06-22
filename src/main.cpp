@@ -3,11 +3,10 @@
 #include <emulation/runtime.hpp>
 #include <emulation/interpreter.hpp>
 #include <emulation/hybrid_runtime.hpp>
+#include <emulation/emulator_factory.hpp>
 #include <utils/benchmark.hpp>
-#include <utils/utils.hpp>
 #include <utils/csv.hpp>
 #include <utils/strtools.hpp>
-#include <mips/loader.hpp>
 #include <mips/testing/loader.hpp>
 #include <mips/testing/runner.hpp>
 
@@ -24,7 +23,7 @@ void execute_single(const int argc, const char** argv)
     Loader loader;
     Runner runner;
 
-    const std::string path = argv[0];
+    const std::string path = "tests/mips/func/long_mul.s";
     std::cout << "Loading " << path << "\n";
 
     const auto test = loader.load_test(path);
@@ -37,9 +36,9 @@ void execute_single(const int argc, const char** argv)
 
     auto time = benchmark::measure([&]
     {
-        emulation::Runtime runtime;
-        result = runner.execute_test(runtime, test);
-        dump = runtime.get_debug_with_dumps();
+        Emulator* emulator = EmulatorFactory::create_from_str("");
+        result = runner.execute_test(*emulator, test);
+        dump = emulator->get_debug_with_dumps();
     });
 
     switch (result.status)
@@ -152,6 +151,9 @@ void test_bench(const int argc, const char** argv)
 
 int main(const int argc, const char** argv)
 {
+    execute_single(argc, argv);
+    return 0;
+
     try
     {
         if (argc >= 3 && std::string(argv[1]) == "--single")
