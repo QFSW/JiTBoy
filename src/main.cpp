@@ -32,13 +32,38 @@ void execute_single(const int argc, const char** argv)
     std::cout << "Loaded assembly\n";
     std::cout << test.program << "\n";
 
+    TestResult result;
+    std::string dump;
+
     auto time = benchmark::measure([&]
     {
         emulation::Runtime runtime;
-
-        auto _ = utils::finally([&] { std::cout << runtime.get_debug_with_dumps(); });
-        runner.execute_test(runtime, test);
+        result = runner.execute_test(runtime, test);
+        dump = runtime.get_debug_with_dumps();
     });
+
+    switch (result.status)
+    {
+        case TestResult::Status::Passed:
+        {
+            std::cout << dump;
+            std::cout << strtools::catf("%s %s\n", test.name.c_str(), strtools::colorize("passed", strtools::AnsiColor::Green).c_str());
+            break;
+        }
+        case TestResult::Status::Failed:
+        {
+            std::cout << result.errors;
+            std::cout << strtools::catf("%s %s\n", test.name.c_str(), strtools::colorize("failed", strtools::AnsiColor::Red).c_str());
+            break;
+        }
+        case TestResult::Status::Faulted:
+        {
+            std::cout << result.errors;
+            std::cout << strtools::catf("%s %s\n", test.name.c_str(), strtools::colorize("faulted", strtools::AnsiColor::Red).c_str());
+            break;
+        }
+        default: break;
+    }
 
     std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;
 }
