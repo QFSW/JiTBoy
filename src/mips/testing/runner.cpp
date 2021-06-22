@@ -2,6 +2,10 @@
 
 namespace mips::testing
 {
+    Runner::Runner()
+        : Runner(Config())
+    { }
+
     Runner::Runner(Config config)
         : _config(config)
     { }

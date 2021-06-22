@@ -27,7 +27,10 @@ namespace mips::testing
     public:
         using Config = RunnerConfig;
 
+        Runner();
         Runner(Config config);
+
+        void execute_test(emulation::Emulator& emulator, const Test& test) const;
 
         template <typename Emulator>
         std::vector<TestResult> run(const std::vector<Test>& tests);
@@ -38,7 +41,6 @@ namespace mips::testing
     private:
         Config _config;
 
-        void execute_test(emulation::Emulator& emulator, const Test& test) const;
         void log_test_failure(const Test& test, const std::string& error);
 
         template <typename Emulator>

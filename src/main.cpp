@@ -18,21 +18,26 @@ uint32_t return_8()
 
 void execute_single(const int argc, const char** argv)
 {
+    using namespace mips::testing;
+    using namespace emulation;
+
+    Loader loader;
+    Runner runner;
+
     const std::string path = argv[0];
     std::cout << "Loading " << path << "\n";
 
-    mips::Loader loader;
-    auto program = loader.load_auto(path);
+    const auto test = loader.load_test(path);
 
     std::cout << "Loaded assembly\n";
-    std::cout << program << "\n";
+    std::cout << test.program << "\n";
 
     auto time = benchmark::measure([&]
     {
         emulation::Runtime runtime;
 
         auto _ = utils::finally([&] { std::cout << runtime.get_debug_with_dumps(); });
-        runtime.execute(utils::copy(program));
+        runner.execute_test(runtime, test);
     });
 
     std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;
