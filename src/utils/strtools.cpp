@@ -1,5 +1,6 @@
 #include "strtools.hpp"
 
+#include <algorithm>
 #include <cctype>
 
 namespace strtools
@@ -31,6 +32,14 @@ namespace strtools
 	std::string colorize(const std::string& str, const AnsiColor col)
 	{
 		return catf("\033[1;%dm%s\033[0m", col, str.c_str());
+	}
+
+	std::string to_lower(const std::string& str)
+	{
+		std::string cpy = str;
+		std::ranges::transform(cpy, cpy.begin(), std::tolower);
+
+		return cpy;
 	}
 
 	bool replace_substr(std::string& str, const std::string& to_find, const std::string& to_replace)

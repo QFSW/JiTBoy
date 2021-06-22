@@ -30,7 +30,10 @@ void execute_single(const int argc, const char** argv)
     Runner runner;
 
     const std::string path = argv[0];
-    const std::string emu_str = argv[1];
+
+    std::string emu_str;
+    for (int i = 1; i < argc; i++)
+        emu_str += argv[i];
 
     std::cout << "Loading " << path << "\n";
 
