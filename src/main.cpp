@@ -23,7 +23,7 @@ void execute_single(const int argc, const char** argv)
     Loader loader;
     Runner runner;
 
-    const std::string path = "tests/mips/func/long_mul.s";
+    const std::string path = argv[0];
     std::cout << "Loading " << path << "\n";
 
     const auto test = loader.load_test(path);
@@ -151,9 +151,6 @@ void test_bench(const int argc, const char** argv)
 
 int main(const int argc, const char** argv)
 {
-    execute_single(argc, argv);
-    return 0;
-
     try
     {
         if (argc >= 3 && std::string(argv[1]) == "--single")
