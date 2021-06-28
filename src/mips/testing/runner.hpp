@@ -27,7 +27,12 @@ namespace mips::testing
     public:
         using Config = RunnerConfig;
 
+        Runner();
         Runner(Config config);
+
+        void initialize_test(emulation::Emulator& emulator, const Test& test) const;
+        void evaluate_test(emulation::Emulator& emulator, const Test& test, TestResult& result) const;
+        TestResult execute_test(emulation::Emulator& emulator, const Test& test) const;
 
         template <typename Emulator>
         std::vector<TestResult> run(const std::vector<Test>& tests);
@@ -38,8 +43,7 @@ namespace mips::testing
     private:
         Config _config;
 
-        void execute_test(emulation::Emulator& emulator, const Test& test) const;
-        void log_test_failure(const Test& test, const std::string& error);
+        void log_test_failure(const Test& test, const TestResult& result) const;
 
         template <typename Emulator>
         std::chrono::duration<double> measure_execution_time(const Test& test, const typename Emulator::Config& emulator_config) const;
@@ -67,7 +71,6 @@ namespace mips::testing
         size_t fail_count = 0;
         size_t fault_count = 0;
 
-        std::vector<std::tuple<Test, std::string>> failures;
         std::vector<TestResult> results;
 
         size_t name_width = 0;
@@ -80,8 +83,6 @@ namespace mips::testing
         {
             executed_count++;
             Emulator emulator(emulator_config);
-            TestResult result;
-            result.name = test.name;
 
             constexpr auto counter_col = strtools::AnsiColor::Blue;
             constexpr auto counter_delim = "0";
@@ -93,71 +94,49 @@ namespace mips::testing
 
             std::cout << std::left << std::setw(name_width) << test.name << std::right;
 
-            try
+            TestResult result = execute_test(emulator, test);
+
+            switch (result.status)
             {
-                execute_test(emulator, test);
-
-                bool failed = false;
-                std::stringstream ss;
-                for (const auto& assertion : test.assertions)
-                {
-                    if (!assertion.evaluate(emulator.get_state().regs))
-                    {
-                        if (!failed)
-                        {
-                            result.status = TestResult::Status::Failed;
-                            std::cout << colorize(" failed\n", strtools::AnsiColor::Red);
-                        }
-
-                        failed = true;
-                        ss << "Assertion failed: " << assertion << "\n";
-                    }
-                }
-
-                if (failed)
-                {
-                    fail_count++;
-                    ss << emulator.get_debug_with_dumps();
-                    failures.push_back(std::tuple(test, ss.str()));
-                }
-                else
+                case TestResult::Status::Passed:
                 {
                     pass_count++;
-                    result.status = TestResult::Status::Passed;
-                    result.time = measure_execution_time<Emulator>(test, emulator_config);
-                    get_statistics(emulator, result);
-
                     std::cout << colorize(" pass\n", strtools::AnsiColor::Green);
+                    result.time = measure_execution_time<Emulator>(test, emulator_config);
+                    break;
                 }
-            }
-            catch (const std::exception& e)
-            {
-                fault_count++;
-                result.status = TestResult::Status::Faulted;
-                std::cout << colorize(" faulted\n", strtools::AnsiColor::Red);
-
-                std::stringstream ss;
-                ss << e.what() << "\n";
-                failures.push_back(std::tuple(test, ss.str()));
-            }
+                case TestResult::Status::Failed:
+                {
+                    fail_count++;
+                    std::cout << colorize(" failed\n", strtools::AnsiColor::Red);
+                    break;
+                }
+                case TestResult::Status::Faulted:
+                {
+                    fault_count++;
+                    std::cout << colorize(" faulted\n", strtools::AnsiColor::Red);
+                    break;
+                }
+                default: break;
+            }           
 
             results.push_back(std::move(result));
         }
 
-        for (const auto& [test, err] : failures)
-            log_test_failure(test, err);
+        for (int i = 0; i < tests.size(); i++)
+            log_test_failure(tests[i], results[i]);
 
-        std::string pass_ctr = strtools::colorize(
+        const std::string pass_ctr = strtools::colorize(
             strtools::catf("%d/%d", pass_count, tests.size()),
             pass_count == tests.size() ? strtools::AnsiColor::Green : strtools::AnsiColor::Red
         );
 
-        std::string fail_ctr = strtools::colorize(
+        const std::string fail_ctr = strtools::colorize(
             strtools::catf("%d", fail_count),
             fail_count == 0 ? strtools::AnsiColor::Green : strtools::AnsiColor::Red
         );
 
-        std::string fault_ctr = strtools::colorize(
+        const std::string fault_ctr = strtools::colorize(
             strtools::catf("%d", fault_count),
             fault_count == 0 ? strtools::AnsiColor::Green : strtools::AnsiColor::Red
         );

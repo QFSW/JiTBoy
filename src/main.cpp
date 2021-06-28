@@ -3,11 +3,10 @@
 #include <emulation/runtime.hpp>
 #include <emulation/interpreter.hpp>
 #include <emulation/hybrid_runtime.hpp>
+#include <emulation/emulator_factory.hpp>
 #include <utils/benchmark.hpp>
-#include <utils/utils.hpp>
 #include <utils/csv.hpp>
 #include <utils/strtools.hpp>
-#include <mips/loader.hpp>
 #include <mips/testing/loader.hpp>
 #include <mips/testing/runner.hpp>
 
@@ -16,23 +15,65 @@ uint32_t return_8()
     return 8;
 }
 
-void execute_single(const std::string& path)
+void execute_single(const int argc, const char** argv)
 {
+    using namespace mips::testing;
+    using namespace emulation;
+
+    if (argc < 1)
+        throw std::runtime_error("Please provide a test file");
+
+    if (argc < 2)
+        throw std::runtime_error("Please provide an emulator config");
+
+    Loader loader;
+    Runner runner;
+
+    const std::string path = argv[0];
+
+    std::string emu_str;
+    for (int i = 1; i < argc; i++)
+        emu_str += argv[i];
+
     std::cout << "Loading " << path << "\n";
 
-    mips::Loader loader;
-    auto program = loader.load_auto(path);
+    const auto test = loader.load_test(path);
 
     std::cout << "Loaded assembly\n";
-    std::cout << program << "\n";
+    std::cout << test.program << "\n";
+
+    TestResult result;
+    std::string dump;
 
     auto time = benchmark::measure([&]
     {
-        emulation::Runtime runtime;
-
-        auto _ = utils::finally([&] { std::cout << runtime.get_debug_with_dumps(); });
-        runtime.execute(utils::copy(program));
+        Emulator* emulator = EmulatorFactory::create_from_str(emu_str);
+        result = runner.execute_test(*emulator, test);
+        dump = emulator->get_debug_with_dumps();
     });
+
+    switch (result.status)
+    {
+        case TestResult::Status::Passed:
+        {
+            std::cout << dump;
+            std::cout << strtools::catf("%s %s\n", test.name.c_str(), strtools::colorize("passed", strtools::AnsiColor::Green).c_str());
+            break;
+        }
+        case TestResult::Status::Failed:
+        {
+            std::cout << result.errors;
+            std::cout << strtools::catf("%s %s\n", test.name.c_str(), strtools::colorize("failed", strtools::AnsiColor::Red).c_str());
+            break;
+        }
+        case TestResult::Status::Faulted:
+        {
+            std::cout << result.errors;
+            std::cout << strtools::catf("%s %s\n", test.name.c_str(), strtools::colorize("faulted", strtools::AnsiColor::Red).c_str());
+            break;
+        }
+        default: break;
+    }
 
     std::cout << "\nComplete in " << std::chrono::duration_cast<std::chrono::microseconds>(time).count() << "us" << std::endl;
 }
@@ -45,7 +86,7 @@ void write_test_results(const std::vector<mips::testing::TestResult>& results, c
     csv::write_file(path, results);
 }
 
-mips::testing::Runner::Config parse_config(const int argc, char** argv)
+mips::testing::Runner::Config parse_config(const int argc, const char** argv)
 {
     using namespace mips::testing;
     Runner::Config::Timing timing = Runner::Config::Timing::none();
@@ -83,7 +124,7 @@ void investigate_hybrid(mips::testing::Runner& runner, const std::vector<mips::t
     }
 }
 
-void test_bench(const int argc, char** argv)
+void test_bench(const int argc, const char** argv)
 {
     using namespace mips::testing;
     using namespace emulation;
@@ -119,12 +160,20 @@ void test_bench(const int argc, char** argv)
     investigate_hybrid(runner, tests);
 }
 
-int main(const int argc, char** argv)
+int main(const int argc, const char** argv)
 {
-    if (argc == 3 && std::string(argv[1]) == "--single")
-        execute_single(argv[2]);
-    else
-        test_bench(argc, argv);
+    try
+    {
+        if (argc >= 3 && std::string(argv[1]) == "--single")
+            execute_single(argc - 2, argv + 2);
+        else
+            test_bench(argc, argv);
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "JiTBoy Failed!\n" << e.what() << std::endl;
+        std::exit(-1);
+    }
 
     return 0;
 }

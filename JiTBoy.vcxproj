@@ -132,6 +132,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/Zc:alignedNew %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +158,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalOptions>/Zc:alignedNew %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -228,6 +230,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/Zc:alignedNew %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -272,6 +275,7 @@
     <ClCompile Include="src\emulation\block_partitioner.cpp" />
     <ClCompile Include="src\emulation\compiler_config.cpp" />
     <ClCompile Include="src\emulation\conditional_jump.cpp" />
+    <ClCompile Include="src\emulation\emulator_factory.cpp" />
     <ClCompile Include="src\emulation\emulator_state.cpp" />
     <ClCompile Include="src\emulation\hybrid_runtime.cpp" />
     <ClCompile Include="src\emulation\hybrid_runtime_config.cpp" />
@@ -318,6 +322,7 @@
     <ClInclude Include="src\common\environment.hpp" />
     <ClInclude Include="src\emulation\block_partitioner.hpp" />
     <ClInclude Include="src\emulation\conditional_jump.hpp" />
+    <ClInclude Include="src\emulation\emulator_factory.hpp" />
     <ClInclude Include="src\emulation\interpreter_config.hpp" />
     <ClInclude Include="src\emulation\jump_resolver.hpp" />
     <ClInclude Include="src\emulation\runtime_config.hpp" />

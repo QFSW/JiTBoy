@@ -21,8 +21,10 @@ namespace memory
         [[nodiscard]] size_t get_total() const noexcept;
 
     private:
+        static constexpr size_t fixed_size = StackAlloc ? PartitionSize : 0;
+
         using Allocator = ExecutableAllocator<PartitionSize>;
-        using FixedAllocator = ExecutableAllocator<StackAlloc ? PartitionSize : 0>;
+        using FixedAllocator = ExecutableAllocator<fixed_size>;
 
         FixedAllocator _fixed_allocator;
         std::vector<std::unique_ptr<Allocator>> _dynamic_allocators;

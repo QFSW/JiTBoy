@@ -24,8 +24,8 @@ namespace emulation
         [[nodiscard]] EmulatorState& get_state() noexcept override { return _state; }
         [[nodiscard]] const EmulatorState& get_state() const noexcept override { return _state; }
         [[nodiscard]] const common::unordered_map<uint32_t, CompiledBlock>& get_blocks() const noexcept { return _blocks; }
-        [[nodiscard]] std::string get_debug() const;
-        [[nodiscard]] std::string get_debug_with_dumps() const;
+        [[nodiscard]] std::string get_debug() const override;
+        [[nodiscard]] std::string get_debug_with_dumps() const override;
 
     private:
         Config _config;

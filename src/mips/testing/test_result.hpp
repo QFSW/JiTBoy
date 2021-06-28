@@ -16,6 +16,8 @@ namespace mips::testing
 
         std::string name;
         Status status;
+        std::string errors;
+
         std::chrono::duration<double> time;
         size_t block_count;
         size_t host_instr_count;

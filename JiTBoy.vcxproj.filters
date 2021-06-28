@@ -150,6 +150,9 @@
     <ClCompile Include="src\emulation\block_partitioner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\emulation\emulator_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/label_generator.hpp">
@@ -366,6 +369,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\threading\result_queue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulation\emulator_factory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
